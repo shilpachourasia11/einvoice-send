@@ -2,7 +2,7 @@ machine:
   pre:
    - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
    - pip install --force-reinstall -U docker-compose==1.10.0
-   - cd einvoice-send ; rm -Rf wiki ; git clone https://github.com/OpusCapitaBusinessNetwork/einvoice-send.wiki.git && mv einvoice-send.wiki wiki
+   - cd einvoice-send ; rm -Rf wiki ; git clone https://github.com/OpusCapita/einvoice-send.wiki.git && mv einvoice-send.wiki wiki
   services:
     - docker
 
