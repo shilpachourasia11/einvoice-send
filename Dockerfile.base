@@ -3,4 +3,4 @@ MAINTAINER kwierchris
 WORKDIR /var/tmp/base
 COPY package.json .
 ENV NODE_ENV=development
-RUN apk add --no-cache rsync curl ; yarn install && yarn cache clean
+RUN apk add --no-cache rsync curl ; npm install && npm cache clean
