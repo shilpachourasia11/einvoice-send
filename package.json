@@ -16,32 +16,37 @@
     "exclude": []
   },
   "dependencies": {
-    "ocbesbn-config": ">=1.0.1",
-    "ocbesbn-db-init": ">=0.1.7",
-    "ocbesbn-web-init": ">=0.1.4",
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-react": "^6.23.0",
     "bluebird": "^3.0.5",
     "epilogue": "^0.7.0",
+    "ocbesbn-config": "^2.x",
+    "ocbesbn-db-init": "^1x",
+    "ocbesbn-web-init": "^0.x",
     "sequelize": "^3.24.7"
   },
   "devDependencies": {
+    "jsdoc-to-markdown": "^3.0.0",
     "mocha": "^3.2.0",
     "mocha-junit-reporter": "^1.12.1",
     "nodemon": "^1.11.0",
     "nyc": "^10.1.2",
-    "rimraf": "^2.6.0",
     "raml-to-markdown": "^1.x",
+    "rimraf": "^2.6.0",
     "sequelize-to-markdown": "^1.x",
-    "jsdoc-to-markdown": "^3.0.0"
+    "webpack-dev-middleware": "^1.10.1"
   },
   "scripts": {
     "start": "node src/server/index.js",
-    "dev": "npm run setup-consul ; ${NODE_PATH}/.bin/nodemon --watch src/server src/server/index.js",
+    "dev": "npm run setup-consul ; ${NODE_PATH}/.bin/nodemon --watch ./ src/server/index.js",
     "test": "npm run clean ; npm run setup-consul ; ${NODE_PATH}/.bin/nyc ${NODE_PATH}/.bin/mocha --recursive -R mocha-junit-reporter",
     "clean": "${NODE_PATH}/.bin/rimraf .nyc_output coverage test-results.xml",
-    "setup-consul": "curl -X PUT -d 'bnp' http://${HOST_IP}:8500/v1/kv/einvoice-send/MYSQL_DATABASE ; curl -X PUT -d 'root' http://${HOST_IP}:8500/v1/kv/einvoice-send/MYSQL_USER ; curl -X PUT -d 'notSecurePa55w0rd' http://${HOST_IP}:8500/v1/kv/einvoice-send/MYSQL_PASSWORD",
+    "setup-consul": "curl -X PUT -d 'bnp' http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/database ; curl -X PUT -d 'root' http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/user ; curl -X PUT -d 'notSecurePa55w0rd' http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/password",
     "rest-doc": "mkdir -p wiki/rest-doc ; ${NODE_PATH}/.bin/raml2md -o file-per-resource -p wiki/rest-doc --output-ext=.endpoint.md rest-doc/main.raml",
     "domain-doc": "mkdir -p wiki/domain-doc ; ${NODE_PATH}/.bin/sq2md -o file-per-src -p wiki/domain-doc --init=init --field-bl=createdAt,updatedAt --output-ext=.model.md src/server/db/models",
     "api-doc": "mkdir -p wiki/api-doc ; ${NODE_PATH}/.bin/jsdoc2md -f $(find src/server) > wiki/api-doc/Home.md",
-    "doc" : "npm run rest-doc ; npm run domain-doc "
+    "doc": "npm run rest-doc ; npm run domain-doc "
   }
 }
