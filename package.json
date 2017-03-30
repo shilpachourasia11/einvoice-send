@@ -23,7 +23,7 @@
     "bluebird": "^3.0.5",
     "epilogue": "^0.7.0",
     "ocbesbn-config": "^2.x",
-    "ocbesbn-db-init": "^1x",
+    "ocbesbn-db-init": "^1.x",
     "ocbesbn-web-init": "^0.x",
     "sequelize": "^3.24.7"
   },
