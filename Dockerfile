@@ -9,7 +9,7 @@ COPY package.json .
 # Make sure node can load modules from /var/tmp/base/node_modules
 # Setting NODE_ENV is necessary for "npm install" below.
 ENV NODE_ENV=development NODE_PATH=/var/tmp/base/node_modules PATH=${PATH}:${NODE_PATH}/.bin
-RUN npm install ; npm cache clean
+RUN yarn install ; yarn cache clean
 
 WORKDIR /home/node/einvoice-send
 
@@ -17,7 +17,7 @@ WORKDIR /home/node/einvoice-send
 COPY . tmp
 
 # Change owner since COPY/ADD assignes UID/GID 0 to all copied content.
-RUN chown -Rf node:node tmp; rsync -a tmp/ ./ && rm -rf tmp
+RUN rsync -a tmp/* ./ && rm -rf tmp
 
 # Set the user name or UID to use when running the image and for any RUN, CMD and ENTRYPOINT instructions that follow
 USER node
