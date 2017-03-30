@@ -1,10 +1,7 @@
 FROM ocbesbn/einvoice-send-base
 MAINTAINER kwierchris
 
-# NOTE: "node" user and corresponding "/home/node" dir are created by "node:6-alpine" image.
-WORKDIR /var/tmp/base
-
-COPY package.json .
+COPY package.json /var/tmp/base
 
 # Make sure node can load modules from /var/tmp/base/node_modules
 # Setting NODE_ENV is necessary for "npm install" below.
@@ -14,10 +11,7 @@ RUN yarn install ; yarn cache clean
 WORKDIR /home/node/einvoice-send
 
 # Bundle app source by overwriting all WORKDIR content.
-COPY . tmp
-
-# Change owner since COPY/ADD assignes UID/GID 0 to all copied content.
-RUN rsync -a tmp/* ./ && rm -rf tmp
+COPY . .
 
 # Set the user name or UID to use when running the image and for any RUN, CMD and ENTRYPOINT instructions that follow
 USER node
