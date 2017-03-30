@@ -1,7 +1,7 @@
 'use strict'
 
 const Promise = require('bluebird');
-
+const pathJs = require('path');
 /**
  * Initializes all routes for RESTful access.
  *
@@ -16,7 +16,8 @@ module.exports.init = function(app, db, config)
     // Register routes here.
     // Use the passed db parameter in order to use Epilogue auto-routes.
     // Use require in order to separate routes into multiple js files.
-    app.get('/', (req, res) => res.send('Hello world!'));
+    //app.get('/', (req, res) => res.send('Hello world!'));
+    app.get('/', (req, res) => res.sendFile(pathJs.join(process.cwd(), 'src/client/static/index.html')));
 
     // Always return a promise.
     return Promise.resolve();

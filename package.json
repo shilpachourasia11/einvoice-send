@@ -36,6 +36,7 @@
     "raml-to-markdown": "^1.x",
     "rimraf": "^2.6.0",
     "sequelize-to-markdown": "^1.x",
+    "webpack": "^2.3.2",
     "webpack-dev-middleware": "^1.10.1"
   },
   "scripts": {
