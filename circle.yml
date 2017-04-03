@@ -12,9 +12,9 @@ dependencies:
     - docker login -u $DOCKER_USER -p $DOCKER_PASS -e $DOCKER_EMAIL
     - >
       if [ -n "${RUN_NIGHTLY_BUILD}" ]; then
-        echo "Building base image..." ; docker build --rm=false -t ocbesbn/einvoice-send-base:latest -f Dockerfile.base .
+        echo "Building base image..." ; docker build -q --rm=false -t ocbesbn/einvoice-send-base:latest -f Dockerfile.base .
       fi
-    - docker build --rm=false -t ocbesbn/einvoice-send:latest .
+    - docker build -q --rm=false -t ocbesbn/einvoice-send:latest .
 
 test:
   override:

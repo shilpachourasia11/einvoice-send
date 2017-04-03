@@ -10,6 +10,7 @@ services:
      - redis
     volumes:
      - .:/home/node/einvoice-send
+     - ./node_modules:/var/tmp/base/node_modules
     labels:
       SERVICE_NAME: 'einvoice-send'
     extra_hosts:

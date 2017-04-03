@@ -1,12 +1,13 @@
 FROM ocbesbn/einvoice-send-base
 MAINTAINER kwierchris
 
-COPY package.json /var/tmp/base
+WORKDIR /var/tmp/base
+COPY package.json .
 
 # Make sure node can load modules from /var/tmp/base/node_modules
 # Setting NODE_ENV is necessary for "npm install" below.
 ENV NODE_ENV=development NODE_PATH=/var/tmp/base/node_modules PATH=${PATH}:${NODE_PATH}/.bin
-RUN npm install ; npm cache clean
+RUN npm set progress=false && npm install ; npm cache clean
 
 WORKDIR /home/node/einvoice-send
 
