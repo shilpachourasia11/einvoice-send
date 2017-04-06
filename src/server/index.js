@@ -19,7 +19,7 @@ db.init({
     server : {
         mode : server.Server.Mode.Dev,
         staticFilePath : './src/client/static',
-        indexFilePath : './src/client/dist/index.html',
+        indexFilePath : require('path').resolve('./src/client/dist/index.html'),
         webpack : {
             useWebpack : true
         }
