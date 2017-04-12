@@ -1,22 +1,11 @@
 import React from 'react';
-import styles from './App.css';
+import { Route } from 'react-router-dom';
+import Home from './Home';
+import Countries from './Countries';
 
-export default class App extends React.Component
-{
-    constructor(props)
-    {
-        super(props);
-
-        this.state = {
-            test: 'foo'
-        };
-    }
-    render()
-    {
-        return (
-            <div className={styles.app}>
-                bar
-            </div>
-        );
-    }
-}
+export default () => (
+  <div>
+    <Route path="/" component={Home}/>
+    <Route path="/countries" component={Countries}/>
+  </div>
+)

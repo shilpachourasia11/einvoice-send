@@ -2,25 +2,19 @@
 
 var path = require('path');
 var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    name: 'client',
+    name: 'clinet-App for SSR',
     devtool : 'eval-source-map',
-    entry : path.join(__dirname, 'src/client/index.js'),
+    entry : path.join(__dirname, 'src/client/app/App.js'),
     output : {
         path : path.join(__dirname, 'src/client/dist'),
-        filename : 'bundle.js',
+        filename : 'App.js',
         publicPath : '/static'
     },
     plugins: [
         new webpack.ProvidePlugin({
             "React": "react",
-        }),
-        new HtmlWebpackPlugin({
-            template : 'src/client/index.html',
-            inject : 'body',
-            filename : 'index.html'
         })
     ],
     resolve: {
