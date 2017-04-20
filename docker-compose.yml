@@ -10,7 +10,6 @@ services:
      - redis
     volumes:
      - .:/home/node/einvoice-send
-     - ./node_modules:/var/tmp/base/node_modules
     labels:
       SERVICE_NAME: 'einvoice-send'
     extra_hosts:
@@ -53,9 +52,12 @@ services:
     command: [agent, '-server', '-ui', '-bootstrap-expect=1', '-bind=${HOST_IP}', '-client=0.0.0.0']
 
   redis:
-    image: redis:latest
-    network_mode: host
+    image: ocbesbn/redis:latest
     ports:
       - '6379:6379'
+    environment:
+      REDIS_AUTH: 'abc'
+    depends_on:
+      - registrator
     labels:
       SERVICE_NAME: redis
