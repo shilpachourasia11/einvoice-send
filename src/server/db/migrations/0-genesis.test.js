@@ -15,11 +15,24 @@ const Promise = require('bluebird');
  */
 module.exports.up = function(db, config)
 {
-    // Add all structual and data migrations here.
-    // You may use db.getQueryInterface() for structures and config.models for working with data.
+    var InChannelConfigs = db.queryInterface.bulkInsert('InChannelConfigs', [ {
+        supplierId : 'A-TEAM',
+        inputType : 'pdf',
+        billingModelId : 'cheap',
+        createdBy : 'The Doctor',
+        createdOn : new Date()
+    } ]);
 
-    // Always return a promise.
-    return Promise.resolve();
+    var PdfChannelConfig = db.queryInterface.bulkInsert('PdfChannelConfigs', [ {
+        supplierId : 'A-TEAM',
+        createdBy : 'The Doctor',
+        createdOn : new Date()
+    } ]);
+
+    return Promise.all([
+        InChannelConfigs,
+        PdfChannelConfig
+    ]);
 }
 
 /**
@@ -33,6 +46,20 @@ module.exports.up = function(db, config)
  */
 module.exports.down = function(db, config)
 {
-    // Always return a promise.
-    return Promise.resolve();
+    var InChannelConfigs = db.queryInterface.bulkDelete('InChannelConfigs', {
+        supplierId : {
+            $in : [ 'A-TEAM' ]
+        }
+    });
+
+    var PdfChannelConfigs = db.queryInterface.bulkDelete('PdfChannelConfigs', {
+        supplierId : {
+            $in : [ 'A-TEAM' ]
+        }
+    });
+
+    return Promise.all([
+        InChannelConfigs,
+        PdfChannelConfigs
+    ]);
 }

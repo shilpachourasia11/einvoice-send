@@ -1,6 +1,6 @@
 'use strict'
 
-const Sequelize = require('sequelize');
+const DataTypes = require('sequelize');
 const Promise = require('bluebird');
 
 /**
@@ -15,11 +15,102 @@ const Promise = require('bluebird');
  */
 module.exports.up = function(db, config)
 {
-    // Add all structure and data migrations here.
-    // You may use db.getQueryInterface() for structures and config.models for working with data.
+    var InChannelConfigs = db.queryInterface.createTable('InChannelConfigs', {
+        supplierId : {
+            type : DataTypes.STRING(30),
+            allowNull : false,
+            primaryKey : true
+        },
+        billingModelId : {
+            type : DataTypes.STRING(30),
+            allowNull : false
+        },
+        inputType : {
+            type : DataTypes.STRING(30),
+            allowNull : false
+        },
+        status : {
+            type : DataTypes.STRING(100),
+            allowNull : false,
+            defaultValue : 'new'
+        },
+        createdBy : {
+            type : DataTypes.STRING(60),
+            allowNull : false
+        },
+        changedBy : {
+            type : DataTypes.STRING(60),
+            allowNull : false,
+            defaultValue : ''
+        },
+        createdOn : {
+            type : DataTypes.DATE(),
+            allowNull : false,
+            defaultValue : DataTypes.NOW
+        },
+        changedOn : {
+            type : DataTypes.DATE(),
+            allowNull : true
+        }
+    });
 
-    // Always return a promise.
-    return Promise.resolve();
+    var EInvoiceChannelConfigs = db.queryInterface.createTable('EInvoiceChannelConfigs', {
+        supplierId : {
+            type : DataTypes.STRING(30),
+            allowNull : false,
+            primaryKey : true
+        },
+        createdBy : {
+            type : DataTypes.STRING(60),
+            allowNull : false
+        },
+        changedBy : {
+            type : DataTypes.STRING(60),
+            allowNull : false,
+            defaultValue : ''
+        },
+        createdOn : {
+            type : DataTypes.DATE(),
+            allowNull : false,
+            defaultValue : DataTypes.NOW
+        },
+        changedOn : {
+            type : DataTypes.DATE(),
+            allowNull : true
+        }
+    });
+
+    var PdfChannelConfigs = db.queryInterface.createTable('PdfChannelConfigs', {
+        supplierId : {
+            type : DataTypes.STRING(30),
+            allowNull : false,
+            primaryKey : true
+        },
+        createdBy : {
+            type : DataTypes.STRING(60),
+            allowNull : false
+        },
+        changedBy : {
+            type : DataTypes.STRING(60),
+            allowNull : false,
+            defaultValue : ''
+        },
+        createdOn : {
+            type : DataTypes.DATE(),
+            allowNull : false,
+            defaultValue : DataTypes.NOW
+        },
+        changedOn : {
+            type : DataTypes.DATE(),
+            allowNull : true
+        }
+    });
+
+    return Promise.all([
+        InChannelConfigs,
+        EInvoiceChannelConfigs,
+        PdfChannelConfigs
+    ]);
 }
 
 /**
@@ -33,6 +124,9 @@ module.exports.up = function(db, config)
  */
 module.exports.down = function(db, config)
 {
-    // Always return a promise.
-    return Promise.resolve();
+    return Promise.all([
+        db.queryInterface.dropTable('InChannelConfigs'),
+        db.queryInterface.dropTable('EInvoiceChannelConfigs'),
+        db.queryInterface.dropTable('PdfChannelConfigs')
+    ])
 }

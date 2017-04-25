@@ -2,6 +2,8 @@
 
 const Promise = require('bluebird');
 const pathJs = require('path');
+const Api = require('../api.js');
+
 /**
  * Initializes all routes for RESTful access.
  *
@@ -13,11 +15,60 @@ const pathJs = require('path');
  */
 module.exports.init = function(app, db, config)
 {
-    // Register routes here.
-    // Use the passed db parameter in order to use Epilogue auto-routes.
-    // Use require in order to separate routes into multiple js files.
-    app.get('/hello', (req, res) => res.send('Hello world!'));
+    return Api.init(db).then(() =>
+    {
+        app.use(checkContentType);
 
-    // Always return a promise.
-    return Promise.resolve();
+        app.get('/api/config/inchannel/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
+        app.put('/api/config/inchannel/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
+        app.post('/api/config/inchannel', (req, res) => this.addInChannelConfig(req, res));
+    });
+}
+
+module.exports.sendInChannelConfig = function(req, res)
+{
+    Api.getInChannelConfig(req.params.supplierId).then(config =>
+    {
+        (config && res.json(config)) || res.status('404').json({ message : 'No configuration found for this supplier.' });
+    })
+    .catch(e => res.status('400').json({ message : e.message }));
+}
+
+module.exports.addInChannelConfig = function(req, res)
+{
+    var supplierId = req.body.supplierId;
+
+    Api.inChannelConfigExists(supplierId).then(exists =>
+    {
+        if(exists)
+            res.status('409').json({ message : 'This supplier already owns an in-channel configuration.' });
+        else
+            return Api.addInChannelConfig(req.body, true).then(config => res.status(202).json(config));
+    })
+    .catch(e => res.status('400').json({ message : e.message }));
+}
+
+module.exports.updateInChannelConfig = function(req, res)
+{
+    var supplierId = req.params.supplierId;
+
+    Api.inChannelConfigExists(supplierId).then(exists =>
+    {
+        if(exists)
+            return Api.updateInChannelConfig(supplierId, req.body, true).then(config => res.status(202).json(config));
+        else
+            res.status('404').json({ message : 'This supplier has no in-channel to be updated.' });
+    })
+    .catch(e => res.status('400').json({ message : e.message }));
+}
+
+function checkContentType(req, res, next)
+{
+    var method = req.method.toLowerCase();
+    var contentType = req.headers['content-type'] && req.headers['content-type'].toLowerCase();
+
+    if(method !== 'get' && contentType !== 'application/json')
+        res.status(400).json({ message : 'Invalid content type. Has to be "application/json".' });
+    else
+        next();
 }

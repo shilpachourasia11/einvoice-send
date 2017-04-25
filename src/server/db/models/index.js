@@ -13,12 +13,10 @@ const Sequelize = require('sequelize');
  */
 module.exports.init = function(db, config)
 {
-    // Register Sequelize database models here.
-    // Use require in order to separate models into multiple js files.
-    // http://docs.sequelizejs.com/en/latest/api/model/
-    //
-    // db.define(...);
-
-    // Always return a promise.
-    return Promise.resolve();
+    return Promise.all([
+        require('./inChannelConfig.js').init(db, config),
+        require('./pdfChannelConfig.js').init(db, config),
+        require('./eInvoiceChannelConfig.js').init(db, config),
+        require('./supplierPortalConfig.js').init(db, config)
+    ]);
 }
