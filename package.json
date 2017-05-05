@@ -55,7 +55,7 @@
     "dev": "npm run setupConsul ; ${NODE_PATH}/.bin/nodemon --watch ./ src/server/index.js",
     "test": "npm run clean ; npm run setupConsul ; ${NODE_PATH}/.bin/nyc ${NODE_PATH}/.bin/mocha --recursive -R mocha-junit-reporter",
     "clean": "${NODE_PATH}/.bin/rimraf .nyc_output coverage test-resulsts.xml",
-    "setupConsul": "curl -X PUT -d 'bnp' http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/database ; curl -X PUT -d 'root' http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/user ; curl -X PUT -d 'notSecurePa55w0rd' http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/password ; curl -X PUT -d 'true' http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/populate-test-data",
+    "setupConsul": "curl -X PUT -d ${MYSQL_DATABASE} http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/database ; curl -X PUT -d 'root' http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/user ; curl -X PUT -d ${MYSQL_ROOT_PASSWORD} http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/password ; curl -X PUT -d 'true' http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/populate-test-data",
     "rest-doc": "mkdir -p wiki/rest-doc ; ${NODE_PATH}/.bin/raml2md -o file-per-resource -p wiki/rest-doc --output-ext=.endpoint.md rest-doc/main.raml",
     "domain-doc": "mkdir -p wiki/domain-doc ; ${NODE_PATH}/.bin/sq2md -o file-per-src -p wiki/domain-doc --init=init --field-bl=createdAt,updatedAt --output-ext=.model.md src/server/db/models",
     "api-doc": "mkdir -p wiki/api-doc ; ${NODE_PATH}/.bin/jsdoc2md -f $(find src/server) > wiki/api-doc/Home.md",
