@@ -13,7 +13,8 @@ dependencies:
     - npm install -g npm@4.x
     - >
       if [ -n "${RUN_NIGHTLY_BUILD}" ]; then
-        echo "Building base image..." ; docker build --rm=false -t opuscapita/einvoice-send-base:latest -f Dockerfile.base .
+        echo "Building base image..." ; docker build --rm=false -t opuscapita/einvoice-send-base:latest -f Dockerfile.base . ;
+        docker tag opuscapita/einvoice-send:latest opuscapita/einvoice-send:dev
       fi
     - docker build --rm=false -t opuscapita/einvoice-send:latest .
 
@@ -37,7 +38,7 @@ deployment:
        if [ -n "${RUN_NIGHTLY_BUILD}" ]; then
          echo "Deploying base image..." ; docker tag opuscapita/einvoice-send-base:latest opuscapita/einvoice-send-base:dev ; docker push opuscapita/einvoice-send-base:dev
        fi
-     - docker tag opuscapita/einvoice-send:latest opuscapita/einvoice-send:dev && docker push opuscapita/einvoice-send:dev
+     - docker push opuscapita/einvoice-send:dev
      - curl https://raw.githubusercontent.com/gr4per/azureswarm/master/deploy_service.sh > deploy_service.sh
      - chmod +x deploy_service.sh
      - ./deploy_service.sh dm 52.233.155.169 opuscapita/einvoice-send dev
