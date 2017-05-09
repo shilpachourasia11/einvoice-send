@@ -1,4 +1,4 @@
-FROM ocbesbn/einvoice-send-base
+FROM opuscapita/einvoice-send-base:base
 MAINTAINER kwierchris
 
 WORKDIR /var/tmp/base
