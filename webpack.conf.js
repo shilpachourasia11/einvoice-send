@@ -11,9 +11,9 @@ module.exports = {
         path: path.join(__dirname, 'src/client/dist'),
         filename: 'bundle.js',
         publicPath: '/static',
-        library: 'einvoice',
-        libraryTarget: 'umd',
-        umdNamedDefine: true
+        //library: 'einvoice',
+        //libraryTarget: 'umd',
+        //umdNamedDefine: true
     },
     resolve: {
         modules: [process.env.NODE_PATH],
