@@ -9,7 +9,7 @@ module.exports = {
     entry: path.join(__dirname, 'src/client/index.js'),
     output: {
         path: path.join(__dirname, 'src/client/dist'),
-        filename: 'bundle.js',
+        filename: 'bundle.js'
         //publicPath: '/static',
         //library: 'einvoice',
         //libraryTarget: 'umd',
