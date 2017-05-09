@@ -10,7 +10,7 @@ module.exports = {
     output: {
         path: path.join(__dirname, 'src/client/dist'),
         filename: 'bundle.js',
-        publicPath: '/static',
+        //publicPath: '/static',
         //library: 'einvoice',
         //libraryTarget: 'umd',
         //umdNamedDefine: true
