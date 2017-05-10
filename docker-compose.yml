@@ -8,10 +8,12 @@ services:
      - consul
      - registrator
      - redis
+     - nginx
     volumes:
      - .:/home/node/einvoice-send
     labels:
       SERVICE_NAME: 'einvoice-send'
+      SERVICE_TAGS: 'external'
     extra_hosts:
      - 'consul:${HOST_IP}'
     environment:
@@ -64,3 +66,14 @@ services:
       - registrator
     labels:
       SERVICE_NAME: redis
+
+  nginx:
+    image: gr4per/nginx-rp:latest
+    depends_on:
+       - consul
+    extra_hosts:
+       - 'consul:${HOST_IP}'
+    ports:
+      - '8080:8080'
+    depends_on:
+      - consul
