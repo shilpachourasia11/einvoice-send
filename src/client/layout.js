@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 //import NotificationSystem from 'react-notification-system';
-import SidebarMenu from './components/SidebarMenu';
+//import SidebarMenu from './components/SidebarMenu';
 import HeaderMenu from './components/HeaderMenu';
+import { SidebarMenu } from 'ocbesbn-react-components';
 //import { connect } from 'react-redux';
 //import _ from 'lodash';
 //import { injectIntl, intlShape } from 'react-intl';
@@ -55,7 +56,7 @@ class Layout extends Component {
     render() {
         return (
             <span>
-                <SidebarMenu activeMainMenuName="Company" activeSubMenuName="ServiceConfig" />
+                <SidebarMenu />
                 <section className="content">
                     <HeaderMenu/>
                     <div className="container-fluid" style={{ paddingLeft: '250px' }}>
