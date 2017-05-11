@@ -37,12 +37,12 @@ export default class ServiceConfigFlow extends React.Component
             cancelWorkflow : this.props.cancelWorkflow
         };
     }
-    
+
     render()
     {
         return (
-            <div>
-                <section className="content">
+            <div style={{ minHeight: '100vh' }}>
+                <section className="content" style={{ overflow: 'visible' }}>
                     <div className="content-wrap">
                         <div className="container">
                             <section className="header">

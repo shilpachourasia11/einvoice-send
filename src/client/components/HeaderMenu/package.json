@@ -1,0 +1,6 @@
+{
+  "name": "HeaderMenu",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./HeaderMenu.js"
+}
