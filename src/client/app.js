@@ -1,7 +1,7 @@
 import React from 'react';
 import ServiceConfigFlowFrame from './components/ServiceConfigFlowFrame'
 import { Router, Route, IndexRoute, Link, hashHistory } from 'react-router'
-import Layout from './Layout.js';
+import Layout from './layout.js';
 //import browserHistory from 'react-router/lib/browserHistory';
 
 export default class App extends React.Component
