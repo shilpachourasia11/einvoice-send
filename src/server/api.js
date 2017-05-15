@@ -45,7 +45,7 @@ module.exports.getInChannelConfig = function(supplierId)
             })
         }
 
-        throw new Error('Basic configuration for the passed supplier was not found.');
+        throw new Error('The basic configuration for the passed supplier was not found.');
     })
 }
 
@@ -122,6 +122,6 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
             });
         }
 
-        throw new Error('Basic configuration for the passed supplier was not found.');
+        throw new Error('The basic configuration for the passed supplier was not found.');
     })
 }

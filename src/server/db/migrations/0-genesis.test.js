@@ -15,19 +15,19 @@ const Promise = require('bluebird');
  */
 module.exports.up = function(db, config)
 {
-    var InChannelConfigs = db.queryInterface.bulkInsert('InChannelConfig', [ {
+    var InChannelConfigs = db.queryInterface.bulkInsert('InChannelConfig', [{
         supplierId : 'A-TEAM',
         inputType : 'pdf',
         billingModelId : 'cheap',
         createdBy : 'The Doctor',
         createdOn : new Date()
-    } ]);
+    }]);
 
-    var PdfChannelConfigs = db.queryInterface.bulkInsert('PdfChannelConfig', [ {
+    var PdfChannelConfigs = db.queryInterface.bulkInsert('PdfChannelConfig', [{
         supplierId : 'A-TEAM',
         createdBy : 'The Doctor',
         createdOn : new Date()
-    } ]);
+    }]);
 
     return Promise.all([
         InChannelConfigs,

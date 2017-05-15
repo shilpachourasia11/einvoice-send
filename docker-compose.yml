@@ -21,6 +21,7 @@ services:
       HOST_IP: ${HOST_IP}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+      REDIS_AUTH: ${REDIS_AUTH}
     ports:
      - '${PORT}:${PORT}'
     command: "npm run dev"

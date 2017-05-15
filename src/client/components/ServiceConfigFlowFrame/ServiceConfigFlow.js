@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
+import ajax from 'superagent-bluebird-promise';
 import ServiceConfigFlow1 from '../ServiceConfigFlow1'
 import ServiceConfigFlow2 from '../ServiceConfigFlow2'
 import ServiceConfigFlow3 from '../ServiceConfigFlow3'
@@ -36,6 +37,20 @@ export default class ServiceConfigFlow extends React.Component
             lastValidTab : this.props.lastValidTab,
             cancelWorkflow : this.props.cancelWorkflow
         };
+    }
+
+    storeInChannelConfig = () =>
+    {
+        var values = {
+            'billingModelId': 'cheap',
+            'inputType': 'pdf',
+            'status': 'active'
+        }
+
+        console.log(values);
+
+        ajax.post('/einvoice-send/api/config/inchannel/current').set('Content-Type', 'application/json')
+          .send(values).promise().then(() => window.location = '/bnp');
     }
 
     render()
@@ -105,7 +120,7 @@ export default class ServiceConfigFlow extends React.Component
                                                             </Tab.Pane>
                                                             <Tab.Pane eventKey={5}>
                                                                 <ServiceConfigFlow5
-                                                                    onNext={ () => window.location = '/bnp' }
+                                                                    onNext={ () => this.storeInChannelConfig() }
                                                                     onPrevious={ () => this.setState({ currentTab: 4 }) } />
                                                             </Tab.Pane>
                                                         </Tab.Content>

@@ -18,7 +18,7 @@ module.exports.init = function(app, db, config)
     return Api.init(db).then(() =>
     {
         this.events = new RedisEvents({ consul : { host : 'consul' } });
-        
+
         app.use(checkContentType);
 
         app.get('/api/config/inchannel/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
@@ -47,7 +47,7 @@ module.exports.sendInChannelConfig = function(req, res, useCurrentUser)
 
 module.exports.addInChannelConfig = function(req, res, useCurrentUser)
 {
-    var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.params.supplierId;
+    var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.body.supplierId;
 
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
@@ -57,6 +57,9 @@ module.exports.addInChannelConfig = function(req, res, useCurrentUser)
         }
         else
         {
+            req.body.supplierId = supplierId;
+            req.body.createdBy = req.ocbesbn.userData('id');
+
             return Api.addInChannelConfig(req.body, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.added').then(() => config))
                 .then(config => res.status(202).json(config));
@@ -73,6 +76,8 @@ module.exports.updateInChannelConfig = function(req, res, useCurrentUser)
     {
         if(exists)
         {
+            req.body.updatedBy = req.ocbesbn.userData('id');
+
             return Api.updateInChannelConfig(supplierId, req.body, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
                 .then(config => res.status(202).json(config));
