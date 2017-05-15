@@ -15,7 +15,7 @@ const Promise = require('bluebird');
  */
 module.exports.up = function(db, config)
 {
-    var InChannelConfigs = db.queryInterface.bulkInsert('InChannelConfigs', [ {
+    var InChannelConfigs = db.queryInterface.bulkInsert('InChannelConfig', [ {
         supplierId : 'A-TEAM',
         inputType : 'pdf',
         billingModelId : 'cheap',
@@ -23,7 +23,7 @@ module.exports.up = function(db, config)
         createdOn : new Date()
     } ]);
 
-    var PdfChannelConfig = db.queryInterface.bulkInsert('PdfChannelConfigs', [ {
+    var PdfChannelConfigs = db.queryInterface.bulkInsert('PdfChannelConfig', [ {
         supplierId : 'A-TEAM',
         createdBy : 'The Doctor',
         createdOn : new Date()
@@ -31,7 +31,7 @@ module.exports.up = function(db, config)
 
     return Promise.all([
         InChannelConfigs,
-        PdfChannelConfig
+        PdfChannelConfigs
     ]);
 }
 
@@ -46,13 +46,13 @@ module.exports.up = function(db, config)
  */
 module.exports.down = function(db, config)
 {
-    var InChannelConfigs = db.queryInterface.bulkDelete('InChannelConfigs', {
+    var InChannelConfigs = db.queryInterface.bulkDelete('InChannelConfig', {
         supplierId : {
             $in : [ 'A-TEAM' ]
         }
     });
 
-    var PdfChannelConfigs = db.queryInterface.bulkDelete('PdfChannelConfigs', {
+    var PdfChannelConfigs = db.queryInterface.bulkDelete('PdfChannelConfig', {
         supplierId : {
             $in : [ 'A-TEAM' ]
         }

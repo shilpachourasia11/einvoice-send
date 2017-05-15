@@ -15,7 +15,7 @@ const Promise = require('bluebird');
  */
 module.exports.up = function(db, config)
 {
-    var InChannelConfigs = db.queryInterface.createTable('InChannelConfig', {
+    var InChannelConfig = db.queryInterface.createTable('InChannelConfig', {
         supplierId : {
             type : DataTypes.STRING(30),
             allowNull : false,
@@ -54,7 +54,7 @@ module.exports.up = function(db, config)
         }
     });
 
-    var EInvoiceChannelConfigs = db.queryInterface.createTable('EInvoiceChannelConfig', {
+    var EInvoiceChannelConfig = db.queryInterface.createTable('EInvoiceChannelConfig', {
         supplierId : {
             type : DataTypes.STRING(30),
             allowNull : false,
@@ -80,7 +80,7 @@ module.exports.up = function(db, config)
         }
     });
 
-    var PdfChannelConfigs = db.queryInterface.createTable('PdfChannelConfig', {
+    var PdfChannelConfig = db.queryInterface.createTable('PdfChannelConfig', {
         supplierId : {
             type : DataTypes.STRING(30),
             allowNull : false,
@@ -133,9 +133,9 @@ module.exports.up = function(db, config)
     });
 
     return Promise.all([
-        InChannelConfigs,
-        EInvoiceChannelConfigs,
-        PdfChannelConfigs,
+        InChannelConfig,
+        EInvoiceChannelConfig,
+        PdfChannelConfig,
         SupplierPortalConfig
     ]);
 }
@@ -152,8 +152,9 @@ module.exports.up = function(db, config)
 module.exports.down = function(db, config)
 {
     return Promise.all([
-        db.queryInterface.dropTable('InChannelConfigs'),
-        db.queryInterface.dropTable('EInvoiceChannelConfigs'),
-        db.queryInterface.dropTable('PdfChannelConfigs')
+        db.queryInterface.dropTable('InChannelConfig'),
+        db.queryInterface.dropTable('EInvoiceChannelConfig'),
+        db.queryInterface.dropTable('PdfChannelConfig')
+        db.queryInterface.dropTable('SupplierPortalConfig')
     ])
 }
