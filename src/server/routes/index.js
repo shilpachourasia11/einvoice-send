@@ -1,7 +1,7 @@
 'use strict'
 
 const Promise = require('bluebird');
-const pathJs = require('path');
+const RedisEvents = require('ocbesbn-redis-events');
 const Api = require('../api.js');
 
 /**
@@ -17,6 +17,8 @@ module.exports.init = function(app, db, config)
 {
     return Api.init(db).then(() =>
     {
+        this.events = new RedisEvents({ consul : { host : 'consul' } });
+        
         app.use(checkContentType);
 
         app.get('/api/config/inchannel/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
@@ -50,9 +52,15 @@ module.exports.addInChannelConfig = function(req, res, useCurrentUser)
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
         if(exists)
+        {
             res.status('409').json({ message : 'This supplier already owns an in-channel configuration.' });
+        }
         else
-            return Api.addInChannelConfig(req.body, true).then(config => res.status(202).json(config));
+        {
+            return Api.addInChannelConfig(req.body, true)
+                .then(config => this.events.emit(config, 'inChannelConfig.added').then(() => config))
+                .then(config => res.status(202).json(config));
+        }
     })
     .catch(e => res.status('400').json({ message : e.message }));
 }
@@ -64,9 +72,15 @@ module.exports.updateInChannelConfig = function(req, res, useCurrentUser)
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
         if(exists)
-            return Api.updateInChannelConfig(supplierId, req.body, true).then(config => res.status(202).json(config));
+        {
+            return Api.updateInChannelConfig(supplierId, req.body, true)
+                .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
+                .then(config => res.status(202).json(config));
+        }
         else
+        {
             res.status('404').json({ message : 'This supplier has no in-channel to be updated.' });
+        }
     })
     .catch(e => res.status('400').json({ message : e.message }));
 }
