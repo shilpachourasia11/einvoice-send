@@ -15,11 +15,11 @@ module.exports.getModelFromInputType = function(inputType)
     switch(inputType.toLowerCase())
     {
         case 'pdf':
-            return this.db.models['PdfChannelConfig'];
+            return this.db.models.PdfChannelConfig;
         case 'einvoice':
-            return this.db.models['EInvoiceChannelConfig'];
+            return this.db.models.EInvoiceChannelConfig;
         case 'portal':
-            return this.db.models['SupplierPortalConfig'];
+            return this.db.models.SupplierPortalConfig;
     }
 
     return null;

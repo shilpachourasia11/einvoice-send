@@ -154,7 +154,7 @@ module.exports.down = function(db, config)
     return Promise.all([
         db.queryInterface.dropTable('InChannelConfig'),
         db.queryInterface.dropTable('EInvoiceChannelConfig'),
-        db.queryInterface.dropTable('PdfChannelConfig')
+        db.queryInterface.dropTable('PdfChannelConfig'),
         db.queryInterface.dropTable('SupplierPortalConfig')
     ])
 }
