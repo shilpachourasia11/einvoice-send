@@ -15,7 +15,7 @@ const Promise = require('bluebird');
  */
 module.exports.up = function(db, config)
 {
-    var InChannelConfigs = db.queryInterface.createTable('InChannelConfigs', {
+    var InChannelConfigs = db.queryInterface.createTable('InChannelConfig', {
         supplierId : {
             type : DataTypes.STRING(30),
             allowNull : false,
@@ -54,7 +54,7 @@ module.exports.up = function(db, config)
         }
     });
 
-    var EInvoiceChannelConfigs = db.queryInterface.createTable('EInvoiceChannelConfigs', {
+    var EInvoiceChannelConfigs = db.queryInterface.createTable('EInvoiceChannelConfig', {
         supplierId : {
             type : DataTypes.STRING(30),
             allowNull : false,
@@ -80,7 +80,33 @@ module.exports.up = function(db, config)
         }
     });
 
-    var PdfChannelConfigs = db.queryInterface.createTable('PdfChannelConfigs', {
+    var PdfChannelConfigs = db.queryInterface.createTable('PdfChannelConfig', {
+        supplierId : {
+            type : DataTypes.STRING(30),
+            allowNull : false,
+            primaryKey : true
+        },
+        createdBy : {
+            type : DataTypes.STRING(60),
+            allowNull : false
+        },
+        changedBy : {
+            type : DataTypes.STRING(60),
+            allowNull : false,
+            defaultValue : ''
+        },
+        createdOn : {
+            type : DataTypes.DATE(),
+            allowNull : false,
+            defaultValue : DataTypes.NOW
+        },
+        changedOn : {
+            type : DataTypes.DATE(),
+            allowNull : true
+        }
+    });
+
+    var SupplierPortalConfig = db.queryInterface.createTable('SupplierPortalConfig', {
         supplierId : {
             type : DataTypes.STRING(30),
             allowNull : false,
@@ -109,7 +135,8 @@ module.exports.up = function(db, config)
     return Promise.all([
         InChannelConfigs,
         EInvoiceChannelConfigs,
-        PdfChannelConfigs
+        PdfChannelConfigs,
+        SupplierPortalConfig
     ]);
 }
 

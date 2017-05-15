@@ -20,23 +20,32 @@ module.exports.init = function(app, db, config)
         app.use(checkContentType);
 
         app.get('/api/config/inchannel/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
+        app.get('/api/config/inchannel/current', (req, res) => this.sendInChannelConfig(req, res, true));
+
         app.put('/api/config/inchannel/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
+        app.put('/api/config/inchannel/current', (req, res) => this.updateInChannelConfig(req, res, true));
+
         app.post('/api/config/inchannel', (req, res) => this.addInChannelConfig(req, res));
+        app.post('/api/config/inchannel/current', (req, res) => this.addInChannelConfig(req, res, true));
+
+        app.get('/api/test', (req, res) => res.json(req.ocbesbn.userData()));
     });
 }
 
-module.exports.sendInChannelConfig = function(req, res)
+module.exports.sendInChannelConfig = function(req, res, useCurrentUser)
 {
-    Api.getInChannelConfig(req.params.supplierId).then(config =>
+    var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.params.supplierId;
+
+    Api.getInChannelConfig(supplierId).then(config =>
     {
         (config && res.json(config)) || res.status('404').json({ message : 'No configuration found for this supplier.' });
     })
     .catch(e => res.status('400').json({ message : e.message }));
 }
 
-module.exports.addInChannelConfig = function(req, res)
+module.exports.addInChannelConfig = function(req, res, useCurrentUser)
 {
-    var supplierId = req.body.supplierId;
+    var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.params.supplierId;
 
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
@@ -48,9 +57,9 @@ module.exports.addInChannelConfig = function(req, res)
     .catch(e => res.status('400').json({ message : e.message }));
 }
 
-module.exports.updateInChannelConfig = function(req, res)
+module.exports.updateInChannelConfig = function(req, res, useCurrentUser)
 {
-    var supplierId = req.params.supplierId;
+    var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.params.supplierId;
 
     Api.inChannelConfigExists(supplierId).then(exists =>
     {

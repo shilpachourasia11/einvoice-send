@@ -37,7 +37,8 @@ module.exports.init = function(db, config)
         }
     }, {
         updatedAt : 'changedOn',
-        createdAt : 'createdOn'
+        createdAt : 'createdOn',
+        freezeTableName : true
     });
 
     return Promise.resolve();

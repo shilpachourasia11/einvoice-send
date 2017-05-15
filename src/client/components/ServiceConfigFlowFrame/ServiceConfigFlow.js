@@ -105,7 +105,7 @@ export default class ServiceConfigFlow extends React.Component
                                                             </Tab.Pane>
                                                             <Tab.Pane eventKey={5}>
                                                                 <ServiceConfigFlow5
-                                                                    onNext={ () => false }
+                                                                    onNext={ () => window.location = '/bnp' }
                                                                     onPrevious={ () => this.setState({ currentTab: 4 }) } />
                                                             </Tab.Pane>
                                                         </Tab.Content>
