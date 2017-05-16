@@ -16,6 +16,7 @@
     "exclude": []
   },
   "dependencies": {
+<<<<<<< HEAD
     "bluebird": "^3.5.0",
     "epilogue": "^0.7.1",
     "ocbesbn-config": "^2.2.6",
@@ -26,14 +27,41 @@
     "sequelize": "^3.30.4"
   },
   "devDependencies": {
+=======
+>>>>>>> develop
     "babel-core": "^6.24.1",
     "babel-loader": "^6.4.1",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+<<<<<<< HEAD
     "css-loader": "^0.28.1",
+=======
+    "bluebird": "^3.5.0",
+    "css-loader": "^0.28.0",
+    "extend": "^3.0.0",
+>>>>>>> develop
     "html-webpack-plugin": "^2.28.0",
+    "less": "^2.7.2",
+    "less-loader": "^4.0.3",
+    "ocbesbn-config": "^2.2.6",
+    "ocbesbn-db-init": "^1.1.8",
+    "ocbesbn-react-components": "^0.1.3",
+    "ocbesbn-redis-events": "^1.0.4",
+    "ocbesbn-web-init": "^1.1.9",
+    "react": "15.5.4",
+    "react-bootstrap": "0.30.9",
+    "react-dom": "15.5.4",
+    "react-router": "3.0.2",
+    "sequelize": "^3.30.4",
+    "style-loader": "^0.16.1",
+    "superagent": "^3.5.2",
+    "superagent-bluebird-promise": "^4.2.0",
+    "webpack": "^2.4.1"
+  },
+  "devDependencies": {
     "jsdoc-to-markdown": "^3.0.0",
+<<<<<<< HEAD
     "mocha": "^3.4.1",
     "mocha-junit-reporter": "^1.13.0",
     "nodemon": "^1.11.0",
@@ -44,14 +72,24 @@
     "sqlite3": "^3.1.8",
     "style-loader": "^0.16.1",
     "webpack": "^2.5.1",
+=======
+    "mocha": "^3.3.0",
+    "mocha-junit-reporter": "^1.13.0",
+    "nodemon": "^1.11.0",
+    "nyc": "^10.2.2",
+    "raml-to-markdown": "^1.1.1",
+    "rimraf": "^2.6.1",
+    "sequelize-to-markdown": "^1.1.13",
+    "sqlite3": "^3.1.8",
+>>>>>>> develop
     "webpack-dev-middleware": "^1.10.2"
   },
   "scripts": {
     "start": "node src/server/index.js",
     "dev": "npm run setupConsul ; ${NODE_PATH}/.bin/nodemon --watch ./ src/server/index.js",
     "test": "npm run clean ; npm run setupConsul ; ${NODE_PATH}/.bin/nyc ${NODE_PATH}/.bin/mocha --recursive -R mocha-junit-reporter",
-    "clean": "${NODE_PATH}/.bin/rimraf .nyc_output coverage test-results.xml",
-    "setupConsul": "curl -X PUT -d 'bnp' http://${HOST_IP}:8500/v1/kv/supplier/db-init/database ; curl -X PUT -d 'root' http://${HOST_IP}:8500/v1/kv/supplier/db-init/user ; curl -X PUT -d 'notSecurePa55w0rd' http://${HOST_IP}:8500/v1/kv/supplier/db-init/password ; curl -X PUT -d 'true' http://${HOST_IP}:8500/v1/kv/supplier/db-init/populate-test-data",
+    "clean": "${NODE_PATH}/.bin/rimraf .nyc_output coverage test-resulsts.xml",
+    "setupConsul": "curl -X PUT -d ${MYSQL_DATABASE} http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/database ; curl -X PUT -d 'root' http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/user ; curl -X PUT -d ${MYSQL_ROOT_PASSWORD} http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/password ; curl -X PUT -d 'true' http://${HOST_IP}:8500/v1/kv/einvoice-send/db-init/populate-test-data ; curl -X PUT -d ${REDIS_AUTH} http://${HOST_IP}:8500/v1/kv/einvoice-send/redis/password",
     "rest-doc": "mkdir -p wiki/rest-doc ; ${NODE_PATH}/.bin/raml2md -o file-per-resource -p wiki/rest-doc --output-ext=.endpoint.md rest-doc/main.raml",
     "domain-doc": "mkdir -p wiki/domain-doc ; ${NODE_PATH}/.bin/sq2md -o file-per-src -p wiki/domain-doc --init=init --field-bl=createdAt,updatedAt --output-ext=.model.md src/server/db/models",
     "api-doc": "mkdir -p wiki/api-doc ; ${NODE_PATH}/.bin/jsdoc2md -f $(find src/server) > wiki/api-doc/Home.md",
