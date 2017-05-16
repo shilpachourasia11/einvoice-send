@@ -12,9 +12,9 @@ dependencies:
     - docker login -u $DOCKER_USER -p $DOCKER_PASS -e $DOCKER_EMAIL
     - >
       if [ -n "${RUN_NIGHTLY_BUILD}" ]; then
-        echo "Building base image..." ; docker build -q --rm=false -t ocbesbn/einvoice-send-base:latest -f Dockerfile.base .
+        echo "Building base image..." ; docker build -q --rm=false -t opuscapita/einvoice-send-base:latest -f Dockerfile.base .
       fi
-    - docker build -q --rm=false -t ocbesbn/einvoice-send:latest .
+    - docker build -q --rm=false -t opuscapita/einvoice-send:latest .
 
 test:
   override:
@@ -28,13 +28,26 @@ test:
     - sudo cp test-results.xml $CIRCLE_TEST_REPORTS/junit
 
 deployment:
- hub:
-   branch: master
-   commands:
-     - docker login -u $DOCKER_USER -p $DOCKER_PASS -e $DOCKER_EMAIL
-     - >
-       if [ -n "${RUN_NIGHTLY_BUILD}" ]; then
-         echo "Deploying base image..." ; docker push ocbesbn/einvoice-send-base
-       fi
-     - docker push ocbesbn/einvoice-send:latest
-     - cd wiki ; git add --all . ; git commit -am 'Updated documentation.' ; git push ; (exit 0)
+    develop:
+        branch: develop
+        commands:
+          - docker login -u $DOCKER_USER -p $DOCKER_PASS -e $DOCKER_EMAIL
+          - >
+            if [ -n "${RUN_NIGHTLY_BUILD}" ]; then
+              echo "Deploying base image..." ; docker tag opuscapita/einvoice-send-base:latest opuscapita/einvoice-send-base:dev ; docker push opuscapita/einvoice-send-base:dev
+            fi
+          - docker tag opuscapita/einvoice-send:latest opuscapita/einvoice-send:dev && docker push opuscapita/einvoice-send:dev
+          - curl https://raw.githubusercontent.com/gr4per/azureswarm/master/deploy_service.sh > deploy_service.sh
+          - chmod +x deploy_service.sh
+          - ./deploy_service.sh dm 52.233.155.169 opuscapita/einvoice-send dev
+
+     production:
+       branch: master
+       commands:
+         - docker login -u $DOCKER_USER -p $DOCKER_PASS -e $DOCKER_EMAIL
+         - >
+           if [ -n "${RUN_NIGHTLY_BUILD}" ]; then
+             echo "Deploying base image..." ; docker push opuscapita/einvoice-send-base
+           fi
+         - docker push opuscapita/einvoice-send:latest
+         - cd wiki ; git add --all . ; git commit -am 'Updated documentation.' ; git push ; (exit 0)

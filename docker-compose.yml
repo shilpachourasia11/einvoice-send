@@ -2,7 +2,7 @@ version: '2'
 services:
   main:
     build: .
-    image: ocbesbn/einvoice-send
+    image: opuscapita/einvoice-send
     depends_on:
      - mysql
      - consul
