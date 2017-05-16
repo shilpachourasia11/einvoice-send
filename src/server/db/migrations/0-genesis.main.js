@@ -23,11 +23,11 @@ module.exports.up = function(db, config)
         },
         billingModelId : {
             type : DataTypes.STRING(30),
-            allowNull : false
+            allowNull : true
         },
         inputType : {
             type : DataTypes.STRING(30),
-            allowNull : false
+            allowNull : true
         },
         status : {
             type : DataTypes.STRING(100),
