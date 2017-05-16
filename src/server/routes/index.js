@@ -38,6 +38,12 @@ module.exports.sendInChannelConfig = function(req, res, useCurrentUser)
 {
     var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.params.supplierId;
 
+    if(useCurrentUser)
+    {
+        res.send(req.ocbesbn.userData);
+        return;
+    }
+
     Api.getInChannelConfig(supplierId).then(config =>
     {
         (config && res.json(config)) || res.status('404').json({ message : 'No configuration found for this supplier.' });
