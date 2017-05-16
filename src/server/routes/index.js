@@ -56,7 +56,11 @@ module.exports.sendInChannelConfig = function(req, res, useCurrentUser)
 module.exports.addInChannelConfig = function(req, res, useCurrentUser)
 {
     var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.body.supplierId;
-
+    if(useCurrentUser)
+    {
+        res.json([ req.ocbesbn.userData(), req.ocbesbn.userData('supplierId') ]);
+        return;
+    }
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
         if(exists)
