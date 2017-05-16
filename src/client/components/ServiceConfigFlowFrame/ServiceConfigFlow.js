@@ -37,20 +37,36 @@ export default class ServiceConfigFlow extends React.Component
             lastValidTab : this.props.lastValidTab,
             cancelWorkflow : this.props.cancelWorkflow
         };
+
+        this.getInChannelConfig().catch(e => this.addInChannelConfig());
     }
 
-    storeInChannelConfig = () =>
+    getInChannelConfig = () =>
+    {
+        return ajax.get('/einvoice-send/api/config/inchannel/current')
+            .set('Content-Type', 'application/json')
+            .promise();
+    }
+
+    addInChannelConfig = () =>
+    {
+        return ajax.post('/einvoice-send/api/config/inchannel/current')
+            .set('Content-Type', 'application/json')
+            .send({ inputType : 'einvoice' })
+            .promise();
+    }
+
+    updateInChannelConfig = () =>
     {
         var values = {
             'billingModelId': 'cheap',
-            'inputType': 'pdf',
+            'inputType': 'einvoice',
             'status': 'active'
         }
 
-        console.log(values);
-
-        ajax.post('/einvoice-send/api/config/inchannel/current').set('Content-Type', 'application/json')
-          .send(values).promise().then(() => window.location = '/bnp');
+        return ajax.put('/einvoice-send/api/config/inchannel/current')
+            .set('Content-Type', 'application/json')
+            .send(values).promise().then(() => window.location = '/bnp');
     }
 
     render()
@@ -120,7 +136,7 @@ export default class ServiceConfigFlow extends React.Component
                                                             </Tab.Pane>
                                                             <Tab.Pane eventKey={5}>
                                                                 <ServiceConfigFlow5
-                                                                    onNext={ () => this.storeInChannelConfig() }
+                                                                    onNext={ () => this.updateInChannelConfig() }
                                                                     onPrevious={ () => this.setState({ currentTab: 4 }) } />
                                                             </Tab.Pane>
                                                         </Tab.Content>

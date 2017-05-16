@@ -12,17 +12,20 @@ module.exports.init = function(db)
 
 module.exports.getModelFromInputType = function(inputType)
 {
-    switch(inputType.toLowerCase())
+    if(inputType)
     {
-        case 'pdf':
-            return this.db.models.PdfChannelConfig;
-        case 'einvoice':
-            return this.db.models.EInvoiceChannelConfig;
-        case 'portal':
-            return this.db.models.SupplierPortalConfig;
+        switch(inputType.toLowerCase())
+        {
+            case 'pdf':
+                return this.db.models.PdfChannelConfig;
+            case 'einvoice':
+                return this.db.models.EInvoiceChannelConfig;
+            case 'portal':
+                return this.db.models.SupplierPortalConfig;
+        }
     }
-
-    return null;
+    
+    throw new Error('Invalid input type. Must be pdf, einvoice or portal.');
 }
 
 module.exports.getInChannelConfig = function(supplierId)

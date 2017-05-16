@@ -36,9 +36,19 @@ module.exports.sendInChannelConfig = function(req, res, useCurrentUser)
 {
     var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.params.supplierId;
 
-    Api.getInChannelConfig(supplierId).then(config =>
+    Api.inChannelConfigExists(supplierId).then(exists =>
     {
-        (config && res.json(config)) || res.status('404').json({ message : 'No configuration found for this supplier.' });
+        if(exists)
+        {
+            Api.getInChannelConfig(supplierId).then(config =>
+            {
+                (config && res.json(config)) || res.status('404').json({ message : 'No configuration found for this supplier.' });
+            });
+        }
+        else
+        {
+            res.status('404').json({ message : 'This supplier has no in-channel configuration.' });
+        }
     })
     .catch(e => res.status('400').json({ message : e.message }));
 }
@@ -55,10 +65,12 @@ module.exports.addInChannelConfig = function(req, res, useCurrentUser)
         }
         else
         {
-            req.body.supplierId = supplierId;
-            req.body.createdBy = req.ocbesbn.userData('id');
+            var obj = req.body || { }
 
-            return Api.addInChannelConfig(req.body, true)
+            obj.supplierId = supplierId;
+            obj.createdBy = req.ocbesbn.userData('id');
+
+            return Api.addInChannelConfig(obj, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.added').then(() => config))
                 .then(config => res.status(202).json(config));
         }
@@ -74,9 +86,12 @@ module.exports.updateInChannelConfig = function(req, res, useCurrentUser)
     {
         if(exists)
         {
-            req.body.updatedBy = req.ocbesbn.userData('id');
+            var obj = req.body || { }
 
-            return Api.updateInChannelConfig(supplierId, req.body, true)
+            obj.supplierId = supplierId;
+            obj.updatedBy = req.ocbesbn.userData('id');
+
+            return Api.updateInChannelConfig(supplierId, obj, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
                 .then(config => res.status(202).json(config));
         }
