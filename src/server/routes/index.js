@@ -21,28 +21,20 @@ module.exports.init = function(app, db, config)
 
         app.use(checkContentType);
 
-        app.get('/api/config/inchannel/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
         app.get('/api/config/inchannel/current', (req, res) => this.sendInChannelConfig(req, res, true));
+        app.get('/api/config/inchannel/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
 
-        app.put('/api/config/inchannel/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
         app.put('/api/config/inchannel/current', (req, res) => this.updateInChannelConfig(req, res, true));
+        app.put('/api/config/inchannel/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
 
-        app.post('/api/config/inchannel', (req, res) => this.addInChannelConfig(req, res));
         app.post('/api/config/inchannel/current', (req, res) => this.addInChannelConfig(req, res, true));
-
-        app.get('/api/test', (req, res) => res.json(req.ocbesbn.userData()));
+        app.post('/api/config/inchannel', (req, res) => this.addInChannelConfig(req, res));
     });
 }
 
 module.exports.sendInChannelConfig = function(req, res, useCurrentUser)
 {
     var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.params.supplierId;
-
-    if(useCurrentUser)
-    {
-        res.send(req.ocbesbn.userData);
-        return;
-    }
 
     Api.getInChannelConfig(supplierId).then(config =>
     {
