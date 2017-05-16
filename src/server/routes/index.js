@@ -34,7 +34,7 @@ module.exports.init = function(app, db, config)
 
 module.exports.sendInChannelConfig = function(req, res, useCurrentUser)
 {
-    var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.params.supplierId;
+    var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.params.supplierId;
 
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
@@ -55,8 +55,8 @@ module.exports.sendInChannelConfig = function(req, res, useCurrentUser)
 
 module.exports.addInChannelConfig = function(req, res, useCurrentUser)
 {
-    var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.body.supplierId;
-    
+    var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.body.supplierId;
+
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
         if(exists)
@@ -68,7 +68,7 @@ module.exports.addInChannelConfig = function(req, res, useCurrentUser)
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.createdBy = req.ocbesbn.userData('id');
+            obj.createdBy = req.opuscapita.userData('id');
 
             return Api.addInChannelConfig(obj, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.added').then(() => config))
@@ -80,7 +80,7 @@ module.exports.addInChannelConfig = function(req, res, useCurrentUser)
 
 module.exports.updateInChannelConfig = function(req, res, useCurrentUser)
 {
-    var supplierId = useCurrentUser ? req.ocbesbn.userData('supplierId') : req.params.supplierId;
+    var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.params.supplierId;
 
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
@@ -89,7 +89,7 @@ module.exports.updateInChannelConfig = function(req, res, useCurrentUser)
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.updatedBy = req.ocbesbn.userData('id');
+            obj.updatedBy = req.opuscapita.userData('id');
 
             return Api.updateInChannelConfig(supplierId, obj, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
