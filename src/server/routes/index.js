@@ -3,6 +3,7 @@
 const Promise = require('bluebird');
 const RedisEvents = require('ocbesbn-redis-events');
 const Api = require('../api.js');
+const eInvoiceTypes = require('../services/einvoiceTypes.js');
 
 /**
  * Initializes all routes for RESTful access.
@@ -29,6 +30,8 @@ module.exports.init = function(app, db, config)
 
         app.post('/api/config/inchannel/current', (req, res) => this.addInChannelConfig(req, res, true));
         app.post('/api/config/inchannel', (req, res) => this.addInChannelConfig(req, res));
+
+        app.get('/api/eInvoiceTypes', (req, res) => this.getEInvoiceTypes(req, res));
     });
 }
 
@@ -112,4 +115,16 @@ function checkContentType(req, res, next)
         res.status(400).json({ message : 'Invalid content type. Has to be "application/json".' });
     else
         next();
+}
+
+
+module.exports.getEInvoiceTypes = function(req, res) {
+  eInvoiceTypes.getEInvoiceTypes()
+  .then ((types) => {
+// console.log(">> eInvoiceTypes: ", types);
+      (types && res.json(types)) || res.status('404').json({ message : 'No eInvoiceTypes found.'});
+  })
+  .catch((error) => {
+    res.status(400).json({ message : 'No eInvoiceTypes found.' });
+  });
 }

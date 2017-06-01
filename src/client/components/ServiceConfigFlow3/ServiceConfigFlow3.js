@@ -1,12 +1,14 @@
 import React from 'react';
 import { Button, FormControl } from 'react-bootstrap';
+import request from 'superagent-bluebird-promise';
 
 export default class ServiceConfigFlow3 extends React.Component {
 
     static propTypes = {
         hasValidFile : React.PropTypes.bool,
         onNext : React.PropTypes.func.isRequired,
-        onPrevious : React.PropTypes.func.isRequired
+        onPrevious : React.PropTypes.func.isRequired,
+        eInvoiceTypes : React.PropTypes.array
     };
 
     static defaultProps = {
@@ -18,9 +20,33 @@ export default class ServiceConfigFlow3 extends React.Component {
         super(props);
 
         this.state = {
-            hasValidFile : this.props.hasValidFile
+            hasValidFile : this.props.hasValidFile,
+            eInvoiceTypes: [] // "Svefaktura 1.0", "Svefaktura BIS 5A", "Svekatalog 2.0", "Sveorder BIS 28A", "Sveorder (ordersvar)", "Sveleveransavisering BIS 30A", "PEPPOL Message Envelope 1.0", "SFTI Tekniska kuvert (SBDH)", "SFTI ObjectEnvelope"]
         };
     }
+
+    componentDidMount() {
+        // console.log(">> componentDidMount is called.");
+        this.loadInvoiceTypesPromise = request.
+            get('http://localhost:8080/einvoice-send/api/eInvoiceTypes').
+            set('Accept', 'application/json').
+            promise();
+
+        Promise.all([this.loadInvoiceTypesPromise])
+        .then(([invoiceTypes]) => {
+            var eInvoiceTypesArray = JSON.parse(invoiceTypes.text).map((item) => {return item.formatName;});
+            this.setState({eInvoiceTypes: eInvoiceTypesArray.sort()});
+        })
+        .catch(errors => {
+            if (errors.status === 401) {
+                // TODO: Add proper error handling
+                this.setState({eInvoiceTypes: []});
+                return;
+            }
+        });
+        return;
+    }
+
 
     onFileDrop = function(e)
     {
@@ -55,16 +81,10 @@ export default class ServiceConfigFlow3 extends React.Component {
                                 <label className="col-sm-3 control-label">Validation Type</label>
                                 <div className="col-sm-9">
                                     <FormControl componentClass="select">
-                                        <option value="insert-update">Svefaktura 1.0</option>
-                                        <option value="replace">Svefaktura BIS 5A</option>
-                                        <option value="replace">Svekatalog 2.0</option>
-                                        <option value="replace">Sveorder BIS 28A</option>
-                                        <option value="replace">Sveorder (ordersvar)</option>
-                                        <option value="replace">Sveleveransavisering BIS 30A</option>
-                                        <option value="replace">PEPPOL Message Envelope 1.0</option>
-                                        <option value="replace">SFTI Tekniska kuvert (SBDH)</option>
-                                        <option value="replace">SFTI ObjectEnvelope</option>
-                                    </FormControl>
+                                        {this.state.eInvoiceTypes.map((type, index) => {
+                                          return (<option key={index} value={type}>{type}</option>);
+                                        })}
+                                     </FormControl>
                                 </div>
                             </div>
                         </div>
