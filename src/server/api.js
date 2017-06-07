@@ -24,7 +24,7 @@ module.exports.getModelFromInputType = function(inputType)
                 return this.db.models.SupplierPortalConfig;
         }
     }
-    
+
     throw new Error('Invalid input type. Must be pdf, einvoice or portal.');
 }
 
@@ -74,7 +74,7 @@ module.exports.addInChannelConfig = function(config, returnConfig)
     var basicConfig = config;
     var extendedConfig = config.settings || { };
 
-    // Remove nesed settings object.
+    // Remove nested settings object.
     delete basicConfig.settings;
 
     // Remove fields we do not want to be set from outside.
