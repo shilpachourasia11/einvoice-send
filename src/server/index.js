@@ -17,6 +17,7 @@ db.init({
 })
 .then((db) => server.init({
     server : {
+        port : 3007,
         mode : server.Server.Mode.Dev,
         staticFilePath : './src/client/static',
         indexFilePath : require('path').resolve('./src/client/dist/index.html'),

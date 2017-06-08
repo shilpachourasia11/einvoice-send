@@ -82,7 +82,7 @@ module.exports.addInChannelConfig = function(config, returnConfig)
     // Copy required values to the extendedConfig as it is a plain object.
     [ 'supplierId', 'createdBy' ].forEach(key => extendedConfig[key] = basicConfig[key]);
 
-    // Try to create a new basic config bewfore adding the extended one.
+    // Try to create a new basic config before adding the extended one.
     return this.db.models.InChannelConfig.create(basicConfig).then(() =>
     {
         return this.getModelFromInputType(basicConfig.inputType)
