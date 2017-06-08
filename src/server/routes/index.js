@@ -29,6 +29,8 @@ module.exports.init = function(app, db, config)
 
         app.post('/api/config/inchannel/current', (req, res) => this.addInChannelConfig(req, res, true));
         app.post('/api/config/inchannel', (req, res) => this.addInChannelConfig(req, res));
+
+        app.post('/api/test', (req, res) => res.json(req.opuscapita.userData()));
     });
 }
 
