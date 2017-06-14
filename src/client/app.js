@@ -4,7 +4,6 @@ import { Router, Route, IndexRoute, Link, hashHistory } from 'react-router'
 import { I18nManager } from 'opuscapita-i18n';
 
 import Layout from './layout.js';
-import sidebarLocales from './components/SidebarMenu/i18n';
 
 export default class App extends React.Component
 {
@@ -19,11 +18,7 @@ export default class App extends React.Component
 
     getChildContext()
     {
-        var context = { };
-        context.i18n = new I18nManager('en', [ ]);
-        context.i18n.register('SidebarMenu', sidebarLocales);
-        
-        return context;
+        return { i18n : new I18nManager('en', [ ]) };
     }
 
     render()
