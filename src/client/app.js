@@ -1,14 +1,29 @@
 import React from 'react';
 import ServiceConfigFlowFrame from './components/ServiceConfigFlowFrame'
 import { Router, Route, IndexRoute, Link, hashHistory } from 'react-router'
+import { I18nManager } from 'opuscapita-i18n';
+
 import Layout from './layout.js';
-//import browserHistory from 'react-router/lib/browserHistory';
+import sidebarLocales from './components/SidebarMenu/i18n';
 
 export default class App extends React.Component
 {
+    static childContextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+    };
+
     constructor(props)
     {
         super(props);
+    }
+
+    getChildContext()
+    {
+        var context = { };
+        context.i18n = new I18nManager('en', [ ]);
+        context.i18n.register('SidebarMenu', sidebarLocales);
+        
+        return context;
     }
 
     render()
