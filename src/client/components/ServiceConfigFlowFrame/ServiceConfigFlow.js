@@ -46,14 +46,14 @@ export default class ServiceConfigFlow extends React.Component
 
     getInChannelConfig = () =>
     {
-        return ajax.get('/einvoice-send/api/config/inchannel/ABC')  // !!! /current
+        return ajax.get('/einvoice-send/api/config/inchannel')  // !!! /current
             .set('Content-Type', 'application/json')
             .promise();
     }
 
     addInChannelConfig = () =>
     {
-        return ajax.post('/einvoice-send/api/config/inchannel/ABC')  // !!! /current
+        return ajax.post('/einvoice-send/api/config/inchannel')  // !!! /current
             .set('Content-Type', 'application/json')
             .send({ inputType : 'einvoice' })
             .promise();
@@ -67,11 +67,11 @@ export default class ServiceConfigFlow extends React.Component
             'status': 'active'
         }
 
-        return ajax.put('/einvoice-send/api/config/inchannel/ABC')  // !!! /current
+        return ajax.put('/einvoice-send/api/config/inchannel')  // !!! /current
             .set('Content-Type', 'application/json')
             .send(values).promise().then(() => window.location = '/bnp');
 */
-        return ajax.put('/einvoice-send/api/config/inchannel/ABC')  // !!! /current
+        return ajax.put('/einvoice-send/api/config/inchannel')  // !!! /current
             .set('Content-Type', 'application/json')
             .send(values).promise();
     }

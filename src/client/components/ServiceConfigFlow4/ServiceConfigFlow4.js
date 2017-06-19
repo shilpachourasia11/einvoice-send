@@ -11,7 +11,7 @@ export default class ServiceConfigFlow4 extends React.Component {
     };
 
     static defaultProps = {
-        hasValidFile : false,
+        hasValidFile : false
     };
 
     constructor(props)
@@ -67,7 +67,7 @@ export default class ServiceConfigFlow4 extends React.Component {
             //}
 
 
-            ajax.post('/einvoice-send/api/config/inchannel/' + 'ABC' + '/file')
+            ajax.post('/einvoice-send/api/config/inchannel/file')
                 // https://medium.com/ecmastack/uploading-files-with-react-js-and-node-js-e7e6b707f4ef
                 // .set('Content-Type', 'Content-Type: multipart/form-data;')   // 'Content-Type: multipart/mixed;')
                 .send(formData)
@@ -105,7 +105,7 @@ export default class ServiceConfigFlow4 extends React.Component {
 
                     <section className="oc-drag-and-drop">
                         <div className="drag-and-drop-canvas text-center" id="file-upload" onDragOver={ e => e.preventDefault() } onDrop={ e => this.onFileDrop(e) }>
-                            <h2>Please Drop your example PDF here.</h2>
+                            <h2>Please drop your PDF Example here.</h2>
                             {/* TODO: <h4>or <a href="#">browse</a> for a file to upload.</h4> */}
                         </div>
                     </section>

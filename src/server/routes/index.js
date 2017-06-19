@@ -33,11 +33,17 @@ module.exports.init = function(app, db, config)
     {
         this.events = new RedisEvents({ consul : { host : 'consul' } });
 
-        // app.use(checkContentType);
+        // app.use(checkContentType);  ???
 
+
+        // TODO: Refactoring of endpoints: Only one endpoint /api/config/inchannel
+        // TODO: What about a default in dev mode???
+        //
+        app.get('/api/config/inchannel', (req, res) => this.sendInChannelConfig(req, res));
         app.get('/api/config/inchannel/current', (req, res) => this.sendInChannelConfig(req, res, true));
         app.get('/api/config/inchannel/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
 
+        app.put('/api/config/inchannel', (req, res) => this.updateInChannelConfig(req, res));
         app.put('/api/config/inchannel/current', (req, res) => this.updateInChannelConfig(req, res, true));
         app.put('/api/config/inchannel/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
 
@@ -58,7 +64,7 @@ module.exports.init = function(app, db, config)
             }
           }
         });
-        app.post('/api/config/inchannel/:supplierId/file',
+        app.post('/api/config/inchannel/file',
           upload.single('file'),
           (req, res) => this.addPdfExample(req, res));
 
@@ -68,16 +74,23 @@ module.exports.init = function(app, db, config)
 
 module.exports.sendInChannelConfig = function(req, res, useCurrentUser)
 {
-    var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.params.supplierId;
+    // TODO: Refactoring of supplierId determination
+    let supplierId = req.opuscapita.userData('supplierId');
+    if (req.params.supplierId) {
+        supplierId = req.params.supplierId;
+    }
+    if (!supplierId) {
+        supplierId = 'ABC';    // ??? Remove - only for test!
+    }
 
 console.log(">> ", supplierId);
 
-    Api.inChannelConfigExists(supplierId).then(exists =>
-    {
+    Api.inChannelConfigExists(supplierId)
+    .then(exists => {
         if(exists)
         {
-            return Api.getInChannelConfig(supplierId).then(config =>
-            {
+            return Api.getInChannelConfig(supplierId)
+            .then(config => {
                 (config && res.json(config)) || res.status('404').json({ message : 'No configuration found for this supplier.' });
             });
         }
@@ -91,7 +104,15 @@ console.log(">> ", supplierId);
 
 module.exports.addInChannelConfig = function(req, res, useCurrentUser)
 {
-    var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.body.supplierId;
+    let supplierId = req.opuscapita.userData('supplierId');
+    if (req.params.supplierId) {
+        supplierId = req.params.supplierId;
+    }
+    if (!supplierId) {
+        supplierId = 'ABC';    // ??? Remove - only for test!
+    }
+
+    // var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.body.supplierId;
 
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
@@ -124,6 +145,14 @@ module.exports.addInChannelConfig = function(req, res, useCurrentUser)
  */
 module.exports.addPdfExample = function(req, res)
 {
+    let supplierId = req.opuscapita.userData('supplierId');
+    if (req.params.supplierId) {
+        supplierId = req.params.supplierId;
+    }
+    if (!supplierId) {
+        supplierId = 'ABC';    // ??? Remove - only for test!
+    }
+
     /*
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     console.log(req.headers);
@@ -139,7 +168,6 @@ module.exports.addPdfExample = function(req, res)
     });
     */
 
-    const supplierId = req.query.supplierId;
     const file = req.file;
 
     if (file && req.file.buffer) {
@@ -181,7 +209,15 @@ module.exports.forwardPdfExample = function(req, res) {
 
 module.exports.updateInChannelConfig = function(req, res, useCurrentUser)
 {
-    var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.params.supplierId;
+    let supplierId = req.opuscapita.userData('supplierId');
+    if (req.params.supplierId) {
+        supplierId = req.params.supplierId;
+    }
+    if (!supplierId) {
+        supplierId = 'ABC';    // ??? Remove - only for test!
+    }
+
+    // var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.params.supplierId;
 
 console.log(">> updateInChannelConfig", supplierId);
 

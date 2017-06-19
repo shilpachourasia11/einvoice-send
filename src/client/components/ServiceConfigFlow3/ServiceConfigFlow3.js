@@ -27,7 +27,7 @@ export default class ServiceConfigFlow3 extends React.Component {
     {
         return (
             <div>
-                <h3>Terms and Conditions of xxx</h3>
+                <h3>Terms and Conditions of xxx</h3>  {/* ??? How to access the Customer that initiated the Onboarding*/}
                 <div>
                     Please check the terms and conditions below and confirm your acceptance at the end of this page.
                 </div>
@@ -48,7 +48,7 @@ export default class ServiceConfigFlow3 extends React.Component {
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            I read and understood the terms and conditions of "Customer X">.
+                            I read and understood the terms and conditions of "Customer xxx">.  {/* ??? How to access the Customer that initiated the Onboarding*/}
                         </a>
                     </label>
                 </div>
