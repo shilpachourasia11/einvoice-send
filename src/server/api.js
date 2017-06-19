@@ -25,7 +25,7 @@ module.exports.getModelFromInputType = function(inputType)
         }
     }
 
-    throw new Error('Invalid input type. Must be pdf, einvoice or portal.');
+    throw new Error('Invalid input type ' + inputType + '. Must be pdf, einvoice or portal.');
 }
 
 module.exports.getInChannelConfig = function(supplierId)
@@ -36,10 +36,12 @@ module.exports.getInChannelConfig = function(supplierId)
         if(basicConfig)
         {
             // Try to load an extended configuration from a different model...
-            return this.getModelFromInputType(basicConfig.inputType).findById(supplierId).then(extendedConfig =>
-            {
+            return this.getModelFromInputType(basicConfig.inputType).findById(supplierId)
+            .then(extendedConfig => {
+
                 // Remove fields we do not want to output.
-                [ 'supplierId', 'createdBy', 'changedBy', 'createdOn', 'changedOn' ].forEach(key => delete extendedConfig.dataValues[key]);
+                // [ 'supplierId', 'createdBy', 'changedBy', 'createdOn', 'changedOn' ].forEach(key => delete extendedConfig.dataValues[key]);
+                [ 'createdBy', 'changedBy', 'createdOn', 'changedOn' ].forEach(key => delete extendedConfig.dataValues[key]);
 
                 // Extend the basic configuration with the extend values.
                 basicConfig.dataValues.settings = extendedConfig || { };

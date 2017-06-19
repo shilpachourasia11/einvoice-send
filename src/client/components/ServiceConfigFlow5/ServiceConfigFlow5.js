@@ -5,13 +5,11 @@ import { Button } from 'react-bootstrap';
 export default class ServiceConfigFlow5 extends React.Component {
 
     static propTypes = {
-        accepted : React.PropTypes.bool,
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired
     };
 
     static defaultProps = {
-        accepted : false
     };
 
     constructor(props)
@@ -19,7 +17,6 @@ export default class ServiceConfigFlow5 extends React.Component {
         super(props)
 
         this.state = {
-            accepted : this.props.accepted
         }
     }
 
@@ -27,21 +24,33 @@ export default class ServiceConfigFlow5 extends React.Component {
     {
         return (
             <div>
-                <h3>Complete</h3>
-                <p>Please submit your registration by agreeing to "GTC".</p>
-                <div className="col-md-6">
-                    <label className="oc-check">
-                        <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
-                        <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            I have read and understood the terms and conditions for the invoice portal.
-                        </a>
-                    </label>
-                </div>
+                <h3>Next Steps</h3>
+
+                <p>
+                All required steps from your side are done.
+                </p>
+
+                <p>
+                Now that you have uploaded the invoice example, we will setup
+                the automated processing of your invoices.
+                <br/>
+                This will usually take <em>X</em> days.
+                </p>
+
+                <p>
+                You will receive an notification under <em>xxx@yyy.zz</em> as soon
+                as the required setup is done. This email will also provide
+                the email address that you have to use to send your invoices to
+                us. Please use this email address only.
+                </p>
+
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>
-                <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>Previous</Button>
-                <Button bsStyle="primary" disabled={ !this.state.accepted } onClick={ () => this.props.onNext() }>
-                    Submit
-                </Button>
+                    <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>
+                        Previous
+                    </Button>
+                    <Button bsStyle="primary" disabled={ !this.state.accepted } onClick={ () => this.props.onNext() }>
+                        Submit
+                    </Button>
                 </div>
             </div>
         )

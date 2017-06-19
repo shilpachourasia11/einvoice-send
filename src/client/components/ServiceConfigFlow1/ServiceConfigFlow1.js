@@ -29,6 +29,12 @@ export default class ServiceConfigFlow1 extends React.Component
 
     render()
     {
+        var styleFree = {
+            float:"right",
+            color:"#5ab95a",
+            fontWeight:"bold"
+        };
+
         return (
             <div>
                 <h3>Type of Service</h3>
@@ -44,7 +50,7 @@ export default class ServiceConfigFlow1 extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'eInvoice' } value="eInvoice"/>
+                            <Radio disabled onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'eInvoice' } value="eInvoice"/>
                         </label>
                     </div>
                     <div className="col-md-11">
@@ -67,7 +73,7 @@ export default class ServiceConfigFlow1 extends React.Component
                     <div className="col-md-11">
                         <div className="panel panel-default">
                             <div className="panel-heading">
-                                <h4 className="panel-title">PDF by E-Mail</h4>
+                                <h4 className="panel-title">PDF by E-Mail <span style={styleFree}>FREE</span></h4>
                             </div>
                             <div className="panel-body">
                                 By sending your invoice as PDF attached to an email you can easily submit your invoice. Continue registration and Read more under option PDF by e-mail in order to proceed.
@@ -78,7 +84,7 @@ export default class ServiceConfigFlow1 extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'supplierPortal' } value="supplierPortal"/>
+                            <Radio disabled onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'supplierPortal' } value="supplierPortal"/>
                         </label>
                     </div>
                     <div className="col-md-11">
@@ -95,13 +101,13 @@ export default class ServiceConfigFlow1 extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'paperInvoice' } value="paperInvoice"/>
+                            <Radio onChange={ this.onInvoiceSendingTypeChanged } checked={this.state.invoiceSendingType === 'paperInvoice' } value="paperInvoice"/>
                         </label>
                     </div>
                     <div className="col-md-11">
                         <div className="panel panel-default">
                             <div className="panel-heading">
-                                <h4 className="panel-title">Paper-Invoice</h4>
+                                <h4 className="panel-title">Paper-Invoice<span style={styleFree}>FREE</span></h4>
                             </div>
                             <div className="panel-body">
                                 Until the year end of 2018 NCC still receives paper invoices. Continue registration and Read more under option Paper-Invoice in order to proceed.
@@ -109,21 +115,7 @@ export default class ServiceConfigFlow1 extends React.Component
                         </div>
                     </div>
                 </div>
-                <hr/>
-                <p>Have you received an invitation code?</p>
-                <form className="form-horizontal">
-                    <div className="row">
-                        <div className="col-md-6">
-                            <div className="form-group">
-                                <label className="col-sm-3 control-label">Invitation Code</label>
-                                <div className="col-sm-9">
-                                    <FormControl type="text" value={ this.state.invitationCode } placeholder="Enter your code here." onChange={e => this.setState({invitationCode : e.target.value})}/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                <br/>
+
                 <div className="form-submit text-right">
                     <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>Cancel</Button>
                     <Button bsStyle="primary" disabled={ !this.state.invoiceSendingType } onClick={ () => this.props.onNext() }>

@@ -1,91 +1,65 @@
 import React from 'react';
-import { Button, FormControl } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+//import browserHistory from 'react-router/lib/browserHistory';
 
 export default class ServiceConfigFlow3 extends React.Component {
 
     static propTypes = {
-        hasValidFile : React.PropTypes.bool,
+        accepted : React.PropTypes.bool,
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired
     };
 
     static defaultProps = {
-        hasValidFile : false,
+        accepted : false
     };
 
     constructor(props)
     {
-        super(props);
+        super(props)
 
         this.state = {
-            hasValidFile : this.props.hasValidFile
-        };
-    }
-
-    onFileDrop = function(e)
-    {
-        e.preventDefault();
-
-        var files = e.dataTransfer.files;
-        var formData = new FormData();
-
-        formData.append('file', files[0]);
-        this.setState({ hasValidFile : true });
+            accepted : this.props.accepted
+        }
     }
 
     render()
     {
         return (
             <div>
-                <h3>eInvoice Validation</h3>
-
-                <div className="bs-callout bs-callout-info">
-                    <h4 id="callout-progress-csp">Type of Validation</h4>
-                    <p>
-                        You can change your type of validation here if neccessary, which you selected one step earlier.
-                        <br/>
-                        Please upload a test file for validation in the Drag &#39;n&#39; Drop section below.
-                    </p>
+                <h3>Terms and Conditions of xxx</h3>
+                <div>
+                    Please check the terms and conditions below and confirm your acceptance at the end of this page.
                 </div>
 
-                <form className="form-horizontal">
-                    <div className="row">
-                        <div className="col-md-6">
-                            <div className="form-group">
-                                <label className="col-sm-3 control-label">Validation Type</label>
-                                <div className="col-sm-9">
-                                    <FormControl componentClass="select">
-                                        <option value="insert-update">Svefaktura 1.0</option>
-                                        <option value="replace">Svefaktura BIS 5A</option>
-                                        <option value="replace">Svekatalog 2.0</option>
-                                        <option value="replace">Sveorder BIS 28A</option>
-                                        <option value="replace">Sveorder (ordersvar)</option>
-                                        <option value="replace">Sveleveransavisering BIS 30A</option>
-                                        <option value="replace">PEPPOL Message Envelope 1.0</option>
-                                        <option value="replace">SFTI Tekniska kuvert (SBDH)</option>
-                                        <option value="replace">SFTI ObjectEnvelope</option>
-                                    </FormControl>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <hr/>
 
-                    <section className="oc-drag-and-drop">
-                        <div className="drag-and-drop-canvas text-center" id="file-upload" onDragOver={ e => e.preventDefault() } onDrop={ e => this.onFileDrop(e) }>
-                            <h2>Drag a file here</h2>
-                            <h4>or <a href="#">browse</a> for a file to upload.</h4>
-                        </div>
-                    </section>
+                <div className="bs-callout bs-callout-info">
+                    <br/>
+                    <br/>
+                    <h4 id="callout-progress-csp">...OpusCapita Terms and Conditions...</h4>
+                    <br/>
+                    <br/>
+                </div>
 
-                </form>
+                <hr/>
 
-                <br/>
+                <div className="col-md-6">
+                    <label className="oc-check">
+                        <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
+                        <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
+                            I read and understood the terms and conditions of "Customer X">.
+                        </a>
+                    </label>
+                </div>
 
-                <div className="form-submit text-right">
-                    <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>Previous</Button>
-                    <Button bsStyle="primary" disabled={ !this.state.hasValidFile } onClick={ () => this.props.onNext() }>
-                        Save &amp; Continue
-                    </Button>
+                <div className="form-submit text-right" style={{ marginTop: '80px' }}>
+                <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>
+                    Previous
+                </Button>
+                <Button bsStyle="primary" disabled={ !this.state.accepted } onClick={ () => this.props.onNext() }>
+                    Submit
+                </Button>
                 </div>
             </div>
         )
