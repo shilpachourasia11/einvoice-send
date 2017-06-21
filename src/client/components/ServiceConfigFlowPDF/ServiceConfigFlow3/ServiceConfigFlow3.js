@@ -2,16 +2,18 @@ import React from 'react';
 import { Button, FormControl } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
 
-export default class ServiceConfigFlow4 extends React.Component {
+export default class ServiceConfigFlow3 extends React.Component {
 
     static propTypes = {
         hasValidFile : React.PropTypes.bool,
+        filename : React.PropTypes.string,
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired
     };
 
     static defaultProps = {
-        hasValidFile : false
+        hasValidFile : false,
+        filename : "<undefined>"
     };
 
     constructor(props)
@@ -19,7 +21,8 @@ export default class ServiceConfigFlow4 extends React.Component {
         super(props);
 
         this.state = {
-            hasValidFile : this.props.hasValidFile
+            hasValidFile : this.props.hasValidFile,
+            filename : this.props.filename
         };
     }
 
@@ -55,6 +58,7 @@ export default class ServiceConfigFlow4 extends React.Component {
         // reader.readAsDataURL(file);
 
         if (ok2proceed) {
+
             console.log("File for upload to server: ", file);
 
             var formData = new FormData();
@@ -65,8 +69,8 @@ export default class ServiceConfigFlow4 extends React.Component {
             // for(var pair of formData.entries()) {
             //     console.log(">> entries: " + pair[0]+ ', '+ pair[1]);
             //}
-
-
+            
+            let localthis = this;
             ajax.post('/einvoice-send/api/config/inchannel/file')
                 // https://medium.com/ecmastack/uploading-files-with-react-js-and-node-js-e7e6b707f4ef
                 // .set('Content-Type', 'Content-Type: multipart/form-data;')   // 'Content-Type: multipart/mixed;')
@@ -76,14 +80,9 @@ export default class ServiceConfigFlow4 extends React.Component {
                         alert("The upload did not succeed. Please try again.");
                     }
                     else {
-                        ok2proceed = false;
-                        // this.setState({ hasValidFile : true });  // ??? Error: "Cannot read property 'setState' of undefined" -> solved by usage of ok2proceed
+                        localthis.setState({ hasValidFile : true, filename : file.name });
                     }
                 });
-        }
-
-        if (ok2proceed) {
-            this.setState({ hasValidFile : true });
         }
     }
 
@@ -107,6 +106,7 @@ export default class ServiceConfigFlow4 extends React.Component {
                         <div className="drag-and-drop-canvas text-center" id="file-upload" onDragOver={ e => e.preventDefault() } onDrop={ e => this.onFileDrop(e) }>
                             <h2>Please drop your PDF Example here.</h2>
                             {/* TODO: <h4>or <a href="#">browse</a> for a file to upload.</h4> */}
+                            <h4>Uploaded: {this.state.filename} </h4>
                         </div>
                     </section>
 

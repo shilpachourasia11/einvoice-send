@@ -156,3 +156,96 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
         throw new Error('The basic configuration for the passed supplier was not found.');
     })
 }
+
+
+////////////////////////////////////////
+
+module.exports.getInChannelContract = function(supplierId, customerId)
+{
+    // Try finding an existing config...
+    return this.db.models.InChannelConfig.findOne(
+        {where: {supplierId: supplierId, custoemrId: customerId}})
+    .then(data => {  // ??? to check - maybe it throws an error?
+        if (data) {
+            return data
+        }
+        else {
+            throw new Error('No InChannelContract found for ' + supplierId + ' + ' + customerId + '.');
+        }
+    });
+}
+
+module.exports.inChannelContractExists = function(supplierId, customerId)
+{
+    // Try finding an existing config...
+    return this.db.models.InChannelConfig.findOne(
+        {where: {supplierId: supplierId, custoemrId: customerId}})
+    .then(data => {
+        return data // && data.supplierId === supplierId;  ???
+    });
+}
+
+module.exports.addInChannelContract = function(config, returnConfig)
+{
+/*
+    var supplierId = config.supplierId;
+    var basicConfig = config;
+    var extendedConfig = config.settings || { };
+
+    // Remove nested settings object.
+    delete basicConfig.settings;
+
+    // Remove fields we do not want to be set from outside.
+    [ 'createdOn', 'changedOn', 'changedBy' ].forEach(key => delete basicConfig[key]);
+    // Copy required values to the extendedConfig as it is a plain object.
+    [ 'supplierId', 'createdBy' ].forEach(key => extendedConfig[key] = basicConfig[key]);
+
+    // Try to create a new basic config before adding the extended one.
+    return this.db.models.InChannelConfig.create(basicConfig).then(() =>
+    {
+        return this.getModelFromInputType(basicConfig.inputType)
+        .create(extendedConfig).then(() => returnConfig ? this.getInChannelConfig(supplierId) : supplierId);
+    });
+*/
+}
+
+module.exports.updateInChannelContract = function(supplierId, customerId, config, returnConfig)
+{
+/*
+    var basicConfig = config;
+    var extendedConfig = config.settings || { };
+
+    // Remove nesed settings object.
+    delete basicConfig.settings;
+
+    // Remove fields we do not want to be set from outside.
+    [ 'type', 'createdOn', 'changedOn', 'createdBy' ].forEach(key => delete basicConfig[key]);
+    // Copy required values to the extendedConfig as it is a plain object.
+    [ 'changedBy' ].forEach(key => extendedConfig[key] = basicConfig[key]);
+
+    // Override supplierId making sure it's the same on both.
+    basicConfig.supplierId = supplierId;
+    extendedConfig.supplierId = supplierId;
+
+    basicConfig.changedOn = new Date();
+    extendedConfig.changedOn = new Date();
+
+    return this.db.models.InChannelConfig.findById(supplierId).then(existingbasicConfig =>
+    {
+        if(existingbasicConfig)
+        {
+            // Set the createdBy field as we do not accept it to be set from outside on updates.
+            extendedConfig.createdBy = existingbasicConfig.createdBy;
+
+            return this.db.models.InChannelConfig.update(basicConfig, { where : { supplierId : supplierId } })
+            .then(() =>
+            {
+                return this.getModelFromInputType(existingbasicConfig.inputType).upsert(extendedConfig)
+                .then(() => returnConfig ? this.getInChannelConfig(supplierId) : supplierId);
+            });
+        }
+
+        throw new Error('The basic configuration for the passed supplier was not found.');
+    })
+*/
+}

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 //import browserHistory from 'react-router/lib/browserHistory';
 
-export default class ServiceConfigFlow2 extends React.Component {
+export default class ServiceConfigFlow1 extends React.Component {
 
     static propTypes = {
         accepted : React.PropTypes.bool,
@@ -54,9 +54,7 @@ export default class ServiceConfigFlow2 extends React.Component {
                 </div>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>
-                <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>
-                    Previous
-                </Button>
+                {/* <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>Previous</Button> */}
                 <Button bsStyle="primary" disabled={ !this.state.accepted } onClick={ () => this.props.onNext() }>
                     Submit
                 </Button>

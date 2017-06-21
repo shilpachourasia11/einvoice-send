@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 //import browserHistory from 'react-router/lib/browserHistory';
 
-export default class ServiceConfigFlow3 extends React.Component {
+export default class ServiceConfigFlow1 extends React.Component {
 
     static propTypes = {
         accepted : React.PropTypes.bool,
@@ -27,7 +27,7 @@ export default class ServiceConfigFlow3 extends React.Component {
     {
         return (
             <div>
-                <h3>Terms and Conditions of xxx</h3>  {/* ??? How to access the Customer that initiated the Onboarding*/}
+                <h3>Business Portal Terms and Conditions</h3>
                 <div>
                     Please check the terms and conditions below and confirm your acceptance at the end of this page.
                 </div>
@@ -48,15 +48,13 @@ export default class ServiceConfigFlow3 extends React.Component {
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            I read and understood the terms and conditions of "Customer xxx">.  {/* ??? How to access the Customer that initiated the Onboarding*/}
+                            I have read and understood the terms and conditions for the invoice portal.
                         </a>
                     </label>
                 </div>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>
-                <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>
-                    Previous
-                </Button>
+                {/* <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>Previous</Button> */}
                 <Button bsStyle="primary" disabled={ !this.state.accepted } onClick={ () => this.props.onNext() }>
                     Submit
                 </Button>

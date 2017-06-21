@@ -1,31 +1,85 @@
 import React from 'react';
-import { Button, FormControl, Radio } from 'react-bootstrap';
+import { Button, Radio } from 'react-bootstrap';
+import { Redirect } from 'react-router';
+import ajax from 'superagent-bluebird-promise';
+import Promise from 'bluebird';
 
-export default class ServiceConfigFlow1 extends React.Component
+// A workaround to prevent a browser warning about unknown properties 'active', 'activeKey' and 'activeHref'
+// in DIV element.
+const MyDiv = () =>
+{
+    return <div className="connecting-line"/>;
+};
+
+export default class ServiceConfigFlowStart extends React.Component
 {
     static propTypes = {
         invoiceSendingType : React.PropTypes.string,
-        invitationCode : React.PropTypes.string,
-        onNext : React.PropTypes.func.isRequired,
-        onPrevious : React.PropTypes.func.isRequired
+        invitationCode : React.PropTypes.string
     };
 
     static defaultProps = {
         invoiceSendingType : null,
-        invitationCode : ''
+        invitationCode : ''      /* ??? We need the invitation code to determine the customer. -> Voucher???*/
     };
 
     constructor(props)
     {
         super(props);
-
         this.state = {
             invoiceSendingType : this.props.invoiceSendingType,
             invitationCode : this.props.invitationCode
         };
     }
 
-    onInvoiceSendingTypeChanged = (event) => this.setState({invoiceSendingType : event.target.value});
+    onInvoiceSendingTypeChanged = (event) => {
+        this.setState({invoiceSendingType : event.target.value});
+    }
+
+    updateInChannelConfig = (values) => {
+        return ajax.put('/einvoice-send/api/config/inchannel')  // !!! /current
+            .set('Content-Type', 'application/json')
+            .send(values)
+            .promise();
+    }
+
+    createInChannelConfig = (values) => {
+        return ajax.post('/einvoice-send/api/config/inchannel')
+            .set('Content-Type', 'application/json')
+            .send(values)
+            .promise();
+    }
+
+
+    // pdf, einvoice, portal or paper
+    setInputType = function() {
+
+        var data = {
+            inputType: this.state.invoiceSendingType,
+            status: 'new'
+        };
+
+        return new Promise((resolve, reject) => {
+            return this.updateInChannelConfig(data)
+            .then(() => {
+                resolve();
+            })
+            .catch((e) => {
+                return this.createInChannelConfig(data)
+                .then(() => {
+                    console.log("InChannelConfig did not exist and was successfully created.");
+                    resolve();
+                })
+            })
+        })
+        .then(() => {
+            this.props.openFlow(this.state.invoiceSendingType);
+        })
+        .catch((e) => {
+            alert("Saving the service type did not succeed. Please retry.");
+        });
+    }
+
 
     render()
     {
@@ -50,11 +104,11 @@ export default class ServiceConfigFlow1 extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio disabled onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'eInvoice' } value="eInvoice"/>
+                            <Radio disabled onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'einvoice' } value="einvoice"/>
                         </label>
                     </div>
                     <div className="col-md-11">
-                        <div className="panel panel-default">
+                        <div className="panel panel-default disabled">
                             <div className="panel-heading">
                                 <h4 className="panel-title">eInvoice</h4>
                             </div>
@@ -67,7 +121,7 @@ export default class ServiceConfigFlow1 extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'pdfByEmail' } value="pdfByEmail"/>
+                            <Radio onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'pdf' } value="pdf"/>
                         </label>
                     </div>
                     <div className="col-md-11">
@@ -84,11 +138,11 @@ export default class ServiceConfigFlow1 extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio disabled onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'supplierPortal' } value="supplierPortal"/>
+                            <Radio disabled onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'supplier' } value="supplier"/>
                         </label>
                     </div>
                     <div className="col-md-11">
-                        <div className="panel panel-default">
+                        <div className="panel panel-default disabled">
                             <div className="panel-heading">
                                 <h4 className="panel-title">Supplier Portal</h4>
                             </div>
@@ -101,7 +155,7 @@ export default class ServiceConfigFlow1 extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio onChange={ this.onInvoiceSendingTypeChanged } checked={this.state.invoiceSendingType === 'paperInvoice' } value="paperInvoice"/>
+                            <Radio onChange={ this.onInvoiceSendingTypeChanged } checked={this.state.invoiceSendingType === 'paper' } value="paper"/>
                         </label>
                     </div>
                     <div className="col-md-11">
@@ -117,8 +171,9 @@ export default class ServiceConfigFlow1 extends React.Component
                 </div>
 
                 <div className="form-submit text-right">
-                    <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>Cancel</Button>
-                    <Button bsStyle="primary" disabled={ !this.state.invoiceSendingType } onClick={ () => this.props.onNext() }>
+                    {/*<Button bsStyle="link" onClick={ () => this.props.onPrevious() }>Cancel</Button>   ??? Where to go? */}
+                    <Button bsStyle="primary" disabled={ !this.state.invoiceSendingType }
+                        onClick={ () =>  this.setInputType() }>
                         Save &amp; Continue
                     </Button>
                 </div>

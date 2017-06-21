@@ -1,0 +1,65 @@
+'use strict'
+
+const Promise = require('bluebird');
+const DataTypes = require('sequelize');
+
+module.exports.init = function(db, config)
+{
+    /**
+     * Data model representing an inChannelContract between a supplier and a customer.
+     */
+    var InChannelContract = db.define('InChannelContract',
+    {
+        id : {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            allowNull: false,
+            primaryKey : true
+        },
+        supplierId : {
+            type : DataTypes.STRING(30),
+            allowNull : false
+        },
+        customerId : {
+            type : DataTypes.STRING(30),
+            allowNull : false
+        },
+        billingModelId : {
+            type : DataTypes.STRING(30),
+            allowNull : true
+        },
+        inputType : {
+            type : DataTypes.STRING(30),
+            allowNull : true
+        },
+        status : {
+            type : DataTypes.STRING(100),
+            allowNull : false,
+            defaultValue : 'new'
+        },
+        createdBy : {
+            type : DataTypes.STRING(60),
+            allowNull : false
+        },
+        changedBy : {
+            type : DataTypes.STRING(60),
+            allowNull : false,
+            defaultValue : ''
+        },
+        createdOn : {
+            type : DataTypes.DATE(),
+            allowNull : false,
+            defaultValue : DataTypes.NOW
+        },
+        changedOn : {
+            type : DataTypes.DATE(),
+            allowNull : true
+        }
+    }, {
+        updatedAt : 'changedOn',
+        createdAt : 'createdOn',
+        freezeTableName : true
+    });
+
+    return Promise.resolve();
+}
