@@ -4,6 +4,8 @@ const Promise = require('bluebird');
 const Multer = require('multer');
 
 const RedisEvents = require('ocbesbn-redis-events');
+const BlobClient = require('ocbesbn-blob-client');
+
 const Api = require('../api.js');
 const InChannelContract = require('../api/inChannelContract.js');
 
@@ -37,6 +39,8 @@ module.exports.init = function(app, db, config)
     ])
     .then(() => {
         this.events = new RedisEvents({ consul : { host : 'consul' } });
+        // this.blobclient = new BlobClient({});  ??? why does it not work for variable blobclient ???
+        this.blob       = new BlobClient({});
 
         // app.use(checkContentType);  ???
 
@@ -72,8 +76,10 @@ module.exports.init = function(app, db, config)
 
         app.get('/api/test', (req, res) => res.json(req.opuscapita.userData()));
 
-        // PDF upload
+        // blob access, like upload of PDF, download of TermsAndConditions, ...
         app.post('/api/config/inchannel/file', upload.single('file'), (req, res) => this.addPdfExample(req, res));
+        app.get('/api/inchannel/octermsandconditions', (req, res) => this.sendOCTermsAndConditions(req, res));
+        app.get('/api/inchannel/termsandconditions/:cusomterId', (req, res) => this.sendCustomerTermsAndConditions(req, res));
 
         // InChannelContract
         app.get('/api/config/inchannelcontract/:customerId/:supplierId', (req, res) => this.sendInChannelContract(req, res));
@@ -84,6 +90,11 @@ module.exports.init = function(app, db, config)
 
         app.put('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.updateInChannelContract(req, res));  // ???
         app.put('/api/config/inchannelcontract', (req, res) => this.updateInChannelContract(req, res));
+
+
+        // Supplier finally approved the final step:
+        app.get('/api/config/inchannel/approved', (req, res) => this.approveInChannelConfig(req, res));
+
     });
 }
 
@@ -241,16 +252,16 @@ module.exports.addPdfExample = function(req, res)
         const buffer = req.file.buffer;
         const filename = req.file.originalname;
 
-        // TODO: As soon as the blob modul is available, then store the PDF in the blob. (And then?)
-        //       The storage in the file system is (so far) just for test purpose.
-        writeFile("./" + filename, buffer)
-        .then(() => {  // No resonpose
-        console.log("The file " + filename + " was received and stored on local file system.");
-        res.status('200').json({ message : 'PDF file ' + filename + ' received.' });
+        // writeFile("./" + filename, buffer)  // for test only
+
+        this.blob.storeFile("s_" + supplierId, "einvoice/InvoiceTemplate", buffer)  // Storage will be created automatically, if needed.
+        .then((result) => {                                                         // ??? ask Christian about the result of the blob file storage.  ???
+            console.log("The file " + filename + " was received and stored on local file system.");
+            res.status('200').json({ message : 'PDF file ' + filename + ' received.' });
         })
         .catch((err) => {
-          console.log(err);
-          res.status('400').json({ message : err.message });
+            console.log(err);
+            res.status('400').json({ message : err.message });
         });
     }
     else {
@@ -268,9 +279,48 @@ module.exports.addPdfExample = function(req, res)
  * @return {Promise} [Promise]{@link http://bluebirdjs.com/docs/api-reference.html}
  */
 module.exports.forwardPdfExample = function(req, res) {
+
     // forwards the stored PDF (see blob) to the mapping team.
+
+    let supplierId = req.opuscapita.userData('supplierId');
+    if (req.params.supplierId) {
+        supplierId = req.params.supplierId;
+    }
+    if (!supplierId) {
+        supplierId = 'ABC';    // ??? Remove - only for test!
+    }
+
+
+    console.log(">>>>>> Pusching the uploaded PDF example to XXX");
+
+    // TODO: What to do???
+
+    this.blob.readFile("s_" + supplierId, "einvoice/InvoiceTemplate", buffer)
+    .then((buffer) => {
+        return writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
+    });
 }
 
+// later, probably
+module.exports.sendOCTermsAndConditions = function(req, res) {
+
+    console.log(">> sendOCTermsAndConditions");
+
+    this.blob.readFile("", "/einvoice-send/TermsAndConditions")   // ??? Christian: tenantId -> CustomerId vs SupplierId
+    .then((result) => res.status(200).send(text))                  // ??? Christian: What is the result? A Buffer, a String, a File, ...
+    .catch((e) => res.status('400').json({message: e.message}));
+}
+
+
+module.exports.sendCustomerTermsAndConditions = function(req, res) {
+    let customerId = req.params.customerId;
+
+console.log(">> sendCustomerTermsAndConditions - customerId", customerId);
+
+    this.blob.readFile("c_" + customerId, "/einvoice-send/TermsAndConditions")   // ??? Christian: tenantId -> CustomerId vs SupplierId
+    .then((result) => res.status(200).send(text))                  // ??? Christian: What is the result? A Buffer, a String, a File, ...
+    .catch((e) => res.status('400').json({message: e.message}));
+}
 
 
 ////////////////////////////////////////////////////////////////////
@@ -443,6 +493,56 @@ console.log(">> updateInChannelContract - businesspartner: ", bp.customerId, bp.
     }
 }
 
+/**
+ * The Supplier finally approved his configurations. This results in
+ * 1. Set approved state in InChannelConfig
+ * 2. push the uploaded example pdf to xxx
+ * What else???
+ *
+ * @param  {[type]} req [description]
+ * @param  {[type]} res [description]
+ * @return {[type]}     [description]
+ */
+module.exports.approveInChannelConfig = function(req, res) {
+    let supplierId = req.opuscapita.userData('supplierId');
+    if (req.params.supplierId) {
+        supplierId = req.params.supplierId;
+    }
+    if (!supplierId) {
+        supplierId = 'ABC';    // ??? Remove - only for test!
+    }
+
+console.log(">> approveInChannelConfig", supplierId);
+
+    return new Promise((resolve, reject) => {
+        Api.inChannelConfigExists(supplierId)
+        .then(exists => {
+            if(exists) {
+                var obj = {
+                    supplierId : supplierId,
+                    updatedBy : req.opuscapita.userData('id') || "dummy",       // ??? only for test
+                    status :'started'
+                };
+                return Api.updateInChannelConfig(supplierId, obj, true)
+                .then(config => {
+                    return this.events.emit(config, 'inChannelConfig.updated');
+                }).then(() => {
+                    resolve();
+                });
+            }
+            else {
+                reject();
+            }
+        })
+    })
+    .then(() => {
+        return forwardPDFExample();
+    })
+    .then(() => {
+        res.status(200);
+    })
+    .catch(e => res.status('400').json({ message : e.message }));
+}
 
 
 

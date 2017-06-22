@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
-import ServiceConfigFlow1 from '../ServiceConfigFlow1'
-import ServiceConfigFlow2 from '../ServiceConfigFlow2'
+import ServiceConfigFlow1 from '../../common/ServiceConfigFlowTaCOC'
+import ServiceConfigFlow2 from '../../common/ServiceConfigFlowTaCCustomer'
 import ServiceConfigFlow3 from '../ServiceConfigFlow3'
 
 // A workaround to prevent a browser warning about unknown properties 'active', 'activeKey' and 'activeHref'
@@ -124,7 +124,8 @@ export default class ServiceConfigFlow extends React.Component
     }
 
     finalApprove = () => {
-        this.updateInChannelConfig({'status':'started'})
+        return ajax.get('/api/config/inchannel/approved')
+            .promise()
         .then(() => {
             this.props.finalizeFlow();
         });

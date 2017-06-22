@@ -42,6 +42,7 @@
     "superagent-bluebird-promise": "^4.2.0",
     "webpack": "^2.5.1",
     "opuscapita-i18n": "github:patrykkopycinski/js-i18n",
+    "ocbesbn-blob-client": "^1.0.0",
     "multer" : "1.3.0"
   },
   "devDependencies": {

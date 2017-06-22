@@ -2,5 +2,5 @@
   "name": "ServiceConfigFlow2",
   "version": "0.0.0",
   "private": true,
-  "main": "./ServiceConfigFlow2.js"
+  "main": "./ServiceConfigFlowTaCCustomer.js"
 }

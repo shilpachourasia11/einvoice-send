@@ -1,13 +1,15 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 //import browserHistory from 'react-router/lib/browserHistory';
+import ajax from 'superagent-bluebird-promise';
 
 export default class ServiceConfigFlow1 extends React.Component {
 
     static propTypes = {
         accepted : React.PropTypes.bool,
         onNext : React.PropTypes.func.isRequired,
-        onPrevious : React.PropTypes.func.isRequired
+        onPrevious : React.PropTypes.func.isRequired,
+        ocTermsAndConditions : React.PropTypes.string
     };
 
     static defaultProps = {
@@ -19,8 +21,23 @@ export default class ServiceConfigFlow1 extends React.Component {
         super(props)
 
         this.state = {
-            accepted : this.props.accepted
+            accepted : this.props.accepted,
+            ocTermsAndConditions : 'loading OpusCapita Terms and Conditions...'
         }
+    }
+
+    componentDidMount() {
+console.log(">> pdf/ServiceConfigFlow1 - componentDidMount is called.");
+
+        return ajax.get('/einvoice-send/api/config/octermsandconditions')
+            .set('Content-Type', 'application/json')   // ??? really needed?
+            .promise()
+        .then((result) => {
+            this.setState({ocTermsAndConditions : result.text});
+        })
+        .catch((error) => {
+            // TODO: error handling ???
+        })
     }
 
     render()
@@ -37,7 +54,7 @@ export default class ServiceConfigFlow1 extends React.Component {
                 <div className="bs-callout bs-callout-info">
                     <br/>
                     <br/>
-                    <h4 id="callout-progress-csp">...OpusCapita Terms and Conditions...</h4>
+                    <h4 id="callout-progress-csp">{this.state.eInvoiceTypes}</h4>
                     <br/>
                     <br/>
                 </div>
