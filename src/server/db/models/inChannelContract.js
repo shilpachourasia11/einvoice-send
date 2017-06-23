@@ -32,6 +32,7 @@ module.exports.init = function(db, config)
             type : DataTypes.STRING(30),
             allowNull : true
         },
+        // new, approved, inWork, activated
         status : {
             type : DataTypes.STRING(100),
             allowNull : false,

@@ -97,10 +97,15 @@ export default class ServiceConfigFlow extends React.Component
     }
 
     finalApprove = () => {
-        this.updateInChannelConfig({'status':'started'})
+console.log(" ---- finalApprove");
+        return ajax.put('/einvoice-send/api/config/finish')
+            .promise()
         .then(() => {
             this.props.finalizeFlow();
-        });
+        })
+        .catch((e) => {
+            alert ("The forwarding to the Invoice Mapper did not succeed. Please retry.")
+        })
     }
 
     render()
@@ -153,22 +158,26 @@ export default class ServiceConfigFlow extends React.Component
                                                             <Tab.Pane eventKey={1} disabled="disabled">
                                                                 <ServiceConfigFlow1
                                                                     onNext={ () => {this.approvedOcTc(); this.setState({ currentTab: 2 });}}
-                                                                    onPrevious={ () => this.props.cancelWorkflow() } />
+                                                                    onPrevious={ () => this.props.cancelWorkflow() }
+                                                                    voucher = {this.props.voucher}/>
                                                             </Tab.Pane>
                                                             <Tab.Pane eventKey={2}>
                                                                 <ServiceConfigFlow2
                                                                     onNext={ () => {this.approvedCustomerTc(); this.setState({ currentTab: 3 }); }}
-                                                                    onPrevious={ () => this.setState({ currentTab: 1 }) } />
+                                                                    onPrevious={ () => this.setState({ currentTab: 1 }) }
+                                                                    voucher = {this.props.voucher}/>
                                                             </Tab.Pane>
                                                             <Tab.Pane eventKey={3}>
                                                                 <ServiceConfigFlow3
                                                                     onNext={ () => this.setState({ currentTab: 4 }) }
-                                                                    onPrevious={ () => this.setState({ currentTab: 2 }) } />
+                                                                    onPrevious={ () => this.setState({ currentTab: 2 }) }
+                                                                    voucher = {this.props.voucher}/>
                                                             </Tab.Pane>
                                                             <Tab.Pane eventKey={4}>
                                                                 <ServiceConfigFlow4
                                                                     onNext={ () => { this.finalApprove() } }
-                                                                    onPrevious={ () => this.setState({ currentTab: 3 }) } />
+                                                                    onPrevious={ () => this.setState({ currentTab: 3 }) }
+                                                                    voucher = {this.props.voucher}/>
                                                             </Tab.Pane>
                                                         </Tab.Content>
                                                     </Row>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 //import browserHistory from 'react-router/lib/browserHistory';
 import ajax from 'superagent-bluebird-promise';
+import Promise from 'bluebird';
 
 
 export default class ServiceConfigFlow2 extends React.Component {
@@ -28,11 +29,10 @@ export default class ServiceConfigFlow2 extends React.Component {
     }
 
     componentDidMount() {
-console.log(">> pdf/ServiceConfigFlow1 - componentDidMount is called.");
+console.log(">> pdf/ServiceConfigFlowTacCustomer - componentDidMount is called.");
+console.log(">> pdf/ServiceConfigFlowTacCustomer - customerId: ", this.props.voucher.customerId);
 
-        var customerId = "oc";                                          // ??? how to determine the customer
-
-        return ajax.get('/einvoice-send/api/config/termsandconditions/' + customerId)
+        return ajax.get('/einvoice-send/api/config/termsandconditions/' + this.props.voucher.customerId)
             .set('Content-Type', 'application/json')   // ??? really needed?
             .promise()
         .then((result) => {
@@ -43,11 +43,17 @@ console.log(">> pdf/ServiceConfigFlow1 - componentDidMount is called.");
         })
     }
 
+
+    componentWillReceiveProps() {
+
+    }
+
+
     render()
     {
         return (
             <div>
-                <h3>Terms and Conditions of xxx</h3>  {/* ??? How to access the Customer that initiated the Onboarding*/}
+                <h3>Terms and Conditions of <em>{this.props.voucher.customerId}</em></h3>  {/* ??? How to access the Customer that initiated the Onboarding*/}
                 <div>
                     Please check the terms and conditions below and confirm your acceptance at the end of this page.
                 </div>
@@ -64,7 +70,7 @@ console.log(">> pdf/ServiceConfigFlow1 - componentDidMount is called.");
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            I read and understood the terms and conditions of "Customer xxx">.  {/* ??? How to access the Customer that initiated the Onboarding*/}
+                            I read and understood the terms and conditions of Customer <em>{this.props.voucher.customerId}</em>.
                         </a>
                     </label>
                 </div>

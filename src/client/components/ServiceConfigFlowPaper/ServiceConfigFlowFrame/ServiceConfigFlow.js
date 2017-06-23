@@ -111,7 +111,7 @@ export default class ServiceConfigFlow extends React.Component
         var customerId = 'OC';     // ??? how to determine? - implcit SupplierId, explicit CustomerId
 
         return new Promise((resolve, reject) => {
-            this.getInChannelContract(customerId)
+            this.getInChannelContract()
             .then(() => resolve())
             .catch((e) => {
                 this.addInChannelConfig(customerId)
@@ -179,17 +179,20 @@ export default class ServiceConfigFlow extends React.Component
                                                             <Tab.Pane eventKey={1} disabled="disabled">
                                                                 <ServiceConfigFlow1
                                                                     onNext={ () => {this.approvedOcTc(); this.setState({ currentTab: 2 });}}
-                                                                    onPrevious={ () => this.props.cancelWorkflow() } />
+                                                                    onPrevious={ () => this.props.cancelWorkflow() }
+                                                                    voucher = {this.props.voucher}/>
                                                             </Tab.Pane>
                                                             <Tab.Pane eventKey={2}>
                                                                 <ServiceConfigFlow2
                                                                     onNext={ () => {this.approvedCustomerTc(); this.setState({ currentTab: 3 }); }}
-                                                                    onPrevious={ () => this.setState({ currentTab: 1 }) } />
+                                                                    onPrevious={ () => this.setState({ currentTab: 1 }) }
+                                                                    voucher = {this.props.voucher}/>
                                                             </Tab.Pane>
                                                             <Tab.Pane eventKey={3}>
                                                                 <ServiceConfigFlow3
                                                                     onNext={ () => { this.finalApprove() } }
-                                                                    onPrevious={ () => this.setState({ currentTab: 2 }) } />
+                                                                    onPrevious={ () => this.setState({ currentTab: 2 }) }
+                                                                    voucher = {this.props.voucher}/>
                                                             </Tab.Pane>
                                                         </Tab.Content>
                                                     </Row>

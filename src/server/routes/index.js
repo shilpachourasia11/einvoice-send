@@ -6,8 +6,9 @@ const Multer = require('multer');
 const RedisEvents = require('ocbesbn-redis-events');
 const BlobClient = require('ocbesbn-blob-client');
 
-const Api = require('../api.js');
+const Api = require('../api/inChannelConfig.js');
 const InChannelContract = require('../api/inChannelContract.js');
+const Voucher = require('../api/voucher.js');
 
 const fs = require('fs');
 const writeFile = Promise.promisify(fs.writeFile);
@@ -35,7 +36,8 @@ module.exports.init = function(app, db, config)
 {
     return Promise.all([
         Api.init(db),
-        InChannelContract.init(db)
+        InChannelContract.init(db),
+        Voucher.init(db)
     ])
     .then(() => {
         this.events = new RedisEvents({ consul : { host : 'consul' } });
@@ -47,6 +49,8 @@ module.exports.init = function(app, db, config)
         var upload  = Multer({
           storage: Multer.memoryStorage(),
           fileFilter: (req, file, cb) => {
+            cb(null, true);
+/*
             // console.log("---> file: ", file);
             var filename = file.originalname;
             var extension = filename.substr(filename.lastIndexOf('.') + 1);
@@ -56,6 +60,7 @@ module.exports.init = function(app, db, config)
             else {
               cb(null, false)
             }
+*/
           }
         });
 
@@ -76,12 +81,24 @@ module.exports.init = function(app, db, config)
 
         app.get('/api/test', (req, res) => res.json(req.opuscapita.userData()));
 
+
         // blob access, like upload of PDF, download of TermsAndConditions, ...
-        app.post('/api/config/inchannel/file', upload.single('file'), (req, res) => this.addPdfExample(req, res));
+        //
+        app.post('/api/config/inchannelfile', upload.single('file'), (req, res) => this.addPdfExample(req, res));
+        app.get('/api/config/inchannelfile', (req, res) => this.getPdfExample(req, res));
+        app.get('/api/config/inchannelfile2', (req, res) => {console.log("----------- file2"); this.getPdfExample(req, res); });
+
+        app.post('/api/filetest', upload.single('file'), (req, res) => this.addPdfExampleTest(req, res));
+        app.get('/api/filetest', (req, res) => this.getPdfExampleTest(req, res));
+        app.get('/api/listtest', (req, res) => this.listFolderTest(req, res));
+
+
         app.get('/api/inchannel/octermsandconditions', (req, res) => this.sendOCTermsAndConditions(req, res));
         app.get('/api/inchannel/termsandconditions/:cusomterId', (req, res) => this.sendCustomerTermsAndConditions(req, res));
 
         // InChannelContract
+        // TODO: Create own express Router
+        //
         app.get('/api/config/inchannelcontract/:customerId/:supplierId', (req, res) => this.sendInChannelContract(req, res));
         app.get('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.sendInChannelContract(req, res));
 
@@ -92,8 +109,18 @@ module.exports.init = function(app, db, config)
         app.put('/api/config/inchannelcontract', (req, res) => this.updateInChannelContract(req, res));
 
 
+        // Voucher
+        //
+        app.get('/api/config/voucher', (req, res) => this.sendOneVoucher(req, res));
+        app.get('/api/config/voucher/:supplierId', (req, res) => this.sendOneVoucher(req, res));
+
+        // app.put('/api/config/voucher', (req, res) => this.updateVoucher(req, res));
+        // app.put('/api/config/voucher/:supplierId', (req, res) => this.updateVoucher(req, res));
+        // app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
+
+
         // Supplier finally approved the final step:
-        app.get('/api/config/inchannel/approved', (req, res) => this.approveInChannelConfig(req, res));
+        app.put('/api/config/finish', (req, res) => this.approveInChannelConfig(req, res));
 
     });
 }
@@ -213,6 +240,10 @@ console.log(">> updateInChannelConfig", supplierId);
 
 
 
+function generateSupplierTenantId(suppierId) {
+    return "s-" + suppierId.toLowerCase();
+}
+
 
 /**
  * Store PDF example file for invoice-mapping in blob
@@ -230,6 +261,8 @@ module.exports.addPdfExample = function(req, res)
     if (!supplierId) {
         supplierId = 'ABC';    // ??? Remove - only for test!
     }
+
+    supplierId = supplierId.toLowerCase();
 
     /*
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -254,9 +287,15 @@ module.exports.addPdfExample = function(req, res)
 
         // writeFile("./" + filename, buffer)  // for test only
 
-        this.blob.storeFile("s_" + supplierId, "einvoice/InvoiceTemplate", buffer)  // Storage will be created automatically, if needed.
+        let tenantId = generateSupplierTenantId(supplierId)
+console.log(">>>>>>>>>>1 " + tenantId, "einvoice/InvoiceTemplate.pdf");
+
+        this.blob.createStorage(tenantId)
+        .then((result) => {
+            return this.blob.createFile(tenantId, "einvoice/InvoiceTemplate.pdf", buffer)  // Storage will be created automatically, if needed.
+        })
         .then((result) => {                                                         // ??? ask Christian about the result of the blob file storage.  ???
-            console.log("The file " + filename + " was received and stored on local file system.");
+            console.log("Received the file " + filename + " stored it in the blob storage.");
             res.status('200').json({ message : 'PDF file ' + filename + ' received.' });
         })
         .catch((err) => {
@@ -269,19 +308,10 @@ module.exports.addPdfExample = function(req, res)
     }
 }
 
-/**
- * As soon as the supplier finished his configuration, we have to forward the
- * PDF example file to the Mapping-team.
- * TODO: Explain the process.
- *
- * @param  {[type]} req [description]
- * @param  {[type]} res [description]
- * @return {Promise} [Promise]{@link http://bluebirdjs.com/docs/api-reference.html}
- */
-module.exports.forwardPdfExample = function(req, res) {
 
-    // forwards the stored PDF (see blob) to the mapping team.
-
+module.exports.getPdfExample = function(req, res)
+{
+console.log(">>>>>>> getPdfExample is started");
     let supplierId = req.opuscapita.userData('supplierId');
     if (req.params.supplierId) {
         supplierId = req.params.supplierId;
@@ -291,13 +321,174 @@ module.exports.forwardPdfExample = function(req, res) {
     }
 
 
-    console.log(">>>>>> Pusching the uploaded PDF example to XXX");
+    let tenantId = generateSupplierTenantId(supplierId)
+    let filename = "einvoice/InvoiceTemplate.pdf"
+console.log(">>>>>>>>>>1 getPdfExampmle " + tenantId, filename);
+
+    this.blob.readFile(tenantId, filename)
+    .then((buffer) => {
+        if (buffer) {
+// console.log("Buffer: ", buffer);
+            return writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
+            res.status('200').json({ message : 'PDF file ' + filename + ' found.' });
+        }
+        else {
+            console.log("---- Error with the access of the stored blob: ", buffer);
+            res.status('400').json({message : 'Error with the access of the stored blob at ' + filename});
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+        res.status('400').json({ message : err.message });
+    });
+}
+
+
+
+module.exports.addPdfExampleTest = function(req, res)
+{
+    const file = req.file;
+    let tenantId = generateSupplierTenantId("ABC");
+    let filename = "einvoice/InvoiceTemplate.pdf";
+
+    if (file && req.file.buffer) {
+        const buffer = req.file.buffer;
+        // const filename = req.file.originalname;
+
+        // writeFile("./" + filename, buffer)  // for test only
+
+console.log(">>>>>>>>>>1 " + tenantId, filename);
+
+        this.blob.createStorage(tenantId)   // ??? comment by Chris
+        .then((result) => {
+            return this.blob.createFile(tenantId, filename, buffer.toString())
+            .then((result) => {
+console.log(">>>>>>>>>>1.1 result: ", result);
+                if (result.message && result.message == 'The requested path does already exist.') {
+                    return this.blob.storeFile(tenantId, filename, buffer.toString());
+                }
+            });
+        })
+        .then((result) => {
+console.log(">>>>>>>>>>1.2 result: ", result);
+            console.log("Received the file " + filename + " stored it in the blob storage.");
+            res.status('200').json({ message : 'PDF file ' + filename + ' received.' });
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status('400').json({ message : err.message });
+        });
+    }
+    else {
+      res.status('400').json({ message : 'No PDF file received.' });
+    }
+}
+
+/*
+main_1         | Buffer:  { name: 'InvoiceTemplate.pdf',
+main_1         |   extension: '.pdf',
+main_1         |   location: '/private/einvoice',
+main_1         |   path: '/private/einvoice/InvoiceTemplate.pdf',
+main_1         |   size: 183,
+main_1         |   isFile: true,
+main_1         |   isDirectory: false,
+main_1         |   lastModified: '2017-06-23T14:09:09.000Z',
+main_1         |   contentType: 'application/json',
+main_1         |   content: { content: { type: 'Buffer', data: [Object] } } }
+
+ */
+module.exports.getPdfExampleTest = function(req, res)
+{
+console.log(">>>>>>> getPdfExampleTest is started");
+
+    let tenantId = generateSupplierTenantId("ABC");
+    let filename = "einvoice/InvoiceTemplate.pdf";
+    let targetfilename = "./uploadedInvoiceExample.pdf";
+
+    this.blob.readFile(tenantId, filename)
+    .then((result) => {
+        if (result) {
+// console.log("Received Buffer has a size of: ", result.content.length);
+console.log("Buffer: ", result);
+
+console.log("Writing buffer in file" + filename)
+            // writeFile(targetfilename , result.content.data)
+            writeFile(targetfilename , Buffer.from(result.content))
+            .then(() => {
+                res.status('200').json({ message : 'PDF file ' + filename + ' received and stored on filesystem.' });
+            })  // for test only   ???
+        }
+        else {
+            console.log("---- Error with the access of the stored blob: ", result);
+            res.status('400').json({message : 'Error with the access of the stored blob at ' + filename});
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+        res.status('400').json({ message : err.message });
+    });
+}
+
+
+module.exports.listFolderTest = function(req, res)
+{
+console.log(">>>>>>> listFolderTest is started");
+
+    let tenantId = generateSupplierTenantId("ABC");
+    let filename = "/einvoice";
+
+    this.blob.listEntries(tenantId, filename)
+    .then((entries) => {
+console.log("Result: ", entries);
+
+        res.status('200').json({ files : entries});
+    })
+    .catch((err) => {
+        console.log(err);
+        res.status('400').json({ message : err.message });
+    });
+
+}
+
+
+
+
+
+/**
+ * As soon as the supplier finished his configuration, we have to forward the
+ * PDF example file to the Mapping-team.
+ * TODO: Explain the process.
+ *
+ * @param  {[type]} req [description]
+ * @param  {[type]} res [description]
+ * @return {Promise} [Promise]{@link http://bluebirdjs.com/docs/api-reference.html}
+ */
+module.exports.forwardPdfExample = function(supplierId) {
+
+console.log(">>>>>> Pushing the PDF example that was uploaded for supplier " + supplierId + " to ???");
 
     // TODO: What to do???
 
-    this.blob.readFile("s_" + supplierId, "einvoice/InvoiceTemplate", buffer)
-    .then((buffer) => {
-        return writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
+    let tenantId = generateSupplierTenantId(supplierId)
+console.log(">>>>>>>>>>2 " + tenantId, "einvoice/InvoiceTemplate.pdf");
+
+    return this.blob.listEntries(tenantId, "einvoice")
+    .then((entries) => {
+        consule.log("--- ", entries);
+        for (let val of entries) {
+            console.log("--->> ", val);
+        }
+
+        console.log(">>>>>>>>>>3 Readfile...");
+        this.blob.readFile(tenantId, "einvoice/InvoiceTemplate.pdf")
+        .then((buffer) => {
+            if (buffer) {
+                return writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
+            }
+            else {
+                console.log("---- Error with the access of the stored blob: ", buffer);
+            }
+        });
     });
 }
 
@@ -368,33 +559,37 @@ console.log(" - customerId", req.params.customerId)
         }
     }
 
+    return {supplierId: supplierId, customerId, customerId};
+}
 
+function check4BusinessPartner(req, predefinedCustomerId, predefinedSupplierId) {
+    bp = determineBusinessPartner(req, predefinedCustomerId, predefinedSupplierId);
 
     // only for testing ??? ???
-    if (!supplierId) {
+    if (!bp.supplierId) {
         supplierId = 'ABC';    // ??? Remove - only for test!
         customerId = req.params.relatedTenantId;
     }
 
 
-    if (!supplierId && !customerId) {
+    if (!bp.supplierId && !bp.customerId) {
         throw new Error ("A supplierId and customerId (assigment and/or parameter ) is required.")
     }
-    if (!supplierId) {
+    if (!bp.supplierId) {
         throw new Error ("A supplierId/assignment is required.")
     }
-    if (!customerId) {
+    if (!bp.customerId) {
         throw new Error ("A customerId/assignment is required.")
     }
-
-    return {supplierId: supplierId, customerId, customerId};
+    return bp;
 }
+
 
 
 module.exports.sendInChannelContract = function(req, res, useCurrentUser)
 {
     try {
-        let bp = determineBusinessPartner(req, req.params.customerId, req.params.supplierId);
+        let bp = check4BusinessPartner(req, req.params.customerId, req.params.supplierId);
 
 // console.log(">> sendInChannelContract - businesspartner: ", bp.supplierId, bp.customerId);
 
@@ -412,7 +607,7 @@ module.exports.sendInChannelContract = function(req, res, useCurrentUser)
 module.exports.addInChannelContract = function(req, res)
 {
     try {
-        let bp = determineBusinessPartner(req, req.body.customerId, req.body.supplierId);
+        let bp = check4BusinessPartner(req, req.body.customerId, req.body.supplierId);
 
         if (req.body.customerId && bp.customerId != req.body.customerId) {
             throw new Error ("Customer " + req.body.supplierId + " is not allowed to add an InChannelContract for customer " + bp.supplierId + ".");
@@ -451,7 +646,7 @@ console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.cus
 module.exports.updateInChannelContract = function(req, res)
 {
     try {
-        let bp = determineBusinessPartner(req, req.body.customerId, req.body.supplierId);
+        let bp = check4BusinessPartner(req, req.body.customerId, req.body.supplierId);
 
         if (req.body.customerId && bp.customerId != req.body.customerId) {
             throw new Error ("Customer " + req.body.supplierId + " is not allowed to update an InChannelContract for customer " + bp.supplierId + ".");
@@ -536,13 +731,69 @@ console.log(">> approveInChannelConfig", supplierId);
         })
     })
     .then(() => {
-        return forwardPDFExample();
+        return this.forwardPdfExample(supplierId);
     })
     .then(() => {
         res.status(200);
     })
-    .catch(e => res.status('400').json({ message : e.message }));
+    .catch(e => {
+        // logger.error
+        console.log("An error occured: ", e);
+        res.status('400').json({ message : e.message })
+    });
 }
+
+
+//////////////////////////////////////////////////////////////////////
+// Voucher
+//////////////////////////////////////////////////////////////////////
+
+module.exports.sendVoucher = function(req, res)
+{
+    try {
+        let bp = determineBusinessPartner(req, req.params.customerId, req.params.supplierId);
+
+console.log(">> sendVoucher - businesspartner: ", bp.supplierId, bp.customerId);
+
+
+        return Voucher.get(bp.customerId, bp.supplierId)
+        .then(data => {
+            (data && res.json(data)) || res.status('404').json({ message : 'No Voucher object found for the supplier-customer pair ' + bp.supplierId + "+" + bp.customerId});
+        })
+    }
+    catch(e) {
+        res.status('400').json({message: e.message});
+    }
+}
+
+module.exports.sendOneVoucher = function(req, res)
+{
+    try {
+        let bp = determineBusinessPartner(req, null, req.params.supplierId);
+
+console.log(">> sendOneVoucher - businesspartner: ", bp.supplierId, bp.customerId);
+
+        return new Promise((resolve, reject) => {
+            if (!bp.customerId && !bp.supplierId) {
+                resolve(Voucher.getOne());
+            }
+            if (!bp.customerId) {
+                resolve(Voucher.getOne(bp.supplierId));
+            }
+            else {
+                resolve(Voucher.getOne(bp.customerId, bp.supplierId));
+            }
+        })
+        .then(data => {
+console.log(">> sendOneVoucher - data: ", data);
+            (data && res.json(data)) || res.status('404').json({ message : 'No Voucher object found for the supplier-customer pair ' + bp.supplierId + "+" + bp.customerId});
+        })
+    }
+    catch(e) {
+        res.status('400').json({message: e.message});
+    }
+}
+
 
 
 
