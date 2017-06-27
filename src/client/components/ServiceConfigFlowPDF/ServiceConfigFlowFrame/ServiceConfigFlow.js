@@ -13,6 +13,7 @@ const MyDiv = () =>
     return <div className="connecting-line"/>;
 };
 
+
 export default class ServiceConfigFlow extends React.Component
 {
     static propTypes = {
@@ -42,6 +43,24 @@ export default class ServiceConfigFlow extends React.Component
 
         this.getInChannelConfig().catch(e => this.addInChannelConfig());
     }
+
+
+    static contextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+    };
+
+
+    componentWillMount() {
+console.log("-- componentWillMount of ServiceConfigFlow is called");
+console.log("-- i18n 1 - pdf/ServiceConfigFlow: ", this.context.i18n);
+        this.context.i18n.register("ServiceConfigFlow", require('./i18n').default);   // does not work! Why?  ???
+console.log("-- i18n 2 - pdf/ServiceConfigFlow: ", this.context.i18n);
+    }
+
+
+    ///////////////////////////////////////////////////
+    // Helper methods to fetch or post data from/to server
+    ///////////////////////////////////////////////////
 
     getInChannelConfig = () =>
     {
@@ -87,6 +106,9 @@ export default class ServiceConfigFlow extends React.Component
     }
 
 
+    /////////////////////////////////////////////////////////
+    // Events
+    /////////////////////////////////////////////////////////
     approvedOcTc = () => {
         this.updateInChannelConfig({'status':'approvedTC'});
     }
@@ -97,22 +119,27 @@ export default class ServiceConfigFlow extends React.Component
     }
 
     finalApprove = () => {
-console.log(" ---- finalApprove");
+console.log(" ---- 1. finalApprove");
         return ajax.put('/einvoice-send/api/config/finish')
             .promise()
         .then(() => {
+console.log(" ---- 2. finalApprove");
             this.props.finalizeFlow();
         })
         .catch((e) => {
-            alert ("The forwarding to the Invoice Mapper did not succeed. Please retry.")
+            alert ("The forwarding to the Invoice mapping team did not succeed. Please retry.")
         })
     }
+
+
 
     render()
     {
         var visible = {
             display: (1==1) ? 'block' : 'none'
         }
+
+console.log ("** i18n - ServiceConfigFlog.render: ", this.context.i18n);
 
         return (
             <div style={{ minHeight: '100vh' }}>
@@ -121,11 +148,11 @@ console.log(" ---- finalApprove");
                         <div className="container">
                             <section className="header">
                                 <h1>
-                                    Service Configuration Flow
+                                    {this.context.i18n.getMessage('ServiceConfigFlow.header')}
                                     <div className="control-bar text-right pull-right">
                                         <Button onClick={ () => this.props.gotoStart()}>
                                             <i className="fa fa-angle-left"/>
-                                            &nbsp;&nbsp;Back to Type Selection
+                                            &nbsp;&nbsp;{this.context.i18n.getMessage('ServiceConfigFlow.backToTypeSelection')}
                                         </Button>
                                     </div>
                                 </h1>

@@ -19,12 +19,18 @@ export default class App extends React.Component
     static propTypes = {
         supplierId : React.PropTypes.string,
         customerId : React.PropTypes.string,
-        voucherCode : React.PropTypes.string
+        voucher: React.PropTypes.object
     };
 
     static defaultProps = {
         supplierId : "ABC",      // req.opuscapita.userData('supplierId')  ???
-        customerId : "oc"        // to be calculated with the voucherCode  ???
+        customerId : "oc",       // to be calculated with the voucherCode  ???
+        voucher : {
+            eInvoiceEnabled : false,
+            pdfEnabled : false,
+            supplierPortalEnabled : false,
+            paperEnabled : false
+        }
     };
 
     constructor(props)
@@ -33,9 +39,8 @@ export default class App extends React.Component
 
         this.history = null
 
-        this.icc = {
-            supplierId: this.props.supplierId || "ABC",  // req.opuscapita.userData('supplierId')
-            customerId: this.props.customerId
+        this.state = {
+            voucher : this.props.voucher
         }
 
         console.log("--------------> ", this.props)
@@ -45,23 +50,63 @@ export default class App extends React.Component
 
 
     componentWillMount() {
-// console.log("-- componentWillMount is called");
+console.log("-- componentWillMount is called");
         this.getVoucher()
         .then((result) => {    // .spread((voucher, response) => {
 console.log("-- voucher result: ", result);
-            this.voucher = JSON.parse(result.text);               // ???
-            console.log("-- componentWillMount - Voucher: ", this.voucher);
+
+            let voucher = JSON.parse(result.text)               // ??? why result.text?
+
+            // How will evaluation of allowed input types and billings be determined???
+            // Convention: Use boolen to enable or disable the different input types:
+            voucher.eInvoiceEnabled = false; // !!! ??? no flow ui available up to now
+            voucher.pdfEnabled = true;
+            voucher.supplierPortalEnabled = false;
+            voucher.paperEnabled = true; // !!! ??? no flow ui available up to now
+
+            this.setState({voucher : voucher});
+
+            console.log("-- componentWillMount - Voucher: ", this.state.voucher);
         })
         .catch((e) => {
-            // message: No Voucher was found for you.   ???
-            console.log("Error: ", e);
+            console.log("Error determined: ", e);
+
+            this.setState({
+                voucher : {
+                    eInvoiceEnabled : false,
+                    pdfEnabled : true,              // ! ??? test only
+                    supplierPortalEnabled : false,
+                    paperEnabled : false
+                }
+            });
         })
     }
 
-
     getChildContext()
     {
-        return { i18n : new I18nManager('en', [ ]) };
+        // return { i18n : new I18nManager('en', [ ]) };
+
+        let i18n = new I18nManager('en', [ ])
+        i18n.register("ServiceConfigFlow", require('./i18n').default);
+
+        // console.log("** i18n - app.js: ", i18n);
+        return { i18n : i18n};
+
+/*
+        let i18n = new I18nManager('en', [{
+          locales: ['en'],
+          messages: {
+            test: 'test',
+            ServiceConfigFlow: {
+              test: 'Hello again'
+            }
+          }
+        }]);
+
+        console.log("i18n: ", i18n);
+
+        return i18n;
+*/
     }
 
 
@@ -72,6 +117,7 @@ console.log("-- voucher result: ", result);
     }
 
     navigate2Flow = (inputType) => {
+console.log(">> navigate2Flow is called!");
         this.history.push("/" + inputType + "/1");
     }
 
@@ -91,19 +137,19 @@ console.log("-- voucher result: ", result);
 
         return (
             <Router history={ hashHistory } ref={el => {
-                this.history = el.props.history;
+                this.history = el && el.props && el.props.history;
             }}>
                 <Route component={ Layout }>
-                    <Route path="/" component={ () => {return (<ServiceConfigFlowStart openFlow={this.navigate2Flow} />)} } />)} } />
+                    <Route path="/" component={ () => {return (<ServiceConfigFlowStart openFlow={this.navigate2Flow} voucher={this.state.voucher} />)} } />)} } />
 
-                    <Route path="/pdf/1" component={ () => (<ServiceConfigFlowFramePDF currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.voucher} />) } />
-                    <Route path="/pdf/2" component={ () => (<ServiceConfigFlowFramePDF currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.voucher} />) } />
-                    <Route path="/pdf/3" component={ () => (<ServiceConfigFlowFramePDF currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.voucher} />) } />
-                    <Route path="/pdf/4" component={ () => (<ServiceConfigFlowFramePDF currentTab={4} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.voucher} />) } />
+                    <Route path="/pdf/1" component={ () => (<ServiceConfigFlowFramePDF currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} />) } />
+                    <Route path="/pdf/2" component={ () => (<ServiceConfigFlowFramePDF currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} />) } />
+                    <Route path="/pdf/3" component={ () => (<ServiceConfigFlowFramePDF currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} />) } />
+                    <Route path="/pdf/4" component={ () => (<ServiceConfigFlowFramePDF currentTab={4} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} />) } />
 
-                    <Route path="/paper/1" component={ () => (<ServiceConfigFlowFramePaper currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.voucher} />) } />
-                    <Route path="/paper/2" component={ () => (<ServiceConfigFlowFramePaper currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.voucher} />) } />
-                    <Route path="/paper/3" component={ () => (<ServiceConfigFlowFramePaper currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.voucher} />) } />
+                    <Route path="/paper/1" component={ () => (<ServiceConfigFlowFramePaper currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} />) } />
+                    <Route path="/paper/2" component={ () => (<ServiceConfigFlowFramePaper currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} />) } />
+                    <Route path="/paper/3" component={ () => (<ServiceConfigFlowFramePaper currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} />) } />
                 </Route>
             </Router>
         );

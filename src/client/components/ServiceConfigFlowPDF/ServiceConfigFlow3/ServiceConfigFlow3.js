@@ -69,9 +69,9 @@ export default class ServiceConfigFlow3 extends React.Component {
             // for(var pair of formData.entries()) {
             //     console.log(">> entries: " + pair[0]+ ', '+ pair[1]);
             //}
-            
+
             let localthis = this;
-            ajax.post('/einvoice-send/api/config/inchannel/file')
+            ajax.post('/einvoice-send/api/config/inchannelfile')
                 // https://medium.com/ecmastack/uploading-files-with-react-js-and-node-js-e7e6b707f4ef
                 // .set('Content-Type', 'Content-Type: multipart/form-data;')   // 'Content-Type: multipart/mixed;')
                 .send(formData)

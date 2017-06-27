@@ -4,6 +4,9 @@ import { Redirect } from 'react-router';
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
+import BillingDetails from '../common/BillingDetails'
+
+
 // A workaround to prevent a browser warning about unknown properties 'active', 'activeKey' and 'activeHref'
 // in DIV element.
 const MyDiv = () =>
@@ -14,23 +17,30 @@ const MyDiv = () =>
 export default class ServiceConfigFlowStart extends React.Component
 {
     static propTypes = {
-        invoiceSendingType : React.PropTypes.string,
-        invitationCode : React.PropTypes.string
+        invoiceSendingType : React.PropTypes.string
     };
 
     static defaultProps = {
-        invoiceSendingType : null,
-        invitationCode : ''      /* ??? We need the invitation code to determine the customer. -> Voucher???*/
+        invoiceSendingType : null
     };
 
     constructor(props)
     {
         super(props);
         this.state = {
-            invoiceSendingType : this.props.invoiceSendingType,
-            invitationCode : this.props.invitationCode
+            invoiceSendingType : this.props.invoiceSendingType
         };
     }
+
+    static contextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+    };
+
+
+
+    /////////////////////////////////////////////
+    // Events
+    /////////////////////////////////////////////
 
     onInvoiceSendingTypeChanged = (event) => {
         this.setState({invoiceSendingType : event.target.value});
@@ -76,6 +86,7 @@ export default class ServiceConfigFlowStart extends React.Component
             this.props.openFlow(this.state.invoiceSendingType);
         })
         .catch((e) => {
+            console.log("Error: ", e);
             alert("Saving the service type did not succeed. Please retry.");
         });
     }
@@ -83,37 +94,49 @@ export default class ServiceConfigFlowStart extends React.Component
 
     render()
     {
-        var styleFree = {
-            float:"right",
-            color:"#5ab95a",
-            fontWeight:"bold"
-        };
+        // TODO: Replace with translations - maybe move the Hello area to an own component. ???
+        let hello;
+        let intro1;
+        let intro2;
+        if (this.props.voucher.customerId) {
+            hello = this.context.i18n.getMessage('ServiceConfigFlowStart.hello', { customer: this.props.voucher.customerId});
+            intro1 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro1', { customer: this.props.voucher.customerId});
+            intro2 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro2');
+        }
+        else {
+            hello = this.context.i18n.getMessage('ServiceConfigFlowStart.helloWithoutCustomer');
+            intro1 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro1WithoutCustomer');
+        }
+
+console.log("**** Voucher: ", this.props.voucher);
 
         return (
             <div>
-                <h3>Type of Service</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlowStart.header')}</h3>
 
                 <div className="bs-callout bs-callout-info">
-                    <h4>Please select one type here:</h4>
+                    <h4>{hello}</h4>
                     <p>
-                        This is the onboarding site for <b>NCC Svenska AB.</b>
+                        {intro1}
                         <br/>
-                        You have received information about <b>Self Service Onboarding</b> on behalf of NCC. Please register your account and chose your choice of invoice sending. Further instructions will follow.
+                        {intro2}
                     </p>
                 </div>
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio disabled onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'einvoice' } value="einvoice"/>
+                            <Radio disabled={!this.props.voucher.eInvoiceEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'einvoice' } value="einvoice"/>
                         </label>
                     </div>
                     <div className="col-md-11">
-                        <div className="panel panel-default disabled">
+                        <div className={"panel panel-default " + (this.props.voucher.eInvoiceEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
-                                <h4 className="panel-title">eInvoice</h4>
+                                <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoice')}
+                                    <BillingDetails inputType="eInvoice" voucher={this.props.voucher} />
+                                </h4>
                             </div>
                             <div className="panel-body">
-                                Connect with your existing service provider for e-invoicing by simply choose your operator from our partner list and we set up your connection in no time.
+                                {this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoiceDesc')}
                             </div>
                         </div>
                     </div>
@@ -121,16 +144,18 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'pdf' } value="pdf"/>
+                            <Radio disabled={!this.props.voucher.pdfEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'pdf' } value="pdf"/>
                         </label>
                     </div>
                     <div className="col-md-11">
-                        <div className="panel panel-default">
+                        <div className={"panel panel-default " + (this.props.voucher.pdfEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
-                                <h4 className="panel-title">PDF by E-Mail <span style={styleFree}>FREE</span></h4>
+                                <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.pdf')}
+                                    <BillingDetails inputType="pdf" voucher={this.props.voucher} />
+                                </h4>
                             </div>
                             <div className="panel-body">
-                                By sending your invoice as PDF attached to an email you can easily submit your invoice. Continue registration and Read more under option PDF by e-mail in order to proceed.
+                                {this.context.i18n.getMessage('ServiceConfigFlowStart.pdfDesc')}
                             </div>
                         </div>
                     </div>
@@ -138,16 +163,18 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio disabled onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'supplier' } value="supplier"/>
+                            <Radio  disabled={!this.props.voucher.supplierPortalEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'supplier' } value="supplier"/>
                         </label>
                     </div>
                     <div className="col-md-11">
-                        <div className="panel panel-default disabled">
+                        <div className={"panel panel-default " + (this.props.voucher.supplierPortalEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
-                                <h4 className="panel-title">Supplier Portal</h4>
+                                <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.supplierPortal')}
+                                    <BillingDetails inputType="supplierPortal" voucher={this.props.voucher} />
+                                </h4>
                             </div>
                             <div className="panel-body">
-                                By manual key in your invoice data you can easily submit your invoice in the correct format. Continue registration and Read more under option Supplier Portal in order to proceed.
+                                {this.context.i18n.getMessage('ServiceConfigFlowStart.supplierPortalDesc')}
                             </div>
                         </div>
                     </div>
@@ -155,16 +182,18 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio onChange={ this.onInvoiceSendingTypeChanged } checked={this.state.invoiceSendingType === 'paper' } value="paper"/>
+                            <Radio  disabled={!this.props.voucher.paperEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={this.state.invoiceSendingType === 'paper' } value="paper"/>
                         </label>
                     </div>
                     <div className="col-md-11">
-                        <div className="panel panel-default">
+                        <div className={"panel panel-default " + (this.props.voucher.paperEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
-                                <h4 className="panel-title">Paper-Invoice<span style={styleFree}>FREE</span></h4>
+                                <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.paper')}
+                                    <BillingDetails inputType="paper" voucher={this.props.voucher} />
+                                </h4>
                             </div>
                             <div className="panel-body">
-                                Until the year end of 2018 NCC still receives paper invoices. Continue registration and Read more under option Paper-Invoice in order to proceed.
+                                {this.context.i18n.getMessage('ServiceConfigFlowStart.paperDesc')}
                             </div>
                         </div>
                     </div>

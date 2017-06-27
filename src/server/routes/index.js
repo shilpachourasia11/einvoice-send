@@ -116,7 +116,7 @@ module.exports.init = function(app, db, config)
 
         // app.put('/api/config/voucher', (req, res) => this.updateVoucher(req, res));
         // app.put('/api/config/voucher/:supplierId', (req, res) => this.updateVoucher(req, res));
-        // app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
+        app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
 
 
         // Supplier finally approved the final step:
@@ -287,15 +287,22 @@ module.exports.addPdfExample = function(req, res)
 
         // writeFile("./" + filename, buffer)  // for test only
 
-        let tenantId = generateSupplierTenantId(supplierId)
-console.log(">>>>>>>>>>1 " + tenantId, "einvoice/InvoiceTemplate.pdf");
+        let tenantId = generateSupplierTenantId(supplierId);
+        let targetfilename = "einvoice/InvoiceTemplate.pdf";
+console.log("******** Storing file " + filename + " at " + tenantId + " + " + targetfilename);
 
-        this.blob.createStorage(tenantId)
+        this.blob.createStorage(tenantId)   // ??? comment by Chris    ????
         .then((result) => {
-            return this.blob.createFile(tenantId, "einvoice/InvoiceTemplate.pdf", buffer)  // Storage will be created automatically, if needed.
+            return this.blob.createFile(tenantId, targetfilename, buffer)
+            .catch((err) => {
+                // file already exist.
+                if (err) {
+                    return this.blob.storeFile(tenantId, targetfilename, buffer);
+                }
+            });
         })
-        .then((result) => {                                                         // ??? ask Christian about the result of the blob file storage.  ???
-            console.log("Received the file " + filename + " stored it in the blob storage.");
+        .then((result) => {
+            console.log("The file " + filename + " was stored it in the blob storage.");
             res.status('200').json({ message : 'PDF file ' + filename + ' received.' });
         })
         .catch((err) => {
@@ -359,13 +366,13 @@ module.exports.addPdfExampleTest = function(req, res)
 
 console.log(">>>>>>>>>>1 " + tenantId, filename);
 
-        this.blob.createStorage(tenantId)   // ??? comment by Chris
+        this.blob.createStorage(tenantId)   // ??? comment by Chris    ????
         .then((result) => {
-            return this.blob.createFile(tenantId, filename, buffer.toString())
-            .then((result) => {
-console.log(">>>>>>>>>>1.1 result: ", result);
-                if (result.message && result.message == 'The requested path does already exist.') {
-                    return this.blob.storeFile(tenantId, filename, buffer.toString());
+            return this.blob.createFile(tenantId, filename, buffer)
+            .catch((err) => {
+console.log(">>>>>>>>>>1.1 result: ", err);
+                if (err) {
+                    return this.blob.storeFile(tenantId, filename, buffer)
                 }
             });
         })
@@ -409,11 +416,12 @@ console.log(">>>>>>> getPdfExampleTest is started");
     .then((result) => {
         if (result) {
 // console.log("Received Buffer has a size of: ", result.content.length);
+
 console.log("Buffer: ", result);
 
-console.log("Writing buffer in file" + filename)
-            // writeFile(targetfilename , result.content.data)
-            writeFile(targetfilename , Buffer.from(result.content))
+console.log("Writing buffer in file" + filename);
+            writeFile(targetfilename , result)
+            // writeFile(targetfilename , Buffer.from(result.content))
             .then(() => {
                 res.status('200').json({ message : 'PDF file ' + filename + ' received and stored on filesystem.' });
             })  // for test only   ???
@@ -435,7 +443,7 @@ module.exports.listFolderTest = function(req, res)
 console.log(">>>>>>> listFolderTest is started");
 
     let tenantId = generateSupplierTenantId("ABC");
-    let filename = "/einvoice";
+    let filename = req.query.path;
 
     this.blob.listEntries(tenantId, filename)
     .then((entries) => {
@@ -447,7 +455,6 @@ console.log("Result: ", entries);
         console.log(err);
         res.status('400').json({ message : err.message });
     });
-
 }
 
 
@@ -469,26 +476,34 @@ console.log(">>>>>> Pushing the PDF example that was uploaded for supplier " + s
 
     // TODO: What to do???
 
-    let tenantId = generateSupplierTenantId(supplierId)
-console.log(">>>>>>>>>>2 " + tenantId, "einvoice/InvoiceTemplate.pdf");
+    let tenantId = generateSupplierTenantId(supplierId);
+    let filename = "einvoice/InvoiceTemplate.pdf";
+console.log(">>>>>>>>>>2 " + tenantId, filename);
 
+/*
     return this.blob.listEntries(tenantId, "einvoice")
     .then((entries) => {
-        consule.log("--- ", entries);
+        console.log("--- ", entries);
         for (let val of entries) {
             console.log("--->> ", val);
         }
+*/
+console.log(">>>>>>>>>>3 Readfile...");
 
-        console.log(">>>>>>>>>>3 Readfile...");
-        this.blob.readFile(tenantId, "einvoice/InvoiceTemplate.pdf")
-        .then((buffer) => {
-            if (buffer) {
-                return writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
-            }
-            else {
-                console.log("---- Error with the access of the stored blob: ", buffer);
-            }
-        });
+    return this.blob.readFile(tenantId, filename)
+    .then((buffer) => {
+        if (buffer) {
+            writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
+            res.status('200').json({ message : 'PDF file ' + filename + ' found.' });
+        }
+        else {
+            console.log("---- Error with the access of the stored blob: ", buffer);
+            res.status('400').json({message : 'Error with the access of the stored blob at ' + filename});
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+        res.status('400').json({ message : err.message });
     });
 }
 
