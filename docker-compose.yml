@@ -1,34 +1,24 @@
-version: '2'
+version: '3'
 services:
   main:
-    build: .
-    image: opuscapita/einvoice-send
     depends_on:
      - mysql
      - consul
      - registrator
      - redis
      - nginx
-    volumes:
-     - .:/home/node/einvoice-send
     labels:
       SERVICE_NAME: 'einvoice-send'
       SERVICE_TAGS: 'external'
-    extra_hosts:
-     - 'consul:${HOST_IP}'
     environment:
-      PORT: ${PORT}
-      HOST_IP: ${HOST_IP}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       REDIS_AUTH: ${REDIS_AUTH}
     ports:
-     - '${PORT}:${PORT}'
-    command: "npm run dev"
+     - '3007:3007'
 
   mysql:
     image: "mysql:5.6"
-    network_mode: host
     ports:
       - "3306:3306"
     environment:
@@ -37,28 +27,8 @@ services:
     depends_on:
       - registrator
 
-  registrator:
-    image: gliderlabs/registrator:latest
-    network_mode: host
-    depends_on:
-     - consul
-    volumes:
-     - /var/run/docker.sock:/tmp/docker.sock
-    command: ['consul://${HOST_IP}:8500']
-
-  consul:
-    image: consul:latest
-    network_mode: host
-    ports:
-      - '8400:8400'
-      - '8500:8500'
-      - '8600:53/udp'
-    labels:
-      SERVICE_IGNORE: 'true'  # Do not add any of Consul's services to Consul's service discovery registry.
-    command: [agent, '-server', '-ui', '-bootstrap-expect=1', '-bind=${HOST_IP}', '-client=0.0.0.0']
-
   redis:
-    image: ocbesbn/redis:latest
+    image: opuscapita/redis:dev
     ports:
       - '6379:6379'
     environment:
@@ -69,12 +39,28 @@ services:
       SERVICE_NAME: redis
 
   nginx:
-    image: gr4per/nginx-rp:latest
+    image: gr4per/nginx-rp:dev
     depends_on:
        - consul
-    extra_hosts:
-       - 'consul:${HOST_IP}'
     ports:
       - '8080:8080'
     depends_on:
       - consul
+
+  registrator:
+    image: gliderlabs/registrator
+    command: consul://consul:8500
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    depends_on:
+      - consul
+
+  consul:
+    image: consul:latest
+    ports:
+      - '8400:8400'
+      - '8500:8500'
+      - '8600:53/udp'
+    labels:
+      SERVICE_IGNORE: 'true'  # Do not add any of Consul's services to Consul's service discovery registry.
+    command: [agent, '-server', '-ui', '-bootstrap', '-client=0.0.0.0']
