@@ -1,7 +1,8 @@
 import React from 'react';
 import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
-import ServiceConfigFlow1 from '../../common/ServiceConfigFlowTaCOC'
+// import ServiceConfigFlow1 from '../../common/ServiceConfigFlowTaCOC'
+import ServiceConfigFlow1 from '../ServiceConfigFlow1'
 import ServiceConfigFlow2 from '../../common/ServiceConfigFlowTaCCustomer'
 import ServiceConfigFlow3 from '../ServiceConfigFlow3'
 import ServiceConfigFlow4 from '../ServiceConfigFlow4'
@@ -62,6 +63,9 @@ console.log("-- i18n 2 - pdf/ServiceConfigFlow: ", this.context.i18n);
     // Helper methods to fetch or post data from/to server
     ///////////////////////////////////////////////////
 
+    //
+    // InChannelConfig
+    //
     getInChannelConfig = () =>
     {
         return ajax.get('/einvoice-send/api/config/inchannel')  // !!! /current
@@ -81,27 +85,43 @@ console.log("-- i18n 2 - pdf/ServiceConfigFlow: ", this.context.i18n);
     }
 
     updateInChannelConfig = (values) => {
-/*
-        var values = {
-            'billingModelId': 'cheap',
-            'inputType': 'einvoice',
-            'status': 'active'
-        }
-
-        return ajax.put('/einvoice-send/api/config/inchannel')  // !!! /current
-            .set('Content-Type', 'application/json')
-            .send(values).promise().then(() => window.location = '/bnp');
-*/
         return ajax.put('/einvoice-send/api/config/inchannel')  // !!! /current
             .set('Content-Type', 'application/json')
             .send(values)
             .promise();
     }
 
-    updateInChannelContract = (values) => {
+    //
+    // InChannelContract
+    //
+    getInChannelContract = (customerId) => {
+        return ajax.get('/einvoice-send/api/config/inchannelcontract/' + customerId)
+            .set('Content-Type', 'application/json')
+            .promise();
+    }
+
+    addInChannelContract = (customerId, status) => {
+console.log("++ addInChannelContract -> customerId =" + customerId + ", status = " + status);
+        status = status || 'new';
+        return ajax.post('/einvoice-send/api/config/inchannelcontract')
+            .set('Content-Type', 'application/json')
+            .send({
+                customerId : customerId,
+                inputType : 'pdf',
+                status : status
+            })
+            .promise();
+    }
+
+    updateInChannelContract = (customerId, status) => {
+console.log("++ updateInChannelContract -> customerId / status: ", customerId, status);
         return ajax.put('/einvoice-send/api/config/inchannelcontract')
             .set('Content-Type', 'application/json')
-            .send(values)
+            .send({
+                customerId : customerId,
+                inputType : 'pdf',
+                status : status
+            })
             .promise();
     }
 
@@ -109,14 +129,39 @@ console.log("-- i18n 2 - pdf/ServiceConfigFlow: ", this.context.i18n);
     /////////////////////////////////////////////////////////
     // Events
     /////////////////////////////////////////////////////////
-    approvedOcTc = () => {
-        this.updateInChannelConfig({'status':'approvedTC'});
+    setApprovedOcTc = () => {
+        return this.updateInChannelConfig({'status':'approvedTC'});
     }
 
-    approvedCustomerTc = () => {
-        // this.updateInChannelConfig({'status':'approvedCustomerTC'});  // dummy - remove!!!
-        this.updateInChannelContract({'status':'approvedTC'});
+    setApprovedCustomerTc = () => {
+        // this.updateInChannelConfig({'status':'approvedCustomerTc'});  // dummy - remove!!!
+
+        var customerId = this.props.voucher.customerId;
+
+console.log("** customerId: ", customerId);
+
+        return new Promise((resolve, reject) => {
+            this.getInChannelConfig(customerId)
+            .then((data) => resolve(data))
+            .catch((e) => {
+console.log("*** eror: ", e);
+                this.addInChannelConfig(customerId)
+                .then((data) => resolve(data))
+            })
+        })
+        .then((data) => {
+console.log("InchannelConfig found: ", data);
+            return this.addInChannelContract(customerId, 'approved')
+            .catch((e) => {
+                return this.updateInChannelContract(customerId, 'approved');
+            })
+        })
+        .catch((e) => {
+            console.log("Error appeared: ", e);
+            return Promise.reject();
+        })
     }
+
 
     finalApprove = () => {
 console.log(" ---- 1. finalApprove");
@@ -132,14 +177,27 @@ console.log(" ---- 2. finalApprove");
     }
 
 
+    setCurrentTab = (tabNo) => {
+        this.setState({ currentTab : tabNo });
+    }
+
+    approveOcTc = (tabNo) => {
+        this.setApprovedOcTc()
+        .then(() => this.setCurrentTab(tabNo));
+    }
+
+    approveCustomerTC = (tabNo) => {
+        this.setApprovedCustomerTc()
+        .then(() => this.setCurrentTab(tabNo));
+    }
+
+
 
     render()
     {
         var visible = {
             display: (1==1) ? 'block' : 'none'
         }
-
-console.log ("** i18n - ServiceConfigFlog.render: ", this.context.i18n);
 
         return (
             <div style={{ minHeight: '100vh' }}>
@@ -165,48 +223,16 @@ console.log ("** i18n - ServiceConfigFlog.render: ", this.context.i18n);
                                             <div className="wizard-inner">
                                                 <Tab.Container activeKey={ this.state.currentTab } onSelect={ currentTab => this.setState({ currentTab }) } id="stepsContainer">
                                                     <Row className="clearfix">
-                                                        <Nav bsStyle="tabs">
-                                                            <MyDiv/>
-                                                            {/* see http://getbootstrap.com/components/ */}
-                                                            <NavItem eventKey={1}>
-                                                                <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
-                                                            </NavItem>
-                                                            <NavItem eventKey={2} disabled={ this.state.currentTab < 2 }>
-                                                                <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
-                                                            </NavItem>
-                                                            <NavItem eventKey={3} disabled={ this.state.currentTab < 3 }>
-                                                                <span className="round-tab"><i className="glyphicon glyphicon-search"/></span>
-                                                            </NavItem>
-                                                            <NavItem eventKey={4} disabled={ this.state.currentTab < 4 }>
-                                                                <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
-                                                            </NavItem>
-                                                        </Nav>
-                                                        <Tab.Content>
-                                                            <Tab.Pane eventKey={1} disabled="disabled">
-                                                                <ServiceConfigFlow1
-                                                                    onNext={ () => {this.approvedOcTc(); this.setState({ currentTab: 2 });}}
-                                                                    onPrevious={ () => this.props.cancelWorkflow() }
-                                                                    voucher = {this.props.voucher}/>
-                                                            </Tab.Pane>
-                                                            <Tab.Pane eventKey={2}>
-                                                                <ServiceConfigFlow2
-                                                                    onNext={ () => {this.approvedCustomerTc(); this.setState({ currentTab: 3 }); }}
-                                                                    onPrevious={ () => this.setState({ currentTab: 1 }) }
-                                                                    voucher = {this.props.voucher}/>
-                                                            </Tab.Pane>
-                                                            <Tab.Pane eventKey={3}>
-                                                                <ServiceConfigFlow3
-                                                                    onNext={ () => this.setState({ currentTab: 4 }) }
-                                                                    onPrevious={ () => this.setState({ currentTab: 2 }) }
-                                                                    voucher = {this.props.voucher}/>
-                                                            </Tab.Pane>
-                                                            <Tab.Pane eventKey={4}>
-                                                                <ServiceConfigFlow4
-                                                                    onNext={ () => { this.finalApprove() } }
-                                                                    onPrevious={ () => this.setState({ currentTab: 3 }) }
-                                                                    voucher = {this.props.voucher}/>
-                                                            </Tab.Pane>
-                                                        </Tab.Content>
+                                                        <PaperNav
+                                                            currentTab={this.state.currentTab}
+                                                            customerTermsAndConditions={this.props.customerTermsAndConditions} />
+                                                        <PaperTabContent
+                                                            setCurrentTab = { (tabNo) => this.setCurrentTab(tabNo) }
+                                                            approveOcTc = { (tabNo) => this.approveOcTc(tabNo) }
+                                                            approveCustomerTc = { (tabNo) => this.approveCustomerTC(tabNo) }
+                                                            finalApprove = { () => this.finalApprove() }
+                                                            voucher = {this.props.voucher}
+                                                            customerTermsAndConditions={this.props.customerTermsAndConditions}/>
                                                     </Row>
                                                 </Tab.Container>
                                             </div>
@@ -219,5 +245,108 @@ console.log ("** i18n - ServiceConfigFlog.render: ", this.context.i18n);
                 </section>
             </div>
         )
+    }
+}
+
+
+
+class PaperNav extends React.Component {
+    render() {
+        if (this.props.customerTermsAndConditions) {
+            return (
+                <Nav bsStyle="tabs">
+                    <MyDiv/>
+                    {/* see http://getbootstrap.com/components/ */}
+                    <NavItem eventKey={1}>
+                        <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
+                    </NavItem>
+                    <NavItem eventKey={2} disabled={ this.props.currentTab < 2 }>
+                        <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
+                    </NavItem>
+                    <NavItem eventKey={3} disabled={ this.props.currentTab < 3 }>
+                        <span className="round-tab"><i className="glyphicon glyphicon-search"/></span>
+                    </NavItem>
+                    <NavItem eventKey={4} disabled={ this.props.currentTab < 4 }>
+                        <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
+                    </NavItem>
+                </Nav>
+            );
+        }
+        else {
+            return (
+                <Nav bsStyle="tabs">
+                    <MyDiv/>
+                    {/* see http://getbootstrap.com/components/ */}
+                    <NavItem eventKey={1}>
+                        <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
+                    </NavItem>
+                    <NavItem eventKey={2} disabled={ this.props.currentTab < 2 }>
+                        <span className="round-tab"><i className="glyphicon glyphicon-search"/></span>
+                    </NavItem>
+                    <NavItem eventKey={3} disabled={ this.props.currentTab < 3 }>
+                        <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
+                    </NavItem>
+                </Nav>
+            );
+        }
+    }
+}
+
+
+class PaperTabContent extends React.Component {
+    render() {
+        if (this.props.customerTermsAndConditions) {
+            return (
+                <Tab.Content>
+                    <Tab.Pane eventKey={1}>
+                        <ServiceConfigFlow1
+                            onNext={ () => { this.props.approveOcTc(2); }}
+                            voucher = {this.props.voucher}/>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey={2}>
+                        <ServiceConfigFlow2
+                            onNext={ () => { this.props.approveCustomerTc(3); }}
+                            onPrevious={ () => this.props.setCurrentTab(1) }
+                            voucher = {this.props.voucher}
+                            customerTermsAndConditions = {this.props.customerTermsAndConditions}/>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey={3}>
+                        <ServiceConfigFlow3
+                            onNext={ () => { this.props.setCurrentTab(4) } }
+                            onPrevious={ () => this.props.setCurrentTab(2) }
+                            voucher = {this.props.voucher}/>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey={4}>
+                        <ServiceConfigFlow4
+                            onNext={ () => { this.props.finalApprove() } }
+                            onPrevious={ () => this.props.setCurrentTab(3) }
+                            voucher = {this.props.voucher}/>
+                    </Tab.Pane>
+                </Tab.Content>
+            );
+        }
+        else {
+            return (
+                <Tab.Content>
+                    <Tab.Pane eventKey={1} disabled="disabled">
+                        <ServiceConfigFlow1
+                            onNext={ () => { this.props.approveOcTc(2); }}
+                            voucher = {this.props.voucher}/>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey={2}>
+                        <ServiceConfigFlow3
+                            onNext={ () => { this.props.setCurrentTab(3) } }
+                            onPrevious={ () => this.props.setCurrentTab(1) }
+                            voucher = {this.props.voucher}/>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey={3}>
+                        <ServiceConfigFlow4
+                            onNext={ () => { this.props.finalApprove() } }
+                            onPrevious={ () => this.setCurrentTab(2) }
+                            voucher = {this.props.voucher}/>
+                    </Tab.Pane>
+                </Tab.Content>
+            );
+        }
     }
 }

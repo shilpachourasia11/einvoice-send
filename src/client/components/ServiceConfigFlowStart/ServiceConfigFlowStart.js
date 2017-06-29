@@ -75,6 +75,7 @@ export default class ServiceConfigFlowStart extends React.Component
                 resolve();
             })
             .catch((e) => {
+console.log("+ setInputType - Error: ", e);
                 return this.createInChannelConfig(data)
                 .then(() => {
                     console.log("InChannelConfig did not exist and was successfully created.");

@@ -9,7 +9,7 @@ module.exports.init = function(db, config)
      * Data model representing an invoice send configuration
      * @class PaperChannelConfig
      */
-    var paperChannelConfig = db.define('PaperChannelConfig',
+    var PaperChannelConfig = db.define('PaperChannelConfig',
     {
         supplierId : {
             type : DataTypes.STRING(30),

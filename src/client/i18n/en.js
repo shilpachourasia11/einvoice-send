@@ -1,4 +1,9 @@
 export default {
+    previous: "Previous",
+    submit: "Submit",
+    accept: "Accept",
+    congratulations: "Congratulations!",
+
     ServiceConfigFlowStart : {
         header: "Configuration of the In-Channel-Service",
         hello : "Invitation by Customer {customer}",
@@ -15,8 +20,16 @@ export default {
         paper : "Paper Invoice",
         paperDesc: "It is still possible to send paper invoices. Continue registration and read more under option Paper Invoice in order to proceed."
     },
+
     ServiceConfigFlow : {
         header: "Service Configuration Flow",
-        backToTypeSelection: "Back to Type Selection"
+        backToTypeSelection: "Back to Type Selection",
+        readOCTaC: "I have read and understood OpusCapitas terms and conditions of the service",
+
+        CustomerTaC: {
+            subheader: "Terms and Conditions of {customerName}",
+            subsubheader: "Please check the terms and conditions below and confirm your acceptance at the end of this page.",
+            readTaC: "I have read and understood {customerName} terms and conditions of the service",
+        }
     }
 }

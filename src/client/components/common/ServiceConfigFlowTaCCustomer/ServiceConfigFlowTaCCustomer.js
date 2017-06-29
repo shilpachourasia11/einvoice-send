@@ -11,57 +11,42 @@ export default class ServiceConfigFlow2 extends React.Component {
         accepted : React.PropTypes.bool,
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired,
-        customerTermsAndConditions : React.PropTypes.string
     };
 
     static defaultProps = {
         accepted : false
     };
 
+    static contextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+    };
+
+
     constructor(props)
     {
         super(props)
 
         this.state = {
-            accepted : this.props.accepted,
-            customerTermsAndConditions : 'loading Customers Terms and Conditions...'
+            accepted : this.props.accepted
         }
     }
 
-    componentDidMount() {
-console.log(">> pdf/ServiceConfigFlowTacCustomer - componentDidMount is called.");
-console.log(">> pdf/ServiceConfigFlowTacCustomer - customerId: ", this.props.voucher.customerId);
 
-        return ajax.get('/einvoice-send/api/config/termsandconditions/' + this.props.voucher.customerId)
-            .set('Content-Type', 'application/json')   // ??? really needed?
-            .promise()
-        .then((result) => {
-            this.setState({customerTermsAndConditions : result.text});
-        })
-        .catch((error) => {
-            // TODO: error handling ???
-        })
-    }
-
-
-    componentWillReceiveProps() {
-
-    }
-
+    // TODO: Assure that the newest TermsAndConditions are loaded!
 
     render()
     {
         return (
             <div>
-                <h3>Terms and Conditions of <em>{this.props.voucher.customerId}</em></h3>  {/* ??? How to access the Customer that initiated the Onboarding*/}
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.subheader', {customerName:this.props.voucher.customerName})}</h3>
                 <div>
-                    Please check the terms and conditions below and confirm your acceptance at the end of this page.
+                    {this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.subsubheader')}
                 </div>
 
                 <hr/>
 
                 <div className="bs-callout bs-callout-info">
-                    <div dangerouslySetInnerHTML={{__html: this.state.customerTermsAndConditions}}></div>
+                    <div dangerouslySetInnerHTML={{__html: this.props.customerTermsAndConditions}}></div>
                 </div>
 
                 <hr/>
@@ -70,17 +55,17 @@ console.log(">> pdf/ServiceConfigFlowTacCustomer - customerId: ", this.props.vou
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            I read and understood the terms and conditions of Customer <em>{this.props.voucher.customerId}</em>.
+                            {this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.readTaC', {customerName:this.props.voucher.customerName})}
                         </a>
                     </label>
                 </div>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>
                 <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>
-                    Previous
+                    {this.context.i18n.getMessage('previous')}
                 </Button>
                 <Button bsStyle="primary" disabled={ !this.state.accepted } onClick={ () => this.props.onNext() }>
-                    Submit
+                    {this.context.i18n.getMessage('accept')}
                 </Button>
                 </div>
             </div>

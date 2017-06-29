@@ -10,21 +10,23 @@ module.exports.init = function(db, config)
      */
     var voucher = db.define('Voucher',
     {
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
         customerId : {
             type : DataTypes.STRING(30),
-            allowNull : false,
-            primaryKey : true
+            allowNull : false
         },
         supplierId : {
             type : DataTypes.STRING(30),
-            allowNull : false,
-            primaryKey : true
+            allowNull : false
         },
         billingModelId : {
             type : DataTypes.STRING(30),
             allowNull : true
         },
-        // ??? needed
         status : {
             type : DataTypes.STRING(100),
             allowNull : false,

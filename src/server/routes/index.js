@@ -51,6 +51,7 @@ module.exports.init = function(app, db, config)
           fileFilter: (req, file, cb) => {
             cb(null, true);
 /*
+??? Reactivate!!!
             // console.log("---> file: ", file);
             var filename = file.originalname;
             var extension = filename.substr(filename.lastIndexOf('.') + 1);
@@ -65,6 +66,7 @@ module.exports.init = function(app, db, config)
         });
 
 
+        // TODO: Move to own Routes: inchannel, inchannelcontract, voucher, ...
         // TODO: Refactoring of endpoints: Only one endpoint /api/config/inchannel
         // TODO: What about a default in dev mode???
         //
@@ -88,13 +90,13 @@ module.exports.init = function(app, db, config)
         app.get('/api/config/inchannelfile', (req, res) => this.getPdfExample(req, res));
         app.get('/api/config/inchannelfile2', (req, res) => {console.log("----------- file2"); this.getPdfExample(req, res); });
 
-        app.post('/api/filetest', upload.single('file'), (req, res) => this.addPdfExampleTest(req, res));
-        app.get('/api/filetest', (req, res) => this.getPdfExampleTest(req, res));
-        app.get('/api/listtest', (req, res) => this.listFolderTest(req, res));
-
+        app.post('/api/blob/addfile/:tenantId', upload.single('file'), (req, res) => this.addfile(req, res));
+        app.get('/api/blob/storefile/:tenantId', (req, res) => this.storeFile(req, res));
+        app.get('/api/blob/list/:tenantId', (req, res) => this.listFolder(req, res));
 
         app.get('/api/inchannel/octermsandconditions', (req, res) => this.sendOCTermsAndConditions(req, res));
-        app.get('/api/inchannel/termsandconditions/:cusomterId', (req, res) => this.sendCustomerTermsAndConditions(req, res));
+        app.get('/api/inchannel/termsandconditions/:customerId', (req, res) => this.sendCustomerTermsAndConditions(req, res));
+
 
         // InChannelContract
         // TODO: Create own express Router
@@ -120,6 +122,7 @@ module.exports.init = function(app, db, config)
 
 
         // Supplier finally approved the final step:
+        //
         app.put('/api/config/finish', (req, res) => this.approveInChannelConfig(req, res));
 
     });
@@ -218,18 +221,21 @@ console.log(">> updateInChannelConfig", supplierId);
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.updatedBy = req.opuscapita.userData('id') || req.params.updatedBy;
+            obj.changedBy = req.opuscapita.userData('id') || req.params.updatedBy || "dummy"; // ??? Remove dummy!
 
             return Api.updateInChannelConfig(supplierId, obj, true)
-                .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
-                .then(config => res.status(202).json(config));
+            .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
+            .then(config => res.status(202).json(config));
         }
         else
         {
             res.status('404').json({ message : 'This supplier has no in-channel to be updated.' });
         }
     })
-    .catch(e => res.status('400').json({ message : e.message }));
+    .catch(e => {
+        console.log("Error: ", e);
+        res.status('400').json({ message : e.message });
+    });
 }
 
 
@@ -288,7 +294,7 @@ module.exports.addPdfExample = function(req, res)
         // writeFile("./" + filename, buffer)  // for test only
 
         let tenantId = generateSupplierTenantId(supplierId);
-        let targetfilename = "einvoice/InvoiceTemplate.pdf";
+        let targetfilename = "/private/einvoice-send/InvoiceTemplate.pdf";
 console.log("******** Storing file " + filename + " at " + tenantId + " + " + targetfilename);
 
         this.blob.createStorage(tenantId)   // ??? comment by Chris    ????
@@ -318,7 +324,6 @@ console.log("******** Storing file " + filename + " at " + tenantId + " + " + ta
 
 module.exports.getPdfExample = function(req, res)
 {
-console.log(">>>>>>> getPdfExample is started");
     let supplierId = req.opuscapita.userData('supplierId');
     if (req.params.supplierId) {
         supplierId = req.params.supplierId;
@@ -327,16 +332,13 @@ console.log(">>>>>>> getPdfExample is started");
         supplierId = 'ABC';    // ??? Remove - only for test!
     }
 
-
     let tenantId = generateSupplierTenantId(supplierId)
-    let filename = "einvoice/InvoiceTemplate.pdf"
-console.log(">>>>>>>>>>1 getPdfExampmle " + tenantId, filename);
+    let filename = "/private/einvoice-send/InvoiceTemplate.pdf"
 
     this.blob.readFile(tenantId, filename)
-    .then((buffer) => {
+    .spread((buffer, fileInfo) => {
         if (buffer) {
-// console.log("Buffer: ", buffer);
-            return writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
+            writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
             res.status('200').json({ message : 'PDF file ' + filename + ' found.' });
         }
         else {
@@ -352,103 +354,20 @@ console.log(">>>>>>>>>>1 getPdfExampmle " + tenantId, filename);
 
 
 
-module.exports.addPdfExampleTest = function(req, res)
+//////////////////////////////////////////////////////////////////
+// Test methods
+//////////////////////////////////////////////////////////////////
+
+module.exports.listFolder = function(req, res)
 {
-    const file = req.file;
-    let tenantId = generateSupplierTenantId("ABC");
-    let filename = "einvoice/InvoiceTemplate.pdf";
+    let tenantId = req.params.tenantId;
+    let filename = req.query.path  || "/public/einvoice-send";
 
-    if (file && req.file.buffer) {
-        const buffer = req.file.buffer;
-        // const filename = req.file.originalname;
+    console.log("Called Listing for " + tenantId + ": " + filename);
 
-        // writeFile("./" + filename, buffer)  // for test only
-
-console.log(">>>>>>>>>>1 " + tenantId, filename);
-
-        this.blob.createStorage(tenantId)   // ??? comment by Chris    ????
-        .then((result) => {
-            return this.blob.createFile(tenantId, filename, buffer)
-            .catch((err) => {
-console.log(">>>>>>>>>>1.1 result: ", err);
-                if (err) {
-                    return this.blob.storeFile(tenantId, filename, buffer)
-                }
-            });
-        })
-        .then((result) => {
-console.log(">>>>>>>>>>1.2 result: ", result);
-            console.log("Received the file " + filename + " stored it in the blob storage.");
-            res.status('200').json({ message : 'PDF file ' + filename + ' received.' });
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status('400').json({ message : err.message });
-        });
-    }
-    else {
-      res.status('400').json({ message : 'No PDF file received.' });
-    }
-}
-
-/*
-main_1         | Buffer:  { name: 'InvoiceTemplate.pdf',
-main_1         |   extension: '.pdf',
-main_1         |   location: '/private/einvoice',
-main_1         |   path: '/private/einvoice/InvoiceTemplate.pdf',
-main_1         |   size: 183,
-main_1         |   isFile: true,
-main_1         |   isDirectory: false,
-main_1         |   lastModified: '2017-06-23T14:09:09.000Z',
-main_1         |   contentType: 'application/json',
-main_1         |   content: { content: { type: 'Buffer', data: [Object] } } }
-
- */
-module.exports.getPdfExampleTest = function(req, res)
-{
-console.log(">>>>>>> getPdfExampleTest is started");
-
-    let tenantId = generateSupplierTenantId("ABC");
-    let filename = "einvoice/InvoiceTemplate.pdf";
-    let targetfilename = "./uploadedInvoiceExample.pdf";
-
-    this.blob.readFile(tenantId, filename)
-    .then((result) => {
-        if (result) {
-// console.log("Received Buffer has a size of: ", result.content.length);
-
-console.log("Buffer: ", result);
-
-console.log("Writing buffer in file" + filename);
-            writeFile(targetfilename , result)
-            // writeFile(targetfilename , Buffer.from(result.content))
-            .then(() => {
-                res.status('200').json({ message : 'PDF file ' + filename + ' received and stored on filesystem.' });
-            })  // for test only   ???
-        }
-        else {
-            console.log("---- Error with the access of the stored blob: ", result);
-            res.status('400').json({message : 'Error with the access of the stored blob at ' + filename});
-        }
-    })
-    .catch((err) => {
-        console.log(err);
-        res.status('400').json({ message : err.message });
-    });
-}
-
-
-module.exports.listFolderTest = function(req, res)
-{
-console.log(">>>>>>> listFolderTest is started");
-
-    let tenantId = generateSupplierTenantId("ABC");
-    let filename = req.query.path;
-
+    // this.blob.listEntries(tenantId, "/private/" + filename)
     this.blob.listEntries(tenantId, filename)
     .then((entries) => {
-console.log("Result: ", entries);
-
         res.status('200').json({ files : entries});
     })
     .catch((err) => {
@@ -457,6 +376,70 @@ console.log("Result: ", entries);
     });
 }
 
+module.exports.addfile = function(req, res)
+{
+    const file = req.file;
+    let filename = file.originalname;
+    let blobtarget = "/private/" + filename;
+
+    let blobpath = req.query.targetpath;
+    if (blobpath) {
+        blobtarget = blobpath
+    }
+
+    let tenantId = req.params.tenantId;
+
+    console.log("Called AddFile for " + tenantId + " in " + filename + " to " + blobtarget);
+
+    if (file && req.file.buffer) {
+        const buffer = req.file.buffer;
+        this.blob.createStorage(tenantId)
+        .then((result) => {
+            return this.blob.createFile(tenantId, blobtarget, buffer)
+            .catch((err) => {
+                if (err) {
+                    return this.blob.storeFile(tenantId, blobtarget, buffer)
+                }
+            });
+        })
+        .then((result) => {
+            console.log("Received the file " + filename + " stored it in the blob storage.");
+            res.status('200').json({ message : 'File ' + filename + ' received and stored at ' + blobtarget });
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status('400').json({ message : err.message });
+        });
+    }
+    else {
+      res.status('400').json({ message : 'No file received.' });
+    }
+}
+
+module.exports.storeFile = function(req, res) {
+
+    let tenantId = req.params.tenantId;
+    let filename = req.query.path;
+    let targetfilename = req.query.targetpath;
+
+    console.log("Calls StoreFile for " + tenantId + " of " + filename + " to " + targetfilename);
+
+    this.blob.readFile(tenantId, filename)
+    .spread((buffer, fileinfo) => {
+        if (buffer) {
+            writeFile(targetfilename , buffer);
+            res.status('200').json({ message : 'file ' + filename + ' was stored at ' + targetfilename});
+        }
+        else {
+            console.log("---- Error with the access of the stored blob: ", buffer);
+            res.status('400').json({message : 'Error with the access of the stored blob at ' + filename});
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+        res.status('400').json({ message : err.message });
+    });
+}
 
 
 
@@ -477,21 +460,10 @@ console.log(">>>>>> Pushing the PDF example that was uploaded for supplier " + s
     // TODO: What to do???
 
     let tenantId = generateSupplierTenantId(supplierId);
-    let filename = "einvoice/InvoiceTemplate.pdf";
-console.log(">>>>>>>>>>2 " + tenantId, filename);
-
-/*
-    return this.blob.listEntries(tenantId, "einvoice")
-    .then((entries) => {
-        console.log("--- ", entries);
-        for (let val of entries) {
-            console.log("--->> ", val);
-        }
-*/
-console.log(">>>>>>>>>>3 Readfile...");
+    let filename = "/private/einvoice-send/InvoiceTemplate.pdf";
 
     return this.blob.readFile(tenantId, filename)
-    .then((buffer) => {
+    .spread((buffer, fileInfo) => {
         if (buffer) {
             writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
             res.status('200').json({ message : 'PDF file ' + filename + ' found.' });
@@ -507,26 +479,56 @@ console.log(">>>>>>>>>>3 Readfile...");
     });
 }
 
-// later, probably
+// later. Probably.
 module.exports.sendOCTermsAndConditions = function(req, res) {
 
     console.log(">> sendOCTermsAndConditions");
 
-    this.blob.readFile("", "/einvoice-send/TermsAndConditions")   // ??? Christian: tenantId -> CustomerId vs SupplierId
-    .then((result) => res.status(200).send(text))                  // ??? Christian: What is the result? A Buffer, a String, a File, ...
+    this.blob.readFile("OpusCapita", "/public/einvoice-send/TermsAndConditions")
+    .spread((result, fileInfo) => res.status(200).send(text))
     .catch((e) => res.status('400').json({message: e.message}));
 }
 
 
+/**
+ * Delivers the Customer specific terms and conditions as text
+ * @param  {[type]} req [description]
+ * @param  {[type]} res [description]
+ * @return {[type]}     [description]
+ */
 module.exports.sendCustomerTermsAndConditions = function(req, res) {
+
     let customerId = req.params.customerId;
+    let tenantId = "c-" + customerId;
+    let filename = "/public/einvoice-send/TermsAndConditions.txt";
 
-console.log(">> sendCustomerTermsAndConditions - customerId", customerId);
+console.log(">> sendCustomerTermsAndConditions - customerId: " + customerId + " -> tenantId: ", tenantId);
 
-    this.blob.readFile("c_" + customerId, "/einvoice-send/TermsAndConditions")   // ??? Christian: tenantId -> CustomerId vs SupplierId
-    .then((result) => res.status(200).send(text))                  // ??? Christian: What is the result? A Buffer, a String, a File, ...
-    .catch((e) => res.status('400').json({message: e.message}));
+    this.blob.storageExists(tenantId)
+    .then((doesExist) => {
+        if (doesExist) {
+            this.blob.readFile(tenantId, filename)
+            .spread((buffer, fileInfo) => {
+                if (buffer) {
+                    let text = buffer.toString();
+                    res.status('200').send(text)
+                }
+                else {
+                    res.status('400').json({message : 'No data found for customer ' + customerId + ' at ' + filename});
+                }
+            })
+        }
+        else {
+            // return Promise.reject(new Error('No data found for customer ' + customerId));
+            res.status('400').json({ message : 'No data found for customer ' + customerId });
+        }
+    })
+    .catch((err) => {
+        console.log(err);
+        res.status('400').json({ message : err.message });
+    });
 }
+
 
 
 ////////////////////////////////////////////////////////////////////
@@ -552,9 +554,11 @@ console.log(">> sendCustomerTermsAndConditions - customerId", customerId);
  */
 function determineBusinessPartner(req, predefinedCustomerId, predefinedSupplierId) {
 
-console.log(" - relatedTenantId", req.params.relatedTenantId);
-console.log(" - supplier", req.params.supplierId);
-console.log(" - customerId", req.params.customerId)
+console.log(" - predefinedCustomerId", predefinedCustomerId);
+console.log(" - predefinedSupplierId", predefinedSupplierId);
+console.log(" - req.params.relatedTenantId", req.params.relatedTenantId);
+console.log(" - req.params.supplier", req.params.supplierId);
+console.log(" - req.params.customerId", req.params.customerId)
 
     let supplierId = predefinedSupplierId;
     let customerId = predefinedCustomerId;
@@ -578,12 +582,13 @@ console.log(" - customerId", req.params.customerId)
 }
 
 function check4BusinessPartner(req, predefinedCustomerId, predefinedSupplierId) {
-    bp = determineBusinessPartner(req, predefinedCustomerId, predefinedSupplierId);
+
+    let bp = determineBusinessPartner(req, predefinedCustomerId, predefinedSupplierId);
 
     // only for testing ??? ???
     if (!bp.supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-        customerId = req.params.relatedTenantId;
+        bp.supplierId = 'ABC';    // ??? Remove - only for test!
+        bp.customerId = bp.customerId || predefinedCustomerId || req.params.relatedTenantId;
     }
 
 
@@ -606,11 +611,11 @@ module.exports.sendInChannelContract = function(req, res, useCurrentUser)
     try {
         let bp = check4BusinessPartner(req, req.params.customerId, req.params.supplierId);
 
-// console.log(">> sendInChannelContract - businesspartner: ", bp.supplierId, bp.customerId);
+console.log(">> sendInChannelContract - businesspartner: ", bp.supplierId, bp.customerId);
 
         return InChannelContract.get(bp.customerId, bp.supplierId)
         .then(data => {
-            (data && res.json(data)) || res.status('404').json({ message : 'No object found for the supplier-customer pair ' + bp.supplierId + "+" + bp.customerId});
+            (data && res.json(data)) || res.status('404').json({ message : 'No entry found for the supplier-customer pair ' + bp.supplierId + "+" + bp.customerId});
         })
     }
     catch(e) {
@@ -621,6 +626,8 @@ module.exports.sendInChannelContract = function(req, res, useCurrentUser)
 
 module.exports.addInChannelContract = function(req, res)
 {
+console.log(">> addInChannelContract - started! req.body: ", req.body);
+
     try {
         let bp = check4BusinessPartner(req, req.body.customerId, req.body.supplierId);
 
@@ -642,10 +649,10 @@ console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.cus
                 var obj = req.body || { };
                 obj.supplierId = bp.supplierId;
                 obj.customerId = bp.customerId;
-                obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy;
+                obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "dummy"; // ??? only for test
 
                 return InChannelContract.add(obj, true)
-                .then(icc => this.events.emit(icc, 'inChannelContract.added').then(() => icc))
+// ???                .then(icc => this.events.emit(icc, 'inChannelContract.added').then(() => icc))
                 .then(icc => res.status(200).json(icc));
             }
         });
@@ -660,6 +667,7 @@ console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.cus
 
 module.exports.updateInChannelContract = function(req, res)
 {
+console.log(">> updateInChannelContract - started! req.body: ", req.body);
     try {
         let bp = check4BusinessPartner(req, req.body.customerId, req.body.supplierId);
 
@@ -685,10 +693,10 @@ console.log(">> updateInChannelContract - businesspartner: ", bp.customerId, bp.
                 .then( () => {
                     return InChannelContract.get(bp.customerId, bp.supplierId);
                 })
-                .then((icc) => {
-                    return this.events.emit(icc, 'InChannelContract.updated')
-                    .then(() => icc);
-                })
+// ???                .then((icc) => {
+//                    return this.events.emit(icc, 'InChannelContract.updated')
+//                     .then(() => icc);
+//                 })
                 .then((icc) => {
                     res.status(200).json(icc);
                 });
@@ -736,7 +744,8 @@ console.log(">> approveInChannelConfig", supplierId);
                 return Api.updateInChannelConfig(supplierId, obj, true)
                 .then(config => {
                     return this.events.emit(config, 'inChannelConfig.updated');
-                }).then(() => {
+                })
+                .then(() => {
                     resolve();
                 });
             }
@@ -786,28 +795,84 @@ module.exports.sendOneVoucher = function(req, res)
     try {
         let bp = determineBusinessPartner(req, null, req.params.supplierId);
 
-console.log(">> sendOneVoucher - businesspartner: ", bp.supplierId, bp.customerId);
+console.log(">> sendOneVoucher - businesspartner: ", bp.customerId, bp.supplierId);
 
         return new Promise((resolve, reject) => {
-            if (!bp.customerId && !bp.supplierId) {
-                resolve(Voucher.getOne());
-            }
-            if (!bp.customerId) {
-                resolve(Voucher.getOne(bp.supplierId));
-            }
-            else {
+            if (bp.customerId && bp.supplierId) {
                 resolve(Voucher.getOne(bp.customerId, bp.supplierId));
+            }
+            if (bp.supplierId) {
+                resolve(Voucher.getOneBySupplier(bp.supplierId));
+            }
+            else {  // only for test ???
+                resolve(Voucher.getAny());
             }
         })
         .then(data => {
-console.log(">> sendOneVoucher - data: ", data);
-            (data && res.json(data)) || res.status('404').json({ message : 'No Voucher object found for the supplier-customer pair ' + bp.supplierId + "+" + bp.customerId});
+            if (data) {
+                console.log(">> sendOneVoucher - data: ", data.dataValues);
+                (data && res.json(data)) || res.status('200').json(data);
+            }
+            else {
+                (data && res.json(data)) || res.status('404').json({ message : 'No Voucher object found for the supplier-customer pair ' + bp.supplierId + "+" + bp.customerId});
+            }
+        })
+        .catch((error) => {
+            console.log("sendOneVoucher: ", error);
+            res.status('400').json({message: error.message});
         })
     }
-    catch(e) {
-        res.status('400').json({message: e.message});
+    catch(error) {
+        res.status('400').json({message: error.message});
     }
 }
+
+
+module.exports.addVoucher = function(req, res)
+{
+console.log(">> addVoucher - req.body: ", req.body);
+    let data = req.body;
+    let customerId = data.customerId;
+    let supplierId = data.supplierId;
+
+    if (!supplierId) {
+        res.status('400').json({message: 'A supplierId is needed to create a Voucher.'});
+    }
+    if (!customerId) {
+        res.status('400').json({message: 'A customerId is needed to create a Voucher.'});
+    }
+
+    Voucher.exists(customerId, supplierId)
+    .then((exists) => {
+        if (exists) {
+            res.status('409').json({ message : 'The voucher entry for customer ' + customerId + ' and supplier ' + supplierId + ' already exist!'});
+        }
+        else {
+            data.status = data.status || "new";
+            data.createdBy = req.opuscapita.userData('id') || data.createdBy || "dummy"; // ??? only for test
+
+            return Voucher.add(data)
+            .then((voucher) => this.events.emit(voucher, 'voucher.added').then(() => voucher))
+            .then((voucher) => {
+                res.status(200).json(voucher);
+            })
+        }
+    })
+    .catch((error) => {
+        // logger.error (...)  ???
+        console.log("addVoucher error: ", error);
+        res.status('400').json({ message : error.message });
+    });
+}
+
+
+/*
+module.exports.updateVoucher = function(req, res)
+{
+... ??? ToDo
+}
+*/
+
 
 
 

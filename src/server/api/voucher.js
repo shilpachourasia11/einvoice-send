@@ -31,28 +31,30 @@ module.exports.get = function(customerId, supplierId)
     return this.db.models.Voucher.findOne(
         {where: {customerId: customerId, supplierId: supplierId}})
     .then((data) => {
-console.log(">>>>>> findOne 0: ", data);
+// console.log(">>>>>> findOne 2: ", data.dataValues);
         return data;
     });
 }
 
-module.exports.getOne = function(supplierId)  // ??? why not covered by method above?
+module.exports.getOneBySupplier = function(supplierId)  // ??? why not covered by method above?
 {
     // Try finding an existing config...
     return this.db.models.Voucher.findOne(
         {where: {supplierId: supplierId}})
     .then((data) => {
-console.log(">>>>>> findOne 1: ", data);
+// console.log(">>>>>> findOne 1: ", data.dataValues);
         return data;
     });
 }
 
-module.exports.getOne = function()  // ??? why not covered by method above?
+
+// ???  only for test ???
+module.exports.getAny = function()  // ??? why not covered by method above?
 {
     // Try finding an existing config...
     return this.db.models.Voucher.findOne()
     .then((data) => {
-console.log(">>>>>> findOne 2: ", data);
+// console.log(">>>>>> findOne 0: ", data.dataValues);
         return data;
     });
 }

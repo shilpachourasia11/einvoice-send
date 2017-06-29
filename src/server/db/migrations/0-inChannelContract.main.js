@@ -16,11 +16,10 @@ const Promise = require('bluebird');
 module.exports.up = function(db, config)
 {
     var InChannelContract = db.queryInterface.createTable('InChannelContract', {
-        id : {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
-            allowNull: false,
-            primaryKey : true
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
         },
         supplierId : {
             type : DataTypes.STRING(30),

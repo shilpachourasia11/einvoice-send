@@ -10,11 +10,10 @@ module.exports.init = function(db, config)
      */
     var InChannelContract = db.define('InChannelContract',
     {
-        id : {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
-            allowNull: false,
-            primaryKey : true
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
         },
         supplierId : {
             type : DataTypes.STRING(30),

@@ -16,6 +16,11 @@ const Promise = require('bluebird');
 module.exports.up = function(db, config)
 {
     var Voucher = db.queryInterface.createTable('Voucher', {
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
         customerId : {
             type : DataTypes.STRING(30),
             allowNull : false

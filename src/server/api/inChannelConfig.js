@@ -30,7 +30,7 @@ module.exports.getModelFromInputType = function(inputType)
             case 'pdf':
                 return this.db.models.PdfChannelConfig;
             case 'paper':
-                    return this.db.models.PdfChannelConfig;    // ??? An own Config needed???
+                return this.db.models.PaperChannelConfig;
             case 'einvoice':
                 return this.db.models.EInvoiceChannelConfig;
             case 'portal':
@@ -46,7 +46,7 @@ module.exports.getInChannelConfig = function(supplierId)
     // Try finding an existing config...
     return this.db.models.InChannelConfig.findById(supplierId).then(basicConfig =>
     {
-console.log(">> basicConfig: ", basicConfig ? basicConfig.dataValues : basicConfig);
+console.log(">>>> basicConfig: ", basicConfig ? basicConfig.dataValues : basicConfig);
 
         if(basicConfig)
         {
@@ -54,7 +54,7 @@ console.log(">> basicConfig: ", basicConfig ? basicConfig.dataValues : basicConf
             return this.getModelFromInputType(basicConfig.inputType).findById(supplierId)
             .then(extendedConfig => {
 
-console.log(">> extendedConfig: ", extendedConfig ? extendedConfig.dataValues : extendedConfig);
+console.log(">>>> extendedConfig: ", extendedConfig ? extendedConfig.dataValues : extendedConfig);
 
                 // Remove fields we do not want to output.
                 // [ 'supplierId', 'createdBy', 'changedBy', 'createdOn', 'changedOn' ].forEach(key => delete extendedConfig.dataValues[key]);
@@ -77,17 +77,17 @@ module.exports.inChannelConfigExists = function(supplierId)
     return this.db.models.InChannelConfig.findById(supplierId)
     .then(basicConfig =>
     {
-console.log(">> InChannelConfigExists - basicConfig: ", basicConfig ? basicConfig.dataValues : basicConfig);
+console.log(">>>> InChannelConfigExists - basicConfig: ", basicConfig ? basicConfig.dataValues : basicConfig);
         if(basicConfig)
         {
             // Find an extended configuration...
             // return this.getModelFromInputType(basicConfig.inputType)
             //     .findById(supplierId)
             let model = this.getModelFromInputType(basicConfig.inputType);
-console.log(">> InChannelConfigExists - model: ", model);
+console.log(">>>> InChannelConfigExists - model: ", model);
             return model.findById(supplierId)
             .then(config => {
-console.log(">> InChannelConfigExists - extendedConfig: ", config ? config.dataValues : config);
+console.log(">>>> InChannelConfigExists - " + basicConfig.inputType + ": ", config ? config.dataValues : config);
                 return config && config.supplierId === supplierId;
             });
         }
@@ -120,6 +120,8 @@ module.exports.addInChannelConfig = function(config, returnConfig)
 
 module.exports.updateInChannelConfig = function(supplierId, config, returnConfig)
 {
+console.log(">>>> updateInChannelConfig - config: ", config);
+
     var basicConfig = config;
     var extendedConfig = config.settings || { };
 
@@ -140,16 +142,56 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
 
     return this.db.models.InChannelConfig.findById(supplierId).then(existingbasicConfig =>
     {
+// console.log(">>>> updateInChannelConfig - on: ", existingbasicConfig);
         if(existingbasicConfig)
         {
+            let oldInputType = existingbasicConfig.inputType;
+            let newInputType = basicConfig.inputType || oldInputType;
+
             // Set the createdBy field as we do not accept it to be set from outside on updates.
             extendedConfig.createdBy = existingbasicConfig.createdBy;
 
             return this.db.models.InChannelConfig.update(basicConfig, { where : { supplierId : supplierId } })
-            .then(() =>
-            {
-                return this.getModelFromInputType(existingbasicConfig.inputType).upsert(extendedConfig)
-                .then(() => returnConfig ? this.getInChannelConfig(supplierId) : supplierId);
+            .then(() => {
+                // update of the inputType means
+                // if an extendedConfig of the <inputType> exists,
+                //   then update it
+                // else
+                //   1. delete possible old extendedConfig entries (PdfChannelConfig, PaperChannelConfig, ...)
+                //   2. create the required one
+                //
+
+console.log(">>>> updateInChannelConfig: update " + newInputType + ": ", extendedConfig);
+
+                let newModel = this.getModelFromInputType(newInputType);
+                return newModel.findById(supplierId)
+                .then((data) => {
+console.log(">>>> updateInChannelConfig: data to update: ", data);
+                    if (data) {
+                        return data.update(extendedConfig, { where : { supplierId : supplierId } })
+                    }
+                    else {
+                        return newModel.create(extendedConfig)
+                        .then((data) => {
+                            return this.getModelFromInputType(oldInputType).destroy({ where : { supplierId : supplierId } })
+                            .catch((e) => {
+                                console.log("Could not delete outdated " + newInputType + " Object.", e);
+                                return Promise.resolve();
+                            });
+                        })
+                    }
+                })
+                .then(() => returnConfig ? this.getInChannelConfig(supplierId) : supplierId)
+                .catch((e) => {
+                    if (e.name = 'SequelizeValidationError') {
+                        return Promise.reject(e);
+                    }
+                    else {
+console.log(">>>> updateInChannelConfig - error: ", e);
+                        // Update not possible. Create a new one and delete the old entry.
+
+                    }
+                })
             });
         }
 

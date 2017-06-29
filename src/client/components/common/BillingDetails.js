@@ -10,12 +10,12 @@ export default class BillingDetails extends React.Component {
             fontWeight:"bold"
         };
 
+        // TODO: How will billing details get structured and provided? To be defined!
         // TODO: Display details on how billing is done.
-        //       But how will billing details get structured and provided? To be defined!
         //
         if (this.props.inputType && this.props.voucher[this.props.inputType + "Enabled"]) {
             return (
-                <span style={styleFree}>FREE</span>
+                <span style={styleFree}>Free for {this.props.voucher.customerName}</span>
             );
         }
         else {
