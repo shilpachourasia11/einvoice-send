@@ -221,7 +221,7 @@ console.log(">> updateInChannelConfig", supplierId);
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.changedBy = req.opuscapita.userData('id') || req.params.updatedBy || "dummy"; // ??? Remove dummy!
+            obj.changedBy = req.opuscapita.userData('id') || req.params.changedBy || "dummy"; // ??? Remove dummy!
 
             return Api.updateInChannelConfig(supplierId, obj, true)
             .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
@@ -652,7 +652,7 @@ console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.cus
                 obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "dummy"; // ??? only for test
 
                 return InChannelContract.add(obj, true)
-// ???                .then(icc => this.events.emit(icc, 'inChannelContract.added').then(() => icc))
+                .then(icc => this.events.emit(icc, 'inChannelContract.added').then(() => icc))
                 .then(icc => res.status(200).json(icc));
             }
         });
@@ -686,17 +686,14 @@ console.log(">> updateInChannelContract - businesspartner: ", bp.customerId, bp.
                 var obj = req.body || { }
 
                 obj.supplierId = bp.supplierId;
-                obj.updatedBy = req.opuscapita.userData('id') || req.params.updatedBy;
+                obj.changedBy = req.opuscapita.userData('id') || req.params.changedBy;
                 obj.changedOn = new Date();  // ??? via db?
 
                 return InChannelContract.update(bp.customerId, bp.supplierId, obj)
                 .then( () => {
                     return InChannelContract.get(bp.customerId, bp.supplierId);
                 })
-// ???                .then((icc) => {
-//                    return this.events.emit(icc, 'InChannelContract.updated')
-//                     .then(() => icc);
-//                 })
+                .then((icc) => this.events.emit(icc, 'inChannelContract.updated').then(() => icc))
                 .then((icc) => {
                     res.status(200).json(icc);
                 });
@@ -738,13 +735,11 @@ console.log(">> approveInChannelConfig", supplierId);
             if(exists) {
                 var obj = {
                     supplierId : supplierId,
-                    updatedBy : req.opuscapita.userData('id') || "dummy",       // ??? only for test
+                    changedBy : req.opuscapita.userData('id') || "dummy",       // ??? only for test
                     status :'started'
                 };
                 return Api.updateInChannelConfig(supplierId, obj, true)
-                .then(config => {
-                    return this.events.emit(config, 'inChannelConfig.updated');
-                })
+                .then(result => this.events.emit(config, 'inChannelConfig.updated'))
                 .then(() => {
                     resolve();
                 });

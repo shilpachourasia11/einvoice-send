@@ -63,8 +63,8 @@ module.exports.getAny = function()  // ??? why not covered by method above?
 
 module.exports.add = function(data)
 {
-    delete data.updatedBy;  // ???
-    delete data.updatedOn;  // ???
+    delete data.changedBy;
+    delete data.changedOn;
     return this.db.models.Voucher.create(data);
 }
 

@@ -77,6 +77,10 @@ module.exports.inChannelConfigExists = function(supplierId)
     return this.db.models.InChannelConfig.findById(supplierId)
     .then(basicConfig =>
     {
+        return basicConfig && basicConfig.supplierId === supplierId;
+
+        // TODO: Check whether we really need a test on detailConfiguration here.
+/*
 console.log(">>>> InChannelConfigExists - basicConfig: ", basicConfig ? basicConfig.dataValues : basicConfig);
         if(basicConfig)
         {
@@ -89,9 +93,13 @@ console.log(">>>> InChannelConfigExists - model: ", model);
             .then(config => {
 console.log(">>>> InChannelConfigExists - " + basicConfig.inputType + ": ", config ? config.dataValues : config);
                 return config && config.supplierId === supplierId;
+            })
+            .catch((err) => {
+                console.log("Error - inChannelConfigExists: ", e);
+                return
             });
         }
-
+*/
         return false;
     });
 }

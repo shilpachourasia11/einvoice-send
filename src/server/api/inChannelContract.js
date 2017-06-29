@@ -38,8 +38,8 @@ module.exports.get = function(customerId, supplierId)
 
 module.exports.add = function(data)
 {
-    delete data.updatedBy;  // ???
-    delete data.updatedOn;  // ???
+    delete data.changedBy;
+    delete data.changedOn;
     return this.db.models.InChannelContract.create(data);
 }
 
