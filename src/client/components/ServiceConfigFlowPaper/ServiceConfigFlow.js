@@ -3,7 +3,7 @@ import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
 
 import ServiceConfigFlow1 from './ServiceConfigFlow1'
-import ServiceConfigFlow2 from '../common/ServiceConfigFlowTaCCustomer'
+import ServiceConfigFlow2 from '../common/ServiceConfigFlowTaCCustomer.js'
 import ServiceConfigFlow3 from './ServiceConfigFlow3'
 
 
@@ -80,7 +80,7 @@ console.log("++ updateInChannelConfig -> values: ", values);
     getInChannelContract = (customerId) => {
 console.log("++ getInChannelContract -> customerId: ", customerId);
         return ajax.get('/einvoice-send/api/config/inchannelcontract/' + customerId)
-            .set('Content-Type', 'application/json')   // ??? really needed?
+            .set('Content-Type', 'application/json')
             .promise();
     }
 

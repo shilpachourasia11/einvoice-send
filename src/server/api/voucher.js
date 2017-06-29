@@ -48,7 +48,7 @@ module.exports.getOneBySupplier = function(supplierId)  // ??? why not covered b
 }
 
 
-// ???  only for test ???
+// Only for test
 module.exports.getAny = function()  // ??? why not covered by method above?
 {
     // Try finding an existing config...

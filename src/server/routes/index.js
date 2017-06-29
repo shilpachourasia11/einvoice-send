@@ -1,4 +1,4 @@
-"byTest"'use strict'
+'use strict'
 
 const Promise = require('bluebird');
 const Multer = require('multer');
@@ -41,7 +41,7 @@ module.exports.init = function(app, db, config)
     ])
     .then(() => {
         this.events = new RedisEvents({ consul : { host : 'consul' } });
-        // this.blobclient = new BlobClient({});  ??? why does it not work for variable blobclient ???
+        // this.blobclient = new BlobClient({});  ??? why does it not work with variable name "blobclient" ???
         this.blob       = new BlobClient({});
 
         // app.use(checkContentType);  ???
@@ -50,8 +50,6 @@ module.exports.init = function(app, db, config)
           storage: Multer.memoryStorage(),
           fileFilter: (req, file, cb) => {
             cb(null, true);
-/*
-??? Reactivate!!!
             // console.log("---> file: ", file);
             var filename = file.originalname;
             var extension = filename.substr(filename.lastIndexOf('.') + 1);
@@ -61,14 +59,13 @@ module.exports.init = function(app, db, config)
             else {
               cb(null, false)
             }
-*/
           }
         });
 
 
         // TODO: Move to own Routes: inchannel, inchannelcontract, voucher, ...
         // TODO: Refactoring of endpoints: Only one endpoint /api/config/inchannel
-        // TODO: What about a default in dev mode???
+        // TODO: What about a default in dev mode?
         //
         app.get('/api/config/inchannel', (req, res) => this.sendInChannelConfig(req, res));
         app.get('/api/config/inchannel/current', (req, res) => this.sendInChannelConfig(req, res, true));
@@ -135,9 +132,6 @@ module.exports.sendInChannelConfig = function(req, res, useCurrentUser)
     if (req.params.supplierId) {
         supplierId = req.params.supplierId;
     }
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
 
 console.log(">> ", supplierId);
 
@@ -165,12 +159,6 @@ module.exports.addInChannelConfig = function(req, res, useCurrentUser)
         supplierId = req.params.supplierId;
     }
 
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
-
-    // var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.body.supplierId;
-
 console.log(">> addInChannelConfig - supplierId", supplierId);
 
     Api.inChannelConfigExists(supplierId)
@@ -184,7 +172,7 @@ console.log(">> addInChannelConfig - supplierId", supplierId);
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "byTest";  // ??? test test test!!!
+            obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy;
 
 console.log(">> addInChannelConfig - obj", obj);
 
@@ -194,7 +182,6 @@ console.log(">> addInChannelConfig - obj", obj);
         }
     })
     .catch(e => {
-        // logger.error (...)  ???
         console.log("addInChannelConfig error: ", e);
         res.status('400').json({ message : e.message });
     });
@@ -206,11 +193,6 @@ module.exports.updateInChannelConfig = function(req, res, useCurrentUser)
     if (req.params.supplierId) {
         supplierId = req.params.supplierId;
     }
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
-
-    // var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.params.supplierId;
 
 console.log(">> updateInChannelConfig", supplierId);
 
@@ -221,7 +203,7 @@ console.log(">> updateInChannelConfig", supplierId);
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.changedBy = req.opuscapita.userData('id') || req.params.changedBy || "byTest"; // ??? Remove!
+            obj.changedBy = req.opuscapita.userData('id') || req.params.changedBy;
 
             return Api.updateInChannelConfig(supplierId, obj, true)
             .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
@@ -264,11 +246,6 @@ module.exports.addPdfExample = function(req, res)
     if (req.params.supplierId) {
         supplierId = req.params.supplierId;
     }
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
-
-    supplierId = supplierId.toLowerCase();
 
     /*
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -297,7 +274,7 @@ module.exports.addPdfExample = function(req, res)
         let targetfilename = "/private/einvoice-send/InvoiceTemplate.pdf";
 console.log("******** Storing file " + filename + " at " + tenantId + " + " + targetfilename);
 
-        this.blob.createStorage(tenantId)   // ??? comment by Chris    ????
+        this.blob.createStorage(tenantId)   // requested by Chris ???
         .then((result) => {
             return this.blob.createFile(tenantId, targetfilename, buffer)
             .catch((err) => {
@@ -328,9 +305,6 @@ module.exports.getPdfExample = function(req, res)
     if (req.params.supplierId) {
         supplierId = req.params.supplierId;
     }
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
 
     let tenantId = generateSupplierTenantId(supplierId)
     let filename = "/private/einvoice-send/InvoiceTemplate.pdf"
@@ -338,7 +312,7 @@ module.exports.getPdfExample = function(req, res)
     this.blob.readFile(tenantId, filename)
     .spread((buffer, fileInfo) => {
         if (buffer) {
-            writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
+            // /writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only
             res.status('200').json({ message : 'PDF file ' + filename + ' found.' });
         }
         else {
@@ -457,7 +431,7 @@ module.exports.forwardPdfExample = function(req, res, supplierId) {
 
 console.log(">>>>>> Pushing the PDF example that was uploaded for supplier " + supplierId + " to ???");
 
-    // TODO: What to do???
+    // TODO: What to do? To be defined!
 
     let tenantId = generateSupplierTenantId(supplierId);
     let filename = "/private/einvoice-send/InvoiceTemplate.pdf";
@@ -586,13 +560,6 @@ function check4BusinessPartner(req, predefinedCustomerId, predefinedSupplierId) 
 
     let bp = determineBusinessPartner(req, predefinedCustomerId, predefinedSupplierId);
 
-    // only for testing ??? ???
-    if (!bp.supplierId) {
-        bp.supplierId = 'ABC';    // ??? Remove - only for test!
-        bp.customerId = bp.customerId || predefinedCustomerId || req.params.relatedTenantId;
-    }
-
-
     if (!bp.supplierId && !bp.customerId) {
         throw new Error ("A supplierId and customerId (assigment and/or parameter ) is required.")
     }
@@ -650,7 +617,7 @@ console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.cus
                 var obj = req.body || { };
                 obj.supplierId = bp.supplierId;
                 obj.customerId = bp.customerId;
-                obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "byTest"; // ??? only for test
+                obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy;
 
                 return InChannelContract.add(obj, true)
                 .then(icc => this.events.emit(icc, 'inChannelContract.added').then(() => icc))
@@ -659,9 +626,7 @@ console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.cus
         });
     }
     catch(e) {
-        // logger.error (...)  ???
         console.log("addInChannelContract error: ", e);
-
         res.status('400').json({ message : e.message });
     };
 }
@@ -688,7 +653,7 @@ console.log(">> updateInChannelContract - businesspartner: ", bp.customerId, bp.
 
                 obj.supplierId = bp.supplierId;
                 obj.changedBy = req.opuscapita.userData('id') || req.params.changedBy;
-                obj.changedOn = new Date();  // ??? via db?
+                obj.changedOn = new Date();
 
                 return InChannelContract.update(bp.customerId, bp.supplierId, obj)
                 .then( () => {
@@ -724,9 +689,6 @@ module.exports.approveInChannelConfig = function(req, res) {
     if (req.params.supplierId) {
         supplierId = req.params.supplierId;
     }
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
 
 console.log(">> approveInChannelConfig", supplierId);
 
@@ -736,7 +698,7 @@ console.log(">> approveInChannelConfig", supplierId);
             if(exists) {
                 var obj = {
                     supplierId : supplierId,
-                    changedBy : req.opuscapita.userData('id') || "byTest",       // ??? only for test
+                    changedBy : req.opuscapita.userData('id'),
                     status :'preparation'
                 };
                 return Api.updateInChannelConfig(supplierId, obj, true)
@@ -800,9 +762,10 @@ console.log(">> sendOneVoucher - businesspartner: ", bp.customerId, bp.supplierI
             if (bp.supplierId) {
                 resolve(Voucher.getOneBySupplier(bp.supplierId));
             }
-            else {  // only for test ???
-                resolve(Voucher.getAny());
-            }
+            // only for test ???
+            // else {
+            //     resolve(Voucher.getAny());
+            // }
         })
         .then(data => {
             if (data) {
@@ -845,7 +808,7 @@ console.log(">> addVoucher - req.body: ", req.body);
         }
         else {
             data.status = data.status || "new";
-            data.createdBy = req.opuscapita.userData('id') || data.createdBy || "byTest"; // ??? only for test
+            data.createdBy = req.opuscapita.userData('id') || data.createdBy;
 
             return Voucher.add(data)
             .then((voucher) => this.events.emit(voucher, 'voucher.added').then(() => voucher))
@@ -855,7 +818,6 @@ console.log(">> addVoucher - req.body: ", req.body);
         }
     })
     .catch((error) => {
-        // logger.error (...)  ???
         console.log("addVoucher error: ", error);
         res.status('400').json({ message : error.message });
     });

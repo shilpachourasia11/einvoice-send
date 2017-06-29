@@ -29,24 +29,9 @@ export default class ServiceConfigFlow1 extends React.Component {
         i18n : React.PropTypes.object.isRequired,
     };
 
-    componentDidMount() {
-
-      console.log(">>>> ServiceConfigFlowTaCOC - props", this.props);
-
-/*
-console.log(">> pdf/ServiceConfigFlow1 - componentDidMount is called.");
-
-        return ajax.get('/einvoice-send/api/config/termsandconditions')
-            .set('Content-Type', 'application/json')   // ??? really needed?
-            .promise()
-        .then((result) => {
-            this.setState({ocTermsAndConditions : result.text});
-        })
-        .catch((error) => {
-            // TODO: error handling ???
-        })
-*/
-    }
+//    componentDidMount() {
+//      console.log(">>>> ServiceConfigFlow1 - props", this.props);
+//    }
 
     getOcHtmlTermsAndConditions() {
         // TODO: Fetch text from Server

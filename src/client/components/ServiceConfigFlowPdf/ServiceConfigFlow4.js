@@ -38,7 +38,7 @@ export default class ServiceConfigFlow5 extends React.Component {
                 </p>
 
                 <p>
-                You will receive an notification {/* TODO: ??? at <em>xxx@yyy.zz</em> */}as soon   {/* ??? How to access the email address for the notification? */}
+                You will receive an notification as soon 
                 as the required setup is done. This email will also provide
                 the email address that you have to use to send your invoices to
                 us. Please use this email address only.

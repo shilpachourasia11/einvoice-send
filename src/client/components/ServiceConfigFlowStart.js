@@ -95,7 +95,6 @@ console.log("+ setInputType - Error: ", e);
 
     render()
     {
-        // TODO: Replace with translations - maybe move the Hello area to an own component. ???
         let hello;
         let intro1;
         let intro2;
@@ -201,7 +200,6 @@ console.log("**** Voucher: ", this.props.voucher);
                 </div>
 
                 <div className="form-submit text-right">
-                    {/*<Button bsStyle="link" onClick={ () => this.props.onPrevious() }>Cancel</Button>   ??? Where to go? */}
                     <Button bsStyle="primary" disabled={ !this.state.invoiceSendingType }
                         onClick={ () =>  this.setInputType() }>
                         Save &amp; Continue

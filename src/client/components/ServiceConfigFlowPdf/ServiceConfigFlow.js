@@ -3,7 +3,7 @@ import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
 
 import ServiceConfigFlow1 from './ServiceConfigFlow1.js'
-import ServiceConfigFlow2 from '../common/ServiceConfigFlowTaCCustomer'
+import ServiceConfigFlow2 from '../common/ServiceConfigFlowTaCCustomer.js'
 import ServiceConfigFlow3 from './ServiceConfigFlow3.js'
 import ServiceConfigFlow4 from './ServiceConfigFlow4.js'
 

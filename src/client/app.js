@@ -5,7 +5,7 @@ import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
 import ServiceConfigFlowStart      from './components/ServiceConfigFlowStart.js'
-import ServiceConfigFlowFramePDF   from './components/ServiceConfigFlowPDF/ServiceConfigFlow.js'
+import ServiceConfigFlowFramePdf   from './components/ServiceConfigFlowPDF/ServiceConfigFlow.js'
 import ServiceConfigFlowFramePaper from './components/ServiceConfigFlowPaper/ServiceConfigFlow.js'
 import Layout from './layout.js';
 
@@ -57,7 +57,7 @@ console.log("-- componentWillMount is called");
 
 console.log("-- app.js - voucher result: ", result);
 
-            voucher = JSON.parse(result.text)               // ??? why result.text?
+            voucher = JSON.parse(result.text);
 
             // to simplify access of related data:
             //
@@ -77,7 +77,7 @@ console.log("-- app.js - voucher result: ", result);
         })
         .then(() => {
             return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
-                .set('Content-Type', 'application/json')   // ??? really needed?
+                .set('Content-Type', 'application/json')
                 .promise()
             .then((result) => {
 
@@ -107,34 +107,15 @@ console.log("-- app.js - TermsAndConditions: ", result);
 
     getChildContext()
     {
-        // return { i18n : new I18nManager('en', [ ]) };
-
         let i18n = new I18nManager('en', [ ])
         i18n.register("ServiceConfigFlow", require('./i18n').default);
-
         // console.log("** i18n - app.js: ", i18n);
         return { i18n : i18n};
-
-/*
-        let i18n = new I18nManager('en', [{
-          locales: ['en'],
-          messages: {
-            test: 'test',
-            ServiceConfigFlow: {
-              test: 'Hello again'
-            }
-          }
-        }]);
-
-        console.log("i18n: ", i18n);
-
-        return i18n;
-*/
     }
 
 
     getVoucher = () => {
-        return ajax.get('/einvoice-send/api/config/voucher/')  // !!! ??? will search for one voucher depending on your assignment
+        return ajax.get('/einvoice-send/api/config/voucher/')
             .set('Content-Type', 'application/json')
             .promise();
     }
@@ -165,10 +146,6 @@ console.log(">> navigate2Flow is called!");
 
     render()
     {
-        console.log("props: ", this.props);    // ???
-//        const query = this.props.location.query;
-//        console.log("query.supplierId = ", query.supplierId);
-
         return (
             <Router history={ hashHistory } ref={el => {
                 this.history = el && el.props && el.props.history;
