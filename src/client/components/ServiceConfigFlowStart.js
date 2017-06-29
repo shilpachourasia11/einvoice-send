@@ -4,7 +4,7 @@ import { Redirect } from 'react-router';
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
-import BillingDetails from '../common/BillingDetails'
+import BillingDetails from './common/BillingDetails'
 
 
 // A workaround to prevent a browser warning about unknown properties 'active', 'activeKey' and 'activeHref'

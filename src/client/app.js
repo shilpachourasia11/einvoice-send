@@ -4,9 +4,9 @@ import { I18nManager } from 'opuscapita-i18n';
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
-import ServiceConfigFlowStart from './components/ServiceConfigFlowStart/ServiceConfigFlowStart.js'
-import ServiceConfigFlowFramePDF from './components/ServiceConfigFlowPDF/ServiceConfigFlowFrame'
-import ServiceConfigFlowFramePaper from './components/ServiceConfigFlowPaper/ServiceConfigFlowFrame'
+import ServiceConfigFlowStart      from './components/ServiceConfigFlowStart.js'
+import ServiceConfigFlowFramePDF   from './components/ServiceConfigFlowPDF/ServiceConfigFlow.js'
+import ServiceConfigFlowFramePaper from './components/ServiceConfigFlowPaper/ServiceConfigFlow.js'
 import Layout from './layout.js';
 
 

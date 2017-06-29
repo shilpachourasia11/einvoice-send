@@ -453,7 +453,7 @@ module.exports.storeFile = function(req, res) {
  * @param  {[type]} res [description]
  * @return {Promise} [Promise]{@link http://bluebirdjs.com/docs/api-reference.html}
  */
-module.exports.forwardPdfExample = function(supplierId) {
+module.exports.forwardPdfExample = function(req, res, supplierId) {
 
 console.log(">>>>>> Pushing the PDF example that was uploaded for supplier " + supplierId + " to ???");
 
@@ -739,7 +739,7 @@ console.log(">> approveInChannelConfig", supplierId);
                     status :'started'
                 };
                 return Api.updateInChannelConfig(supplierId, obj, true)
-                .then(result => this.events.emit(config, 'inChannelConfig.updated'))
+                .then(config => this.events.emit(config, 'inChannelConfig.updated'))
                 .then(() => {
                     resolve();
                 });
@@ -750,7 +750,7 @@ console.log(">> approveInChannelConfig", supplierId);
         })
     })
     .then(() => {
-        return this.forwardPdfExample(supplierId);
+        return this.forwardPdfExample(req, res, supplierId);
     })
     .then(() => {
         res.status(200);

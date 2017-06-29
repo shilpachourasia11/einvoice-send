@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
-// import ServiceConfigFlow1 from '../../common/ServiceConfigFlowTaCOC'
-import ServiceConfigFlow1 from '../ServiceConfigFlow1'
-import ServiceConfigFlow2 from '../../common/ServiceConfigFlowTaCCustomer'
-import ServiceConfigFlow3 from '../ServiceConfigFlow3'
-import ServiceConfigFlow4 from '../ServiceConfigFlow4'
+
+import ServiceConfigFlow1 from './ServiceConfigFlow1'
+import ServiceConfigFlow2 from '../common/ServiceConfigFlowTaCCustomer'
+import ServiceConfigFlow3 from './ServiceConfigFlow3'
+
 
 // A workaround to prevent a browser warning about unknown properties 'active', 'activeKey' and 'activeHref'
 // in DIV element.
@@ -15,19 +15,18 @@ const MyDiv = () =>
 };
 
 
+
 export default class ServiceConfigFlow extends React.Component
 {
     static propTypes = {
         currentTab : React.PropTypes.number,
         lastValidTab : React.PropTypes.number,
-        cancelWorkflow : React.PropTypes.func,
         inputType: React.PropTypes.string
     };
 
     static defaultProps = {
         currentTab : 1,
         lastValidTab : 1,
-        cancelWorkflow : () => { alert('Canceled!'); },
         inputType: null
     };
 
@@ -38,30 +37,13 @@ export default class ServiceConfigFlow extends React.Component
         this.state = {
             currentTab : this.props.currentTab,
             lastValidTab : this.props.lastValidTab,
-            cancelWorkflow : this.props.cancelWorkflow,
             inputType: this.props.inputType
         };
-
-        this.getInChannelConfig().catch(e => this.addInChannelConfig());
     }
 
-
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-    };
-
-
-    componentWillMount() {
-console.log("-- componentWillMount of ServiceConfigFlow is called");
-console.log("-- i18n 1 - pdf/ServiceConfigFlow: ", this.context.i18n);
-        this.context.i18n.register("ServiceConfigFlow", require('./i18n').default);   // does not work! Why?  ???
-console.log("-- i18n 2 - pdf/ServiceConfigFlow: ", this.context.i18n);
-    }
-
-
-    ///////////////////////////////////////////////////
-    // Helper methods to fetch or post data from/to server
-    ///////////////////////////////////////////////////
+    ///////////////////////////////////////////////
+    // Webservice calls
+    ///////////////////////////////////////////////
 
     //
     // InChannelConfig
@@ -75,28 +57,30 @@ console.log("-- i18n 2 - pdf/ServiceConfigFlow: ", this.context.i18n);
 
     addInChannelConfig = () =>
     {
+console.log("++ addInChannelConfig -> paper/new");
         return ajax.post('/einvoice-send/api/config/inchannel')  // !!! /current
             .set('Content-Type', 'application/json')
             .send({
-                inputType : 'pdf',
+                inputType : 'paper',
                 status: 'new'
             })
             .promise();
     }
 
     updateInChannelConfig = (values) => {
+console.log("++ updateInChannelConfig -> values: ", values);
         return ajax.put('/einvoice-send/api/config/inchannel')  // !!! /current
             .set('Content-Type', 'application/json')
-            .send(values)
-            .promise();
+            .send(values).promise();
     }
 
     //
     // InChannelContract
     //
     getInChannelContract = (customerId) => {
+console.log("++ getInChannelContract -> customerId: ", customerId);
         return ajax.get('/einvoice-send/api/config/inchannelcontract/' + customerId)
-            .set('Content-Type', 'application/json')
+            .set('Content-Type', 'application/json')   // ??? really needed?
             .promise();
     }
 
@@ -107,7 +91,7 @@ console.log("++ addInChannelContract -> customerId =" + customerId + ", status =
             .set('Content-Type', 'application/json')
             .send({
                 customerId : customerId,
-                inputType : 'pdf',
+                inputType : 'paper',
                 status : status
             })
             .promise();
@@ -119,23 +103,21 @@ console.log("++ updateInChannelContract -> customerId / status: ", customerId, s
             .set('Content-Type', 'application/json')
             .send({
                 customerId : customerId,
-                inputType : 'pdf',
+                inputType : 'paper',
                 status : status
             })
             .promise();
     }
 
 
-    /////////////////////////////////////////////////////////
+    ////////////////////////////////////////
     // Events
-    /////////////////////////////////////////////////////////
+    ////////////////////////////////////////
     setApprovedOcTc = () => {
-        return this.updateInChannelConfig({'status':'approvedTC'});
+        return this.updateInChannelConfig({'status':'approved'});
     }
 
     setApprovedCustomerTc = () => {
-        // this.updateInChannelConfig({'status':'approvedCustomerTc'});  // dummy - remove!!!
-
         var customerId = this.props.voucher.customerId;
 
 console.log("** customerId: ", customerId);
@@ -162,20 +144,13 @@ console.log("InchannelConfig found: ", data);
         })
     }
 
-
     finalApprove = () => {
-console.log(" ---- 1. finalApprove");
-        return ajax.put('/einvoice-send/api/config/finish')
+        return ajax.get('/api/config/inchannel/approved')
             .promise()
         .then(() => {
-console.log(" ---- 2. finalApprove");
             this.props.finalizeFlow();
-        })
-        .catch((e) => {
-            alert ("The forwarding to the Invoice mapping team did not succeed. Please retry.")
-        })
+        });
     }
-
 
     setCurrentTab = (tabNo) => {
         this.setState({ currentTab : tabNo });
@@ -193,6 +168,7 @@ console.log(" ---- 2. finalApprove");
 
 
 
+
     render()
     {
         var visible = {
@@ -206,11 +182,11 @@ console.log(" ---- 2. finalApprove");
                         <div className="container">
                             <section className="header">
                                 <h1>
-                                    {this.context.i18n.getMessage('ServiceConfigFlow.header')}
+                                    Service Configuration Flow
                                     <div className="control-bar text-right pull-right">
                                         <Button onClick={ () => this.props.gotoStart()}>
                                             <i className="fa fa-angle-left"/>
-                                            &nbsp;&nbsp;{this.context.i18n.getMessage('ServiceConfigFlow.backToTypeSelection')}
+                                            &nbsp;&nbsp;Back to Type Selection
                                         </Button>
                                     </div>
                                 </h1>
@@ -249,7 +225,6 @@ console.log(" ---- 2. finalApprove");
 }
 
 
-
 class PaperNav extends React.Component {
     render() {
         if (this.props.customerTermsAndConditions) {
@@ -264,9 +239,6 @@ class PaperNav extends React.Component {
                         <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
                     </NavItem>
                     <NavItem eventKey={3} disabled={ this.props.currentTab < 3 }>
-                        <span className="round-tab"><i className="glyphicon glyphicon-search"/></span>
-                    </NavItem>
-                    <NavItem eventKey={4} disabled={ this.props.currentTab < 4 }>
                         <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
                     </NavItem>
                 </Nav>
@@ -281,9 +253,6 @@ class PaperNav extends React.Component {
                         <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
                     </NavItem>
                     <NavItem eventKey={2} disabled={ this.props.currentTab < 2 }>
-                        <span className="round-tab"><i className="glyphicon glyphicon-search"/></span>
-                    </NavItem>
-                    <NavItem eventKey={3} disabled={ this.props.currentTab < 3 }>
                         <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
                     </NavItem>
                 </Nav>
@@ -312,14 +281,8 @@ class PaperTabContent extends React.Component {
                     </Tab.Pane>
                     <Tab.Pane eventKey={3}>
                         <ServiceConfigFlow3
-                            onNext={ () => { this.props.setCurrentTab(4) } }
-                            onPrevious={ () => this.props.setCurrentTab(2) }
-                            voucher = {this.props.voucher}/>
-                    </Tab.Pane>
-                    <Tab.Pane eventKey={4}>
-                        <ServiceConfigFlow4
                             onNext={ () => { this.props.finalApprove() } }
-                            onPrevious={ () => this.props.setCurrentTab(3) }
+                            onPrevious={ () => this.props.setCurrentTab(2) }
                             voucher = {this.props.voucher}/>
                     </Tab.Pane>
                 </Tab.Content>
@@ -335,14 +298,8 @@ class PaperTabContent extends React.Component {
                     </Tab.Pane>
                     <Tab.Pane eventKey={2}>
                         <ServiceConfigFlow3
-                            onNext={ () => { this.props.setCurrentTab(3) } }
-                            onPrevious={ () => this.props.setCurrentTab(1) }
-                            voucher = {this.props.voucher}/>
-                    </Tab.Pane>
-                    <Tab.Pane eventKey={3}>
-                        <ServiceConfigFlow4
                             onNext={ () => { this.props.finalApprove() } }
-                            onPrevious={ () => this.setCurrentTab(2) }
+                            onPrevious={ () => this.props.setCurrentTab(1) }
                             voucher = {this.props.voucher}/>
                     </Tab.Pane>
                 </Tab.Content>
