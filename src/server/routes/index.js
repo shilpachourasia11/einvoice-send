@@ -1,4 +1,4 @@
-'use strict'
+"byTest"'use strict'
 
 const Promise = require('bluebird');
 const Multer = require('multer');
@@ -184,7 +184,7 @@ console.log(">> addInChannelConfig - supplierId", supplierId);
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "dummy";  // ??? test test test!!!
+            obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "byTest";  // ??? test test test!!!
 
 console.log(">> addInChannelConfig - obj", obj);
 
@@ -221,7 +221,7 @@ console.log(">> updateInChannelConfig", supplierId);
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.changedBy = req.opuscapita.userData('id') || req.params.changedBy || "dummy"; // ??? Remove dummy!
+            obj.changedBy = req.opuscapita.userData('id') || req.params.changedBy || "byTest"; // ??? Remove!
 
             return Api.updateInChannelConfig(supplierId, obj, true)
             .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
@@ -465,7 +465,8 @@ console.log(">>>>>> Pushing the PDF example that was uploaded for supplier " + s
     return this.blob.readFile(tenantId, filename)
     .spread((buffer, fileInfo) => {
         if (buffer) {
-            writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
+            // TODO: Up to now it is not defined what to do with the file. tbd!
+            // writeFile("./uploadedInvoiceExample.pdf" , buffer)
             res.status('200').json({ message : 'PDF file ' + filename + ' found.' });
         }
         else {
@@ -649,7 +650,7 @@ console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.cus
                 var obj = req.body || { };
                 obj.supplierId = bp.supplierId;
                 obj.customerId = bp.customerId;
-                obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "dummy"; // ??? only for test
+                obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "byTest"; // ??? only for test
 
                 return InChannelContract.add(obj, true)
                 .then(icc => this.events.emit(icc, 'inChannelContract.added').then(() => icc))
@@ -735,8 +736,8 @@ console.log(">> approveInChannelConfig", supplierId);
             if(exists) {
                 var obj = {
                     supplierId : supplierId,
-                    changedBy : req.opuscapita.userData('id') || "dummy",       // ??? only for test
-                    status :'started'
+                    changedBy : req.opuscapita.userData('id') || "byTest",       // ??? only for test
+                    status :'preparation'
                 };
                 return Api.updateInChannelConfig(supplierId, obj, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.updated'))
@@ -844,7 +845,7 @@ console.log(">> addVoucher - req.body: ", req.body);
         }
         else {
             data.status = data.status || "new";
-            data.createdBy = req.opuscapita.userData('id') || data.createdBy || "dummy"; // ??? only for test
+            data.createdBy = req.opuscapita.userData('id') || data.createdBy || "byTest"; // ??? only for test
 
             return Voucher.add(data)
             .then((voucher) => this.events.emit(voucher, 'voucher.added').then(() => voucher))

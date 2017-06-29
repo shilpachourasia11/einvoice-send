@@ -144,13 +144,23 @@ console.log("InchannelConfig found: ", data);
         })
     }
 
+
     finalApprove = () => {
-        return ajax.get('/api/config/inchannel/approved')
+console.log(" ---- 1. finalApprove");
+        return ajax.put('/einvoice-send/api/config/finish')
             .promise()
         .then(() => {
+console.log(" ---- 2. finalApprove");
             this.props.finalizeFlow();
-        });
+        })
+        .catch((e) => {
+            alert ("The forwarding to the Invoice mapping team did not succeed. Please retry.")
+        })
     }
+
+
+
+
 
     setCurrentTab = (tabNo) => {
         this.setState({ currentTab : tabNo });
