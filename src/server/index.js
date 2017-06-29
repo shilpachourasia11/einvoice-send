@@ -8,6 +8,8 @@ const db = require('ocbesbn-db-init'); // Database
 // See web server: https://github.com/OpusCapitaBusinessNetwork/web-init
 db.init({
     mode : db.Mode.Dev,
+    retryTimeout : 2500,
+    retryCount : 10,
     consul : {
         host : 'consul'
     },

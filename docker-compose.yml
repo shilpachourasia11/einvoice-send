@@ -10,6 +10,9 @@ services:
     labels:
       SERVICE_NAME: 'einvoice-send'
       SERVICE_TAGS: 'external'
+      SERVICE_3007_CHECK_HTTP: '/api/health/check'
+      SERVICE_3007_CHECK_INTERVAL: '15s'
+      SERVICE_3007_CHECK_TIMEOUT: '3s'
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
