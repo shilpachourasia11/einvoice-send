@@ -20,35 +20,44 @@ export default class ServiceConfigFlow5 extends React.Component {
         }
     }
 
+    static contextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+    };
+
+
     render()
     {
         return (
             <div>
-                <h3>Next Steps</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Paper.Approve.header')}</h3>
 
                 <p>
-                All required steps from your side are done.
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.Approve.subheader')}
                 </p>
 
                 <p>
-                Please send your invoices to
-                <br/>
-                <br/>
-                OpusCapita
-                <br/>
-                Lindemannstraße 57
-                <br/>
-                44137 Dortmund
-                <br/>
-                Germany
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.Approve.text1')}
+{/*                 <br/>
+                    OpusCapita
+                    <br/>
+                    Lindemannstraße 79
+                    <br/>
+                    44137 Dortmund
+                    <br/>
+                    Germany
+*/}
+                </p>
+
+                <p>
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.Approve.text2')}
                 </p>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>
                     <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>
-                        Previous
+                        {this.context.i18n.getMessage('previous')}
                     </Button>
                     <Button bsStyle="primary" onClick={ () => this.props.onNext() }>
-                        Submit
+                        {this.context.i18n.getMessage('accept')}
                     </Button>
                 </div>
             </div>

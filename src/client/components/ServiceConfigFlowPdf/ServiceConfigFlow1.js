@@ -15,11 +15,6 @@ export default class ServiceConfigFlow1 extends React.Component {
         accepted : false
     };
 
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-    };
-
-
     constructor(props)
     {
         super(props)
@@ -29,6 +24,10 @@ export default class ServiceConfigFlow1 extends React.Component {
             ocTermsAndConditions : 'loading OpusCapita Terms and Conditions...'
         }
     }
+
+    static contextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+    };
 
 //    componentDidMount() {
 //      console.log(">>>> ServiceConfigFlow1 - props", this.props);
@@ -84,19 +83,14 @@ export default class ServiceConfigFlow1 extends React.Component {
             <div>
                 <h3>{this.context.i18n.getMessage('congratulations')}</h3>
                 <div>
-                    You have successfully registered on behalf of {this.props.voucher.customerName}.
-                    Please read through the following prerequisites and requirements and accept the
-                    terms in order to send your first invoice in PDF-format by E-Mail.
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.subheader', {customer : this.props.voucher.customerName})}
                 </div>
 
                 <hr/>
 
                 <div className="bs-callout bs-callout-info">
                     <div>
-                        Email Invoice Digitizing enables {this.props.voucher.customerName} to receive
-                        invoices as email attachments. OpusCapita has therefor allocated an email
-                        address per buyer unit. The address will have the following format:
-                        [customerId].FI.P.101234-3@docinbound.com
+                        {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.intro', {customer : this.props.voucher.customerName})}
                     </div>
                     <br/>
                     <div dangerouslySetInnerHTML={this.getOcHtmlTermsAndConditions()} />

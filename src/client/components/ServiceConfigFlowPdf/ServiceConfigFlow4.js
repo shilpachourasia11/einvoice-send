@@ -20,36 +20,35 @@ export default class ServiceConfigFlow5 extends React.Component {
         }
     }
 
+    static contextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+    };
+
+
     render()
     {
         return (
             <div>
-                <h3>Next Steps</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Approve.header')}</h3>
 
                 <p>
-                All required steps from your side are done.
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Approve.subheader')}
                 </p>
 
                 <p>
-                Now that you have uploaded the invoice example, we will setup
-                the automated processing of your invoices.
-                <br/>
-                Usually this will take <em>X</em> days.
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Approve.text1')}
                 </p>
 
                 <p>
-                You will receive an notification as soon 
-                as the required setup is done. This email will also provide
-                the email address that you have to use to send your invoices to
-                us. Please use this email address only.
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Approve.text2')}
                 </p>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>
                     <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>
-                        Previous
+                        {this.context.i18n.getMessage('previous')}
                     </Button>
                     <Button bsStyle="primary" onClick={ () => this.props.onNext() }>
-                        Submit
+                        {this.context.i18n.getMessage('accept')}
                     </Button>
                 </div>
             </div>

@@ -17,11 +17,6 @@ export default class ServiceConfigFlow2 extends React.Component {
         accepted : false
     };
 
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-    };
-
-
     constructor(props)
     {
         super(props)
@@ -30,6 +25,11 @@ export default class ServiceConfigFlow2 extends React.Component {
             accepted : this.props.accepted
         }
     }
+
+
+    static contextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+    };
 
 
     // TODO: Assure that the newest TermsAndConditions are loaded!

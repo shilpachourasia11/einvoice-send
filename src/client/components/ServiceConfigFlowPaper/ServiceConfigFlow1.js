@@ -80,9 +80,7 @@ export default class ServiceConfigFlow1 extends React.Component {
             <div>
                 <h3>{this.context.i18n.getMessage('congratulations')}</h3>
                 <div>
-                    You have successfully registered on behalf of {this.props.voucher.customerName}.
-                    Please read through the following prerequisites and requirements and accept the
-                    terms in order to send your first paper- invoice to our global digitizing (scanning) service.
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.subheader', {customer : this.props.voucher.customerName})}
                 </div>
 
                 <hr/>

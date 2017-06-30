@@ -733,20 +733,23 @@ console.log(">> approveInChannelConfig", supplierId);
     return new Promise((resolve, reject) => {
         Api.inChannelConfigExists(supplierId)
         .then(exists => {
+// console.log(">> approveInChannelConfig - exists: ", exists);
             if(exists) {
                 var obj = {
                     supplierId : supplierId,
                     changedBy : req.opuscapita.userData('id') || "byTest",       // ??? only for test
-                    status :'preparation'
+                    status : 'activated'   // 'preparation'
                 };
                 return Api.updateInChannelConfig(supplierId, obj, true)
                 .then(config => {
+// console.log(">> approveInChannelConfig - update done: ", config);
                     return this.events.emit(config, 'inChannelConfig.updated');
                 })
-                .then(() => {
+                // .then(() => {
+                // console.log(">> approveInChannelConfig - emit done.");
                     // return this.forwardPdfExample(req, res, supplierId); - for inputType = pdf
-                    resolve();
-                })
+                //    return Promise.resolve();
+                //})
                 .catch((error) => {
                     console.log("An error occured: ", error);
                     res.status('400').json({ message : error.message })
@@ -756,9 +759,10 @@ console.log(">> approveInChannelConfig", supplierId);
                 reject();
             }
         })
+        .then(() => resolve());
     })
     .then(() => {
-        res.status(200);
+        res.status(200).send();
     })
     .catch(e => {
         // logger.error

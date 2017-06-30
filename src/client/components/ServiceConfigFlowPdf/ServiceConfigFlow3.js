@@ -26,6 +26,11 @@ export default class ServiceConfigFlow3 extends React.Component {
         };
     }
 
+    static contextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+    };
+
+
     onFileDrop = function(e)
     {
         e.preventDefault();
@@ -90,23 +95,20 @@ export default class ServiceConfigFlow3 extends React.Component {
     {
         return (
             <div>
-                <h3>Invoice PDF Example</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Upload.header')}</h3>
 
                 <div className="bs-callout bs-callout-info">
-                    <h4 id="callout-progress-csp">Drop your invoice example PDF below</h4>
+                    <h4 id="callout-progress-csp">{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Upload.subheader')}</h4>
 
-                    In order to provide a proper mapping of your invoices, we need an example PDF. All required data has to be provided in the example.
-                    <br/>
-                    Please upload a proper example PDF in the Drag &#39;n&#39; Drop section below.
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Upload.intro')}
                 </div>
 
                 <form className="form-horizontal">
-
                     <section className="oc-drag-and-drop">
                         <div className="drag-and-drop-canvas text-center" id="file-upload" onDragOver={ e => e.preventDefault() } onDrop={ e => this.onFileDrop(e) }>
-                            <h2>Please drop your PDF Example here.</h2>
+                            <h2>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Upload.dropHere')}</h2>
                             {/* TODO: <h4>or <a href="#">browse</a> for a file to upload.</h4> */}
-                            <h4>Uploaded: {this.state.filename} </h4>
+                            <h4>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Upload.uploaded')} {this.state.filename} </h4>
                         </div>
                     </section>
 
@@ -115,9 +117,11 @@ export default class ServiceConfigFlow3 extends React.Component {
                 <br/>
 
                 <div className="form-submit text-right">
-                    <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>Previous</Button>
+                    <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>
+                        {this.context.i18n.getMessage('previous')}
+                    </Button>
                     <Button bsStyle="primary" disabled={ !this.state.hasValidFile } onClick={ () => this.props.onNext() }>
-                        Save &amp; Continue
+                        {this.context.i18n.getMessage('accept')}
                     </Button>
                 </div>
             </div>
