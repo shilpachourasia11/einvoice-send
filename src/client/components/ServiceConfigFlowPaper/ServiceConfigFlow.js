@@ -41,6 +41,12 @@ export default class ServiceConfigFlow extends React.Component
         };
     }
 
+
+    static contextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+    };
+
+
     ///////////////////////////////////////////////
     // Webservice calls
     ///////////////////////////////////////////////
@@ -194,11 +200,11 @@ console.log(" ---- 2. finalApprove");
                         <div className="container">
                             <section className="header">
                                 <h1>
-                                    Service Configuration Flow
+                                    {this.context.i18n.getMessage('ServiceConfigFlow.header')}
                                     <div className="control-bar text-right pull-right">
                                         <Button onClick={ () => this.props.gotoStart()}>
                                             <i className="fa fa-angle-left"/>
-                                            &nbsp;&nbsp;Back to Type Selection
+                                            &nbsp;&nbsp;{this.context.i18n.getMessage('ServiceConfigFlow.backToTypeSelection')}
                                         </Button>
                                     </div>
                                 </h1>

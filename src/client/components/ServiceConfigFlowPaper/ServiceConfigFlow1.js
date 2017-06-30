@@ -38,11 +38,11 @@ export default class ServiceConfigFlow1 extends React.Component {
         // TODO: Language dependent determination of the terms and conditions
         return {__html: `
             In order to use our Service the paper invoices needs to be directed to the OpusCapita production
-            facilities. A unique [Customer] ID per buyer unit is required. Every invoice must show correct
-            invoicing address and with sufficient [Customer] ID in the address field. If correct buyer cannot
-            be identified, a copy of paper invoice will be rejected and forward to the [[Customer]] via email.
-            The unique [Customer] ID is mandatory data and must be found on the invoice. Without this data it
-            cannot be guaranteed that the invoice can be transferred to the [Customer] system.
+            facilities. A unique Customer ID per buyer unit is required. Every invoice must show correct
+            invoicing address and with sufficient Customer ID in the address field. If correct buyer cannot
+            be identified, a copy of paper invoice will be rejected and forward to the Customer via email.
+            The unique Customer ID is mandatory data and must be found on the invoice. Without this data it
+            cannot be guaranteed that the invoice can be transferred to the Customer system.
             Header/footer data has to be shown in the header/footer level and in understandable form i.e.
             header/footer information will not be searched in invoice specification level nor appendixes.
             Following header/footer data will be delivered in Service. If a mandatory field is missing necessary
@@ -62,12 +62,12 @@ export default class ServiceConfigFlow1 extends React.Component {
                         <li>In such case, OpusCapita add an informative letter to the scanned invoice, i.e. Paper invoice arrived with materials unsuitable for digitizing. </li>
                     </ul>
                 <li>Invoices with formats larger than A4 but up to A3, and smaller than A5 may need manual operating actions in order to be processed. </li>
-                <li>Documents other than invoices i.e. statements, as well as invoices that cannot be optically read due to reasons like torn, heavily damaged or unreadable documents and documents that exceed the size are forwarded to one [[Customer]] address </li>
+                <li>Documents other than invoices i.e. statements, as well as invoices that cannot be optically read due to reasons like torn, heavily damaged or unreadable documents and documents that exceed the size are forwarded to one Customer address </li>
                 <li>Advertisements, customer magazines, pricelists, brochures, and invoice copies are eliminated from the process and destroyed.</li>
-                <li>Parcels sent to the invoicing address will be returned to the Sender and all related cost will be charged to the [[Customer]].</li>
-                <li>If OpusCapita receives letters which are not addressed to the [[Customer]] they will be returned back to local mail provider. </li>
+                <li>Parcels sent to the invoicing address will be returned to the Sender and all related cost will be charged to the Customer.</li>
+                <li>If OpusCapita receives letters which are not addressed to the Customer they will be returned back to local mail provider. </li>
                 <li>Credit invoices and copies of invoices (without receiving the original invoices) will be processed as an invoice. </li>
-                <li>Payment reminders is rejected and returned to the [[Customer]] as non-valid document type</li>
+                <li>Payment reminders is rejected and returned to the Customer as non-valid document type</li>
             </ul>
             `
         };
@@ -80,9 +80,7 @@ export default class ServiceConfigFlow1 extends React.Component {
             <div>
                 <h3>{this.context.i18n.getMessage('congratulations')}</h3>
                 <div>
-                    You have successfully registered on behalf of {this.props.voucher.customerName}.
-                    Please read through the following prerequisites and requirements and accept the
-                    terms in order to send your first paper- invoice to our global digitizing (scanning) service.
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.subheader', {customer : this.props.voucher.customerName})}
                 </div>
 
                 <hr/>
