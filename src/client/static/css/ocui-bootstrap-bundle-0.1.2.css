@@ -6461,9 +6461,12 @@ fieldset[disabled] .form-control {
 }
 .oc-radio input {
   width: 1.6em;
-  visibility: hidden;
   margin-top: -10px;
   margin-bottom: -10px;
+}
+@media screen and (-webkit-min-device-pixel-ratio:0)
+{
+.oc-radio input {visibility: hidden;}
 }
 .oc-radio input:before {
   visibility: visible;
@@ -6743,7 +6746,6 @@ footer .release-info {
 
 .oci-rocket:before {
   content: "\e31";
-  margin-left: 20%;
 }
 .oci-boat:before {
   content: "\e32";
@@ -6756,7 +6758,6 @@ footer .release-info {
 }
 .oci-support:before {
   content: "\e34";
-  margin-left: 20%;
 }
 .oci-order-v2:before {
   content: "\e29";
