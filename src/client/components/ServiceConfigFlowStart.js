@@ -66,8 +66,11 @@ export default class ServiceConfigFlowStart extends React.Component
 
         var data = {
             inputType: this.state.invoiceSendingType,
-            status: 'new'
+            status: 'new',
+            voucherId: this.props.voucher.voucherId
         };
+
+console.log("+ setInputType: ", data);
 
         return new Promise((resolve, reject) => {
             return this.updateInChannelConfig(data)

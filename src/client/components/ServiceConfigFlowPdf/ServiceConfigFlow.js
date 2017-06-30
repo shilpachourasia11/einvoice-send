@@ -41,8 +41,6 @@ export default class ServiceConfigFlow extends React.Component
             cancelWorkflow : this.props.cancelWorkflow,
             inputType: this.props.inputType
         };
-
-        this.getInChannelConfig().catch(e => this.addInChannelConfig());
     }
 
 
@@ -72,7 +70,8 @@ export default class ServiceConfigFlow extends React.Component
             .set('Content-Type', 'application/json')
             .send({
                 inputType : 'pdf',
-                status: 'new'
+                status: 'new',
+                voucherId: this.props.voucher.voucherId
             })
             .promise();
     }
@@ -101,7 +100,8 @@ console.log("++ addInChannelContract -> customerId =" + customerId + ", status =
             .send({
                 customerId : customerId,
                 inputType : 'pdf',
-                status : status
+                status : status,
+                voucherId: this.props.voucher.voucherId
             })
             .promise();
     }

@@ -30,6 +30,10 @@ module.exports.init = function(db, config)
             allowNull : false,
             defaultValue : 'new'
         },
+        voucherId: {
+            type: DataTypes.INTEGER,
+            allowNull : true
+        },
         createdBy : {
             type : DataTypes.STRING(60),
             allowNull : false

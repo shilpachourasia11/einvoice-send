@@ -57,12 +57,13 @@ export default class ServiceConfigFlow extends React.Component
 
     addInChannelConfig = () =>
     {
-console.log("++ addInChannelConfig -> paper/new");
+console.log("++ addInChannelConfig -> paper/new - VoucherId: ", this.props.voucher);
         return ajax.post('/einvoice-send/api/config/inchannel')  // !!! /current
             .set('Content-Type', 'application/json')
             .send({
                 inputType : 'paper',
-                status: 'new'
+                status: 'new',
+                voucherId: this.props.voucher.voucherId
             })
             .promise();
     }
@@ -92,7 +93,8 @@ console.log("++ addInChannelContract -> customerId =" + customerId + ", status =
             .send({
                 customerId : customerId,
                 inputType : 'paper',
-                status : status
+                status : status,
+                voucherId: this.props.voucher.voucherId
             })
             .promise();
     }
