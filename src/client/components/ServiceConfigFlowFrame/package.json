@@ -1,6 +1,0 @@
-{
-  "name": "ServiceConfigFlow",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./ServiceConfigFlow.js"
-}

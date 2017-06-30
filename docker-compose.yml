@@ -7,6 +7,7 @@ services:
      - registrator
      - redis
      - nginx
+##     - blob
     labels:
       SERVICE_NAME: 'einvoice-send'
       SERVICE_TAGS: 'external'
@@ -49,6 +50,26 @@ services:
       - '8080:8080'
     depends_on:
       - consul
+
+  blob:
+    image: opuscapita/blob:dev
+    depends_on:
+     - mysql
+     - consul
+     - registrator
+    labels:
+      SERVICE_NAME: 'blob'
+    extra_hosts:
+     - 'consul:${HOST_IP}'
+    environment:
+      HOST_IP: ${HOST_IP}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      BLOB_KEY : ${BLOB_KEY}
+      BLOB_ACCOUNT: ${BLOB_ACCOUNT}
+    ports:
+     - '3012:3012'
+    command: "npm run dev"
 
   registrator:
     image: gliderlabs/registrator

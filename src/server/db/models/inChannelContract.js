@@ -6,16 +6,22 @@ const DataTypes = require('sequelize');
 module.exports.init = function(db, config)
 {
     /**
-     * Data model representing an invoice send configuration.
-     * @class InvoiceSendConfig
+     * Data model representing an inChannelContract between a supplier and a customer.
      */
-    var InChannelConfig = db.define('InChannelConfig',
-    /** @lends InvoiceSendConfig */
+    var InChannelContract = db.define('InChannelContract',
     {
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
         supplierId : {
             type : DataTypes.STRING(30),
-            allowNull : false,
-            primaryKey : true
+            allowNull : false
+        },
+        customerId : {
+            type : DataTypes.STRING(30),
+            allowNull : false
         },
         billingModelId : {
             type : DataTypes.STRING(30),
@@ -25,6 +31,7 @@ module.exports.init = function(db, config)
             type : DataTypes.STRING(30),
             allowNull : true
         },
+        // new, approved, inWork, activated
         status : {
             type : DataTypes.STRING(100),
             allowNull : false,
