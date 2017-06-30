@@ -49,6 +49,9 @@ export default class ServiceConfigFlow1 extends React.Component {
             actions is shown in the table below.
             <br/>
             <br/>
+            <img src="static/img/InvoiceActionTable.jpg">
+            <br/>
+            <br/>
             Prerequisites for receiving of paper documents for invoice digitizing (scanning)
             <ul/>
                 <li>The default size for scanned documents is A4.</li>

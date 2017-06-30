@@ -11,19 +11,19 @@ export default {
         intro2 : "Bitte bestimmen Sie unten, wie Sie Ihre Rechnungen bereitstellen wollen.",
         helloWithoutCustomer: "Entschuldigung, für Sie liegt keine Einladung (Voucher) vor.",
         intro1WithoutCustomer: "Bitte kontaktieren Sie Ihren Kunden für eine Einladung.",
-        freeFor: "Frei for {customer}",
+        freeFor: "Frei für {customer}",
 
         eInvoice: "eInvoice",
-        eInvoiceDesc: "Connect with your existing service provider for e-invoicing by simply choose your operator from our partner list and we set up your connection in no time.",
+        eInvoiceDesc: "Wählen Sie die passende E-Invoicing-Option und wir werden die Verbindung für Sie aufsetzen.",
 
         pdf : "PDF per Email",
-        pdfDesc: "By sending your invoice as PDF attached to an email you can easily submit your invoice. Continue registration and Read more under option PDF by email in order to proceed.",
+        pdfDesc: "Sie möchten Ihre Rechnung als Anhang einer E-Mail verschicken? Kein Problem. In der Vervollständigung der Registrierung finden Sie mehr Informationen hierzu.",
 
         supplierPortal : "Lieferanten Portal",
-        supplierPortalDesc: "By manual key in your invoice data you can easily submit your invoice in the correct format. Continue registration and Read more under option Supplier Portal in order to proceed.",
+        supplierPortalDesc: "Sie können Rechnungnen per manueller Eingabe der notwendigen Daten hinterlegen.",
 
         paper : "Papierrechnung",
-        paperDesc: "It is still possible to send paper invoices. Continue registration and read more under option Paper Invoice in order to proceed."
+        paperDesc: "So gewünscht, können Sie auch Papierrechnungen verschicken. Lesen Sie mehr dazu in der Registrierung."
     },
 
     ServiceConfigFlow : {
@@ -37,31 +37,31 @@ export default {
 
             Upload: {
                 header: "PDF Beispiel einer Rechnung",
-                subheader: "Drop your invoice example PDF below",
-                intro: "In order to provide a proper mapping of your invoices, we need an example PDF. All required data has to be provided in the example.<br/>Please upload a proper example PDF in the Drag & Drop section below.",
-                dropHere: "Please drop your PDF Example here.",
-                uploaded: "Uploaded:"
+                subheader: "Legen Sie Ihre PDF-Beispieldatei unten ab.",
+                intro: "Um ein passendes Mapping für Sie zu hinterlegen, benötigen wir von Ihnen eine Beispielrechnung. Im Rahmen der Registrierung laden Sie bitte eine entsprechende Datei hoch.",
+                dropHere: "Bitte legen Sie Ihre PDF-Beispieldatei hier ab.",
+                uploaded: "Hochgeladen:"
             },
             Approve: {
-                header: "Next Steps",
-                subheader: "All required steps from your side are done.",
-                text1: "Now that you have uploaded the invoice example, we will setup the automated processing of your invoices. Usually this will take about 3 days.",
-                text2: "You will receive an notification as soon as the required setup is done. This email will also provide the email address that you have to use to send your invoices to us. Please use this email address only."
+                header: "Die nächsten Schritte",
+                subheader: "Sie haben uns alle notwendigen Daten bereitgestellt.",
+                text1: "Nun, da Sie uns Ihre Beispieldatei bereitgestellt haben, werden wir die automatische Verarbeitung vorbereiten.",
+                text2: "Sie werden eine Nachricht erhalten, sobald das System für Sie eingerichtet ist. Sie erhalten von uns die E-Mail-Adresse, an welche Sie die Rechnungen zu schicken haben. Bitte verwenden Sie nur diese E-Mail-Adresse."
             }
         },
         Paper:{
             subheader: "You have successfully registered on behalf of {customer}. Please read through the following prerequisites and requirements and accept the terms in order to send your first paper- invoice to our global digitizing (scanning) service.",
             Approve: {
-                header: "Nächste Schritte",
-                subheader: "All required steps from your side are done.",
-                text1: "You will receive an notification as soon as the required setup is done. This email will also provide the email address that you have to use to send your invoices to us. Please use this email address only.",
+                header: "Die nächsten Schritte",
+                subheader: "Sie haben uns alle notwendigen Daten bereitgestellt.",
+                text1: "Sie erhalten von uns eine Benachrichtigung, sobald die Vorbereitungen abgeschlossen sind. In dieser E-Mail finden Sie die Adresse für den E-Mail-Versand der Papierrechnungen. Bitte verwenden Sie nur diese Adresse.",
                 text2: ""
             }
         },
         CustomerTaC: {
-            subheader: "Terms and Conditions of {customerName}",
-            subsubheader: "Please check the terms and conditions below and confirm your acceptance at the end of this page.",
-            readTaC: "I have read and understood {customerName} terms and conditions of the service",
+            subheader: "Allgemeine Geschäftsbedingungen von {customerName}",
+            subsubheader: "Bitte prüfen Sie die Please Allgemeinen Geschäftsbedingungencheck und bestätigen diese unten auf der Seite.",
+            readTaC: "Ich habe die allgemeine Geschäftsbedingungen von {customerName} gelesen und akzeptiert.",
         }
     }
 }

@@ -41,7 +41,7 @@ export default {
             Approve: {
                 header: "Next Steps",
                 subheader: "All required steps from your side are done.",
-                text1: "Now that you have uploaded the invoice example, we will setup the automated processing of your invoices. Usually this will take about 3 days.",
+                text1: "Now that you have uploaded the invoice example, we will setup the automated processing of your invoices.",
                 text2: "You will receive an notification as soon as the required setup is done. This email will also provide the email address that you have to use to send your invoices to us. Please use this email address only."
             }
         },
@@ -50,7 +50,7 @@ export default {
             Approve: {
                 header: "Next Steps",
                 subheader: "All required steps from your side are done.",
-                text1: "You will receive an notification as soon as the required setup is done. This email will also provide the email address that you have to use to send your invoices to us. Please use this email address only.",
+                text1: "You will receive an notification as soon as the required setup is done. This email will also provide the address that you have to use for your invoices. Please use this address only.",
                 text2: ""
             }
         },
