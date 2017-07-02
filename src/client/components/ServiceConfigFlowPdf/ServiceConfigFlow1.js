@@ -36,7 +36,7 @@ export default class ServiceConfigFlow1 extends React.Component {
     getOcHtmlTermsAndConditions() {
         // TODO: Fetch text from Server
         // TODO: Language dependent determination of the terms and conditions
-        return {__html: `
+        let htmlText = `
             Following prerequisites are required from sender unit for OpusCapita to process the invoices and must therefore be followed by the email invoice sender:
             <ul>
                 <li>The email address must be entered into recipient “TO” field in the email message. Multiple email addresses are not supported in “TO”-field</li>
@@ -72,8 +72,10 @@ export default class ServiceConfigFlow1 extends React.Component {
             <br/>
             Please be aware of; that the domain is dedicated only for Invoice Digitizing services. Anyone, who knows the correct email address, can send email invoices.
             The email body text including sender and receiver information is added to the invoice and is attached to all invoices in the specific email message and processed. The Service uses spam filtering.
-            `
-        };
+            `;
+
+        let str = htmlText.replace(/\[Customer\]/g, this.props.voucher.customerName)
+        return { __html : str };
     }
 
 
@@ -83,14 +85,20 @@ export default class ServiceConfigFlow1 extends React.Component {
             <div>
                 <h3>{this.context.i18n.getMessage('congratulations')}</h3>
                 <div>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.subheader', {customer : this.props.voucher.customerName})}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.subheader',
+                        {customer : this.props.voucher.customerName})}
                 </div>
 
                 <hr/>
 
                 <div className="bs-callout bs-callout-info">
                     <div>
-                        {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.intro', {customer : this.props.voucher.customerName})}
+                        {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.intro',
+                            {customer : this.props.voucher.customerName, customerId : "<CustomerId>"})}
+                        &nbsp;
+                        <b>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.emailTemplate',
+                            {customerId : this.props.voucher.customerName})}
+                        </b>
                     </div>
                     <br/>
                     <div dangerouslySetInnerHTML={this.getOcHtmlTermsAndConditions()} />

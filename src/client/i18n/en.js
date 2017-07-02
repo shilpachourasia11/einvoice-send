@@ -11,7 +11,7 @@ export default {
         intro2 : "Please select below the way on how you want to provide invoices.",
         helloWithoutCustomer: "Sorry, we couldn't find a voucher for you.",
         intro1WithoutCustomer: "Please contact your customer for an invitation.",
-        freeFor: "Free for {customer}",
+        freeFor: "Free for you for customer {customer}",
         eInvoice: "eInvoice",
         eInvoiceDesc: "Connect with your existing service provider for e-invoicing by simply choose your operator from our partner list and we set up your connection in no time.",
         pdf : "PDF by Email",
@@ -27,9 +27,16 @@ export default {
         backToTypeSelection: "Back to Type Selection",
         readOCTaC: "I have read and understood OpusCapitas terms and conditions of the service",
 
+        CustomerTaC: {
+            subheader: "Terms and Conditions of {customerName}",
+            subsubheader: "Please check the terms and conditions below and confirm your acceptance at the end of this page.",
+            readTaC: "I have read and understood {customerName} terms and conditions of the service",
+        },
+
         Pdf:{
             subheader: "You have successfully registered on behalf of {customer}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail..",
-            intro: "Email Invoice Digitizing enables {customer} to receive invoices as email attachments. OpusCapita has therefor allocated an email address per buyer unit. The address will have the following format: [customerId].FI.P.101234-3@docinbound.com",
+            intro: "Email Invoice Digitizing enables {customer} to receive invoices as email attachments. OpusCapita has therefor allocated an email address per buyer unit. The address will have the following format:",
+            emailTemplate: "{customerId}.FI.P.101234-3@docinbound.com",
 
             Upload: {
                 header: "Invoice PDF Example",
@@ -54,10 +61,14 @@ export default {
                 text2: ""
             }
         },
-        CustomerTaC: {
-            subheader: "Terms and Conditions of {customerName}",
-            subsubheader: "Please check the terms and conditions below and confirm your acceptance at the end of this page.",
-            readTaC: "I have read and understood {customerName} terms and conditions of the service",
+        EInvoice:{
+            subheader: "You have successfully registered on behalf of {customer}. Please read carefully through the following prerequisites as well as Supplier Guideline description and accept the terms before sending your first E-invoice by using Interconnect Operator Network.",
+            Approve: {
+                header: "Next Steps",
+                subheader: "All required steps from your side are done.",
+                text1: "You will receive an notification as soon as the required setup is done.",
+                text2: ""
+            }
         }
     }
 }

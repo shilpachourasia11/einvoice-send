@@ -4,9 +4,10 @@ import { I18nManager } from 'opuscapita-i18n';
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
-import ServiceConfigFlowStart      from './components/ServiceConfigFlowStart.js'
-import ServiceConfigFlowFramePdf   from './components/ServiceConfigFlowPdf/ServiceConfigFlow.js'
-import ServiceConfigFlowFramePaper from './components/ServiceConfigFlowPaper/ServiceConfigFlow.js'
+import ServiceConfigFlowStart         from './components/ServiceConfigFlowStart.js'
+import ServiceConfigFlowFramePdf      from './components/ServiceConfigFlowPdf/ServiceConfigFlow.js'
+import ServiceConfigFlowFramePaper    from './components/ServiceConfigFlowPaper/ServiceConfigFlow.js'
+import ServiceConfigFlowFrameEInvoice from './components/ServiceConfigFlowEInvoice/ServiceConfigFlow.js'
 import Layout from './layout.js';
 
 
@@ -65,7 +66,7 @@ console.log("-- app.js - voucher result: ", result);
 
             // How will evaluation of allowed input types and billings be determined???
             // Convention: Use boolen to enable or disable the different input types:
-            voucher.eInvoiceEnabled = false; // !!! no flow ui available up to now
+            voucher.eInvoiceEnabled = true;    // new !
             voucher.pdfEnabled = true;
             voucher.supplierPortalEnabled = false; // !!! no flow ui available up to now
             voucher.paperEnabled = true;
@@ -166,6 +167,15 @@ console.log(">> navigate2Flow is called!");
                     <Route path="/paper/1" component={ () => (<ServiceConfigFlowFramePaper currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
                     <Route path="/paper/2" component={ () => (<ServiceConfigFlowFramePaper currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
                     <Route path="/paper/3" component={ () => (<ServiceConfigFlowFramePaper currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+
+
+                    <Route path="/einvoice" component={ () => (<ServiceConfigFlowFrameEInvoice currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+
+                    <Route path="/einvoice/1" component={ () => (<ServiceConfigFlowFrameEInvoice currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/einvoice/2" component={ () => (<ServiceConfigFlowFrameEInvoice currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/einvoice/3" component={ () => (<ServiceConfigFlowFrameEInvoice currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+
+
                 </Route>
             </Router>
         );

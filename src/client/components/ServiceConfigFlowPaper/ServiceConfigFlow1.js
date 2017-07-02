@@ -36,7 +36,7 @@ export default class ServiceConfigFlow1 extends React.Component {
     getOcHtmlTermsAndConditions() {
         // TODO: Fetch text from Server
         // TODO: Language dependent determination of the terms and conditions
-        return {__html: `
+        let htmlText = `
             In order to use our Service the paper invoices needs to be directed to the OpusCapita production
             facilities. A unique Customer ID per buyer unit is required. Every invoice must show correct
             invoicing address and with sufficient Customer ID in the address field. If correct buyer cannot
@@ -72,8 +72,10 @@ export default class ServiceConfigFlow1 extends React.Component {
                 <li>Credit invoices and copies of invoices (without receiving the original invoices) will be processed as an invoice. </li>
                 <li>Payment reminders is rejected and returned to the Customer as non-valid document type</li>
             </ul>
-            `
-        };
+            `;
+
+        let str = htmlText.replace(/\[Customer\]/g, this.props.voucher.customerName)
+        return { __html : str };
     }
 
 
