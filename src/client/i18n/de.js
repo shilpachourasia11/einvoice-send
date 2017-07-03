@@ -9,8 +9,8 @@ export default {
         hello : "Einladung durch Kunden {customer}",
         intro1 : "Ihr Kunde {customer} hat Sie eingeladen, um am OpusCapita Business Network teilzuhaben.",
         intro2 : "Bitte bestimmen Sie unten, wie Sie Ihre Rechnungen bereitstellen wollen.",
-        helloWithoutCustomer: "Entschuldigung, für Sie liegt keine Einladung (Voucher) vor.",
-        intro1WithoutCustomer: "Bitte kontaktieren Sie Ihren Kunden für eine Einladung.",
+        helloWithoutCustomer: "Entschuldigung, für Sie liegt aktuell Einladung (Voucher) vor.",
+        intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben: Die Generierung der Einladung benötigt einen Moment. Bitte versuchen Sie es in Kürze erneut.",
         freeFor: "Frei für {customer}",
 
         eInvoice: "eInvoice",
@@ -32,7 +32,7 @@ export default {
         readOCTaC: "Ich habe die allgemeine Geschäftsbedingungen gelesen und verstanden.",
 
         Pdf:{
-            subheader: "You have successfully registered on behalf of {customer}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail..",
+            subheader: "Sie habe sich erfolgreich für Ihren Kunden {customer} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
             intro: "Email Invoice Digitizing enables {this.props.voucher.customerName} to receive invoices as email attachments. OpusCapita has therefor allocated an email address per buyer unit. The address will have the following format: [customerId].FI.P.101234-3@docinbound.com",
 
             Upload: {
@@ -50,7 +50,7 @@ export default {
             }
         },
         Paper:{
-            subheader: "You have successfully registered on behalf of {customer}. Please read through the following prerequisites and requirements and accept the terms in order to send your first paper- invoice to our global digitizing (scanning) service.",
+            subheader: "Sie habe sich erfolgreich für Ihren Kunden {customer} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre Papierrechnung an unseren globalen Digitalisierung-Service senden.",
             Approve: {
                 header: "Die nächsten Schritte",
                 subheader: "Sie haben uns alle notwendigen Daten bereitgestellt.",
