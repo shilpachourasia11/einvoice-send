@@ -247,7 +247,7 @@ console.log(">> updateInChannelConfig", supplierId);
 
 
 function generateSupplierTenantId(suppierId) {
-    return "s-" + suppierId.toLowerCase();
+    return "s_" + suppierId;
 }
 
 
@@ -301,7 +301,9 @@ module.exports.addPdfExample = function(req, res)
         let targetfilename = "/private/einvoice-send/InvoiceTemplate.pdf";
 console.log("******** Storing file " + filename + " at " + tenantId + " + " + targetfilename);
 
-        blob.createStorage(tenantId)   // ??? comment by Chris    ????
+
+// TODO: ??? createFile(..., true) will do a createStorage directly.
+        blob.createStorage(tenantId)
         .then((result) => {
             return blob.createFile(tenantId, targetfilename, buffer)
             .catch((err) => {
@@ -339,7 +341,12 @@ module.exports.getPdfExample = function(req, res)
     let tenantId = generateSupplierTenantId(supplierId)
     let filename = "/private/einvoice-send/InvoiceTemplate.pdf"
 
-    this.blob.readFile(tenantId, filename)
+
+    let blob = new BlobClient({
+        serviceClient : req.opuscapita.serviceClient
+    });
+
+    blob.readFile(tenantId, filename)
     .spread((buffer, fileInfo) => {
         if (buffer) {
             writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
