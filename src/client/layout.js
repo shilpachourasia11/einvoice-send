@@ -23,19 +23,11 @@ class Layout extends Component
         this.state = {
             i18n : new I18nManager('en', [ ]),
             locale : 'en',
-            currentUserData : { }
+            currentUserData : { },
+            dataLoaded : false
         };
 
         this.state.i18n.register('ServiceConfigFlow', translations);
-    }
-
-    componentDidMount()
-    {
-        this.loadUserData().then(userData =>
-        {
-            this.setState({ currentUserData : userData });
-            this.setLocale(userData.languageId);
-        });
     }
 
     getChildContext()
@@ -74,19 +66,30 @@ class Layout extends Component
 
     render()
     {
-        return (
-            <span>
-                <SidebarMenu />
-                <section className="content">
-                    <HeaderMenu currentUserData={ this.state.currentUserData } />
-                    <div className="container-fluid" style={{ paddingLeft: '250px' }}>
-                        <div>
-                            { this.props.children }
+        if(this.state.dataLoaded)
+        {
+            return (
+                <span>
+                    <SidebarMenu />
+                    <section className="content">
+                        <HeaderMenu currentUserData={ this.state.currentUserData } />
+                        <div className="container-fluid" style={{ paddingLeft: '250px' }}>
+                            <div>
+                                { this.props.children }
+                            </div>
                         </div>
-                    </div>
-                </section>
-            </span>
-        );
+                    </section>
+                </span>
+            );
+        }
+        else
+        {
+            this.loadUserData().then(userData =>
+            {
+                this.setState({ currentUserData : userData, dataLoaded : true });
+                this.setLocale(userData.languageId);
+            });
+        }
     }
 }
 
