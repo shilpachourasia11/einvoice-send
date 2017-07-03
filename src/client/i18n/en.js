@@ -11,13 +11,17 @@ export default {
         intro2 : "Please select below the way on how you want to provide invoices.",
         helloWithoutCustomer: "Sorry, we couldn't find a voucher for you.",
         intro1WithoutCustomer: "If you just registered as a supplier: Voucher generation may take a minute. Please retry in a moment.",
-        freeFor: "Free for {customer}",
+        freeFor: "Free for you for {customer}",
+
         eInvoice: "eInvoice",
         eInvoiceDesc: "Connect with your existing service provider for e-invoicing by simply choose your operator from our partner list and we set up your connection in no time.",
+
         pdf : "PDF by Email",
         pdfDesc: "By sending your invoice as PDF attached to an email you can easily submit your invoice. Continue registration and Read more under option PDF by email in order to proceed.",
+
         supplierPortal : "Supplier Portal",
         supplierPortalDesc: "By manual key in your invoice data you can easily submit your invoice in the correct format. Continue registration and Read more under option Supplier Portal in order to proceed.",
+
         paper : "Paper Invoice",
         paperDesc: "It is still possible to send paper invoices. Continue registration and read more under option Paper Invoice in order to proceed."
     },
@@ -34,7 +38,7 @@ export default {
             Upload: {
                 header: "Invoice PDF Example",
                 subheader: "Drop your invoice example PDF below",
-                intro: "In order to provide a proper mapping of your invoices, we need an example PDF. All required data has to be provided in the example.<br/>Please upload a proper example PDF in the Drag & Drop section below.",
+                intro: "In order to provide a proper mapping of your invoices, we need an example PDF. All required data has to be provided in the example. Please upload a proper example PDF in the Drag & Drop section below.",
                 dropHere: "Please drop your PDF Example here.",
                 uploaded: "Uploaded:"
             },

@@ -11,7 +11,7 @@ export default {
         intro2 : "Bitte bestimmen Sie unten, wie Sie Ihre Rechnungen bereitstellen wollen.",
         helloWithoutCustomer: "Entschuldigung, für Sie liegt aktuell Einladung (Voucher) vor.",
         intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben: Die Generierung der Einladung benötigt einen Moment. Bitte versuchen Sie es in Kürze erneut.",
-        freeFor: "Frei für {customer}",
+        freeFor: "Frei für Sie für Kunde {customer}",
 
         eInvoice: "eInvoice",
         eInvoiceDesc: "Wählen Sie die passende E-Invoicing-Option und wir werden die Verbindung für Sie aufsetzen.",
@@ -33,7 +33,7 @@ export default {
 
         Pdf:{
             subheader: "Sie habe sich erfolgreich für Ihren Kunden {customer} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
-            intro: "Email Invoice Digitizing enables {this.props.voucher.customerName} to receive invoices as email attachments. OpusCapita has therefor allocated an email address per buyer unit. The address will have the following format: [customerId].FI.P.101234-3@docinbound.com",
+            intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customer} per E-Mail-Anhang bereitzustellen. OpusCapita legt dazu für Sie eine eine E-Mail-Adresse an. Die Adressen wird das Format haben:  {customerId}.FI.P.101234-3@docinbound.com",
 
             Upload: {
                 header: "PDF Beispiel einer Rechnung",
