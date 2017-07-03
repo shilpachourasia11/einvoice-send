@@ -36,7 +36,7 @@ class Layout extends Component
         return this.loadUserData().then(userData =>
         {
             this.setState({ currentUserData : userData, dataLoaded : true });
-            return this.setLocale(userData.languageId);
+            return this.setLocale(userData.languageid);
         });
     }
 
@@ -55,7 +55,7 @@ class Layout extends Component
         i18n.register('ServiceConfigFlow', translations);
 
         var currentUserData = this.state.currentUserData;
-        currentUserData.languageId = locale;
+        currentUserData.languageid = locale;
 
         this.setState({
             i18n : i18n,
@@ -78,9 +78,11 @@ class Layout extends Component
     {
         if(this.state.dataLoaded)
         {
+            var isBuyer = this.state.currentUserData.customerid && typeof this.state.currentUserData.customerid === 'string';
+
             return (
                 <span>
-                    <SidebarMenu isBuyer={ this.state.currentUserData.customerid } />
+                    <SidebarMenu isBuyer={ isBuyer } />
                     <section className="content">
                         <HeaderMenu currentUserData={ this.state.currentUserData } />
                         <div className="container-fluid" style={{ paddingLeft: '250px' }}>
