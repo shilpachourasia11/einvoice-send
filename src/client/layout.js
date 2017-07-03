@@ -27,8 +27,15 @@ class Layout extends Component
         };
 
         this.state.i18n.register('ServiceConfigFlow', translations);
+    }
 
-        this.loadUserData().then(userData => this.setState({ currentUserData : userData, locale : userData.languageId }));
+    componentDidMount()
+    {
+        this.loadUserData().then(userData =>
+        {
+            this.setState({ currentUserData : userData });
+            this.setLocale(userData.languageId);
+        });
     }
 
     getChildContext()
@@ -42,20 +49,22 @@ class Layout extends Component
 
     setLocale = (locale) =>
     {
-        let i18n = new I18nManager(locale, []);
+        var i18n = new I18nManager(locale, []);
         i18n.register('ServiceConfigFlow', translations);
 
+        var currentUserData = this.state.currentUserData;
+        currentUserData.languageId = locale;
+
         this.setState({
-            i18n: i18n,
-            locale: locale
+            i18n : i18n,
+            locale : locale,
+            currentUserData : currentUserData
         });
 
         return ajax.put('/user/users/current/profile')
             .set('Content-Type', 'application/json')
-            .send({ languageId: locale })
-            .then(data => ajax.post('/refreshIdToken').set('Content-Type', 'application/json').promise())
-            .then(() => this.loadUserData())
-            .then(userData => this.setState({ currentUserData : userData, locale : userData.languageId }));
+            .send({ languageId : locale })
+            .then(data => ajax.post('/refreshIdToken').set('Content-Type', 'application/json').promise());
     }
 
     loadUserData()
