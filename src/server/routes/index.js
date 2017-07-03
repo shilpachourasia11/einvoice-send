@@ -268,8 +268,6 @@ module.exports.addPdfExample = function(req, res)
         supplierId = 'ABC';    // ??? Remove - only for test!
     }
 
-    supplierId = supplierId.toLowerCase();
-
     /*
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     console.log(req.headers);
