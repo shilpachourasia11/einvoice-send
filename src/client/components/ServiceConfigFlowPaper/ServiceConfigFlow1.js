@@ -134,7 +134,7 @@ export default class ServiceConfigFlow1 extends React.Component {
             <div>
                 <h3>{this.context.i18n.getMessage('congratulations')}</h3>
                 <div>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.subheader', {customer : this.props.voucher.customerName})}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.subheader', {customerName : this.props.voucher.customerName})}
                 </div>
 
                 <hr/>

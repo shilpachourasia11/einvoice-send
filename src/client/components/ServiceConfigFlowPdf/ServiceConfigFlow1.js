@@ -134,14 +134,14 @@ export default class ServiceConfigFlow1 extends React.Component {
             <div>
                 <h3>{this.context.i18n.getMessage('congratulations')}</h3>
                 <div>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.subheader', {customer : this.props.voucher.customerName})}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.subheader', {customerName : this.props.voucher.customerName})}
                 </div>
 
                 <hr/>
 
                 <div className="bs-callout bs-callout-info">
                     <div>
-                        {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.intro', {customer : this.props.voucher.customerName, customerId : this.props.voucher.customerId})}
+                        {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.intro', {customerName : this.props.voucher.customerName, customerId : this.props.voucher.customerId})}
                     </div>
                     <br/>
                     <div dangerouslySetInnerHTML={this.getOcHtmlTermsAndConditions()} />

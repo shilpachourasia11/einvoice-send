@@ -43,41 +43,33 @@ export default class App extends React.Component
 
     componentWillMount() {
 
-console.log("-- componentWillMount is called");
-
-        let voucher;
-
         this.getVoucher()
         .then((result) => {    // .spread((voucher, response) => {
 
-console.log("-- app.js - voucher result: ", result);
-
-            voucher = JSON.parse(result.text);
-
-            // to simplify access of related data:
-            //
-            voucher.customerName = this.getCustomerName(voucher.customerId);
+            let voucher = JSON.parse(result.text);
+            console.log("--> app.js - received voucher: ", voucher);
 
             // How will evaluation of allowed input types and billings be determined???
-            // Convention: Use boolen to enable or disable the different input types:
+            // Convention for now: Use boolen to enable or disable the different input types:
             voucher.eInvoiceEnabled = false; // !!! no flow ui available up to now
             voucher.pdfEnabled = true;
             voucher.supplierPortalEnabled = false; // !!! no flow ui available up to now
             voucher.paperEnabled = true;
 
+            return this.getCustomer(voucher.customerId)
+            .then((customer) => {
+                voucher.customer = customer
+                voucher.customerName = (customer && customer.customerName) || voucher.customerId;
+            }).then(() => voucher);
+        })
+        .then((voucher) => {
             this.setState({voucher : voucher});
 
-            console.log("-- componentWillMount - Voucher: ", voucher);
-            console.log("-- componentWillMount - this.state.Voucher: ", this.state.voucher);
-        })
-        .then(() => {
             return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
                 .set('Content-Type', 'application/json')
                 .promise()
             .then((result) => {
-
-console.log("-- app.js - TermsAndConditions: ", result);
-
+                console.log("TermsAndConditions for customer " + voucher.customerId + ": ", result);
                 this.setState({customerTermsAndConditions : result.text});
             })
             .catch((e) => {
@@ -88,6 +80,7 @@ console.log("-- app.js - TermsAndConditions: ", result);
         .catch((e) => {
             console.log("Error determined: ", e);
 
+            // Setting voucher defaults - all options disabled:
             this.setState({
                 voucher : {
                     eInvoiceEnabled : false,
@@ -107,9 +100,13 @@ console.log("-- app.js - TermsAndConditions: ", result);
             .promise();
     }
 
-    getCustomerName = (customerId) => {
-        // TODO: Determine the customer name
-        return (customerId == null) ? "<unknown>" : customerId;
+    getCustomer = (customerId) => {
+        return ajax.get('/customers/customer/' + customerId)
+            .set('Content-Type', 'application/json')
+        .catch((e) =>  {
+            console.log("Error - No customer with Id: " + customerId + " - error: ", e);
+            return new Promise.resolve(null);
+        });
     }
 
 
