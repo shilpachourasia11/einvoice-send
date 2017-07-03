@@ -10,7 +10,7 @@ export default {
         intro1 : "Your Customer {customer} invited you to participate on the OpusCapita Business Network.",
         intro2 : "Please select below the way on how you want to provide invoices.",
         helloWithoutCustomer: "Sorry, we couldn't find a voucher for you.",
-        intro1WithoutCustomer: "Please contact your customer for an invitation.",
+        intro1WithoutCustomer: "If you just registered as a supplier: Voucher generation may take a minute. Please retry in a moment.",
         freeFor: "Free for {customer}",
         eInvoice: "eInvoice",
         eInvoiceDesc: "Connect with your existing service provider for e-invoicing by simply choose your operator from our partner list and we set up your connection in no time.",
@@ -28,7 +28,7 @@ export default {
         readOCTaC: "I have read and understood OpusCapitas terms and conditions of the service",
 
         Pdf:{
-            subheader: "You have successfully registered on behalf of {customer}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail..",
+            subheader: "You have successfully registered on behalf of {customer}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail.",
             intro: "Email Invoice Digitizing enables {customer} to receive invoices as email attachments. OpusCapita has therefor allocated an email address per buyer unit. The address will have the following format: [customerId].FI.P.101234-3@docinbound.com",
 
             Upload: {
