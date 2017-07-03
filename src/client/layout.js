@@ -28,7 +28,7 @@ class Layout extends Component
 
         this.state.i18n.register('ServiceConfigFlow', translations);
 
-        this.loadUserData().then(data => this.setState({ currentUserData : data }));
+        this.loadUserData().then(userData => this.setState({ currentUserData : userData, locale : userData.languageId }));
     }
 
     getChildContext()
