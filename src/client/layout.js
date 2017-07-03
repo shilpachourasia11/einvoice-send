@@ -46,7 +46,7 @@ class Layout extends Component
         return ajax.put('/user/users/current/profile')
             .set('Content-Type', 'application/json')
             .send({ languageId: locale })
-            .then(data => request.post('/refreshIdToken').set('Content-Type', 'application/json').promise());
+            .then(data => ajax.post('/refreshIdToken').set('Content-Type', 'application/json').promise());
     }
 
     loadUserData()
