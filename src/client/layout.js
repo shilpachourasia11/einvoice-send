@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import HeaderMenu from './components/HeaderMenu';
-import { SidebarMenu } from 'ocbesbn-react-components';
+import { SidebarMenu, HeaderMenu } from 'ocbesbn-react-components';
 
 class Layout extends Component
 {
@@ -10,7 +9,7 @@ class Layout extends Component
             <span>
                 <SidebarMenu />
                 <section className="content">
-                    <HeaderMenu/>
+                    <HeaderMenu />
                     <div className="container-fluid" style={{ paddingLeft: '250px' }}>
                         <div>
                             { this.props.children }
