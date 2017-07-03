@@ -55,7 +55,7 @@ class Layout extends Component
             .send({ languageId: locale })
             .then(data => ajax.post('/refreshIdToken').set('Content-Type', 'application/json').promise())
             .then(() => this.loadUserData())
-            .then(userData => this.setState({ currentUserData : userData }));
+            .then(userData => this.setState({ currentUserData : userData, locale : userData.languageId }));
     }
 
     loadUserData()
