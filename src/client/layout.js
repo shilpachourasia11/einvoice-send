@@ -70,7 +70,7 @@ class Layout extends Component
         {
             return (
                 <span>
-                    <SidebarMenu />
+                    <SidebarMenu isBuyer={ this.state.currentUserData.customerid } />
                     <section className="content">
                         <HeaderMenu currentUserData={ this.state.currentUserData } />
                         <div className="container-fluid" style={{ paddingLeft: '250px' }}>
