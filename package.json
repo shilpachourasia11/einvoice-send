@@ -60,7 +60,7 @@
   },
   "scripts": {
     "start": "node src/server/index.js",
-    "dev": "npm run setupConsul ; ${NODE_PATH}/.bin/nodemon --watch ./ src/server/index.js",
+    "dev": "npm run setupConsul ; ${NODE_PATH}/.bin/nodemon --watch src/server src/server/index.js",
     "test": "npm run clean ; npm run setupConsul ; ${NODE_PATH}/.bin/nyc ${NODE_PATH}/.bin/mocha --recursive -R mocha-junit-reporter",
     "clean": "${NODE_PATH}/.bin/rimraf .nyc_output coverage test-resulsts.xml",
     "setupConsul": "curl -X PUT -d ${MYSQL_DATABASE} http://consul:8500/v1/kv/einvoice-send/db-init/database ; curl -X PUT -d 'root' http://consul:8500/v1/kv/einvoice-send/db-init/user ; curl -X PUT -d ${MYSQL_ROOT_PASSWORD} http://consul:8500/v1/kv/einvoice-send/db-init/password ; curl -X PUT -d 'true' http://consul:8500/v1/kv/einvoice-send/db-init/populate-test-data ; curl -X PUT -d ${REDIS_AUTH} http://consul:8500/v1/kv/einvoice-send/redis/password",
