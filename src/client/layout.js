@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { SidebarMenu, HeaderMenu } from 'ocbesbn-react-components';
 import ajax from 'superagent-bluebird-promise';
 import I18nManager from 'opuscapita-i18n/lib/utils/I18nManager';
+import translations from './i18n';
 
 class Layout extends Component
 {
@@ -25,6 +26,8 @@ class Layout extends Component
             currentUserData : { }
         };
 
+        this.state.i18n.register('ServiceConfigFlow', translations);
+
         this.loadUserData().then(data => this.setState({ currentUserData : data }));
     }
 
@@ -40,6 +43,7 @@ class Layout extends Component
     setLocale = (locale) =>
     {
         let i18n = new I18nManager(locale, []);
+        i18n.register('ServiceConfigFlow', translations);
 
         this.setState({
             i18n: i18n,

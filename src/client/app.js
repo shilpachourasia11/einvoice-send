@@ -1,6 +1,5 @@
 import React from 'react';
 import { Router, Route, IndexRoute, Link, hashHistory } from 'react-router'
-import { I18nManager } from 'opuscapita-i18n';
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
@@ -12,10 +11,6 @@ import Layout from './layout.js';
 
 export default class App extends React.Component
 {
-    static childContextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-    };
-
     static propTypes = {
         voucher: React.PropTypes.object,
         customerTermsAndConditions: React.PropTypes.string
@@ -103,14 +98,6 @@ console.log("-- app.js - TermsAndConditions: ", result);
                 customerTermsAndConditions : null
             });
         })
-    }
-
-    getChildContext()
-    {
-        let i18n = new I18nManager('en', [ ])
-        i18n.register("ServiceConfigFlow", require('./i18n').default);
-        // console.log("** i18n - app.js: ", i18n);
-        return { i18n : i18n};
     }
 
 
