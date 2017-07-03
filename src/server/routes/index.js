@@ -285,6 +285,10 @@ module.exports.addPdfExample = function(req, res)
     });
     */
 
+    let blob = new BlobClient({
+        serviceClient : req.opuscapita.serviceClient
+    });
+
     const file = req.file;
 
     if (file && req.file.buffer) {
@@ -297,13 +301,13 @@ module.exports.addPdfExample = function(req, res)
         let targetfilename = "/private/einvoice-send/InvoiceTemplate.pdf";
 console.log("******** Storing file " + filename + " at " + tenantId + " + " + targetfilename);
 
-        this.blob.createStorage(tenantId)   // ??? comment by Chris    ????
+        blob.createStorage(tenantId)   // ??? comment by Chris    ????
         .then((result) => {
-            return this.blob.createFile(tenantId, targetfilename, buffer)
+            return blob.createFile(tenantId, targetfilename, buffer)
             .catch((err) => {
                 // file already exist.
                 if (err) {
-                    return this.blob.storeFile(tenantId, targetfilename, buffer);
+                    return blob.storeFile(tenantId, targetfilename, buffer);
                 }
             });
         })
