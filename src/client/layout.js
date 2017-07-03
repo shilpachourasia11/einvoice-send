@@ -28,7 +28,7 @@ class Layout extends Component
 
         this.state.i18n.register('ServiceConfigFlow', translations);
 
-        this.loadUserData().then(data => this.setState({ currentUserData : data }));
+        this.loadUserData().then(userData => this.setState({ currentUserData : userData, locale : userData.languageId }));
     }
 
     getChildContext()
@@ -53,7 +53,9 @@ class Layout extends Component
         return ajax.put('/user/users/current/profile')
             .set('Content-Type', 'application/json')
             .send({ languageId: locale })
-            .then(data => ajax.post('/refreshIdToken').set('Content-Type', 'application/json').promise());
+            .then(data => ajax.post('/refreshIdToken').set('Content-Type', 'application/json').promise())
+            .then(() => this.loadUserData())
+            .then(userData => this.setState({ currentUserData : userData, locale : userData.languageId }));
     }
 
     loadUserData()
