@@ -7,7 +7,8 @@ import translations from './i18n';
 class Layout extends Component
 {
     static contextTypes = {
-      locale: PropTypes.string
+      locale: PropTypes.string,
+      router: React.PropTypes.object
     };
 
     static childContextTypes = {
@@ -28,6 +29,15 @@ class Layout extends Component
         };
 
         this.state.i18n.register('ServiceConfigFlow', translations);
+    }
+
+    componentDidMount()
+    {
+        return this.loadUserData().then(userData =>
+        {
+            this.setState({ currentUserData : userData, dataLoaded : true });
+            return this.setLocale(userData.languageId);
+        });
     }
 
     getChildContext()
@@ -84,12 +94,6 @@ class Layout extends Component
         }
         else
         {
-            this.loadUserData().then(userData =>
-            {
-                this.setState({ currentUserData : userData, dataLoaded : true });
-                this.setLocale(userData.languageId);
-            });
-
             return(<span></span>);
         }
     }
