@@ -21,8 +21,11 @@ class Layout extends Component
 
         this.state = {
             i18n : new I18nManager('en', [ ]),
-            locale : 'en'
+            locale : 'en',
+            currentUserData : { }
         };
+
+        this.loadUserData().then(data => this.setState({ currentUserData : data }));
     }
 
     getChildContext()
@@ -56,12 +59,11 @@ class Layout extends Component
 
     render()
     {
-
         return (
             <span>
                 <SidebarMenu />
                 <section className="content">
-                    <HeaderMenu currentUserData={ this.loadUserData() } />
+                    <HeaderMenu currentUserData={ this.state.currentUserData } />
                     <div className="container-fluid" style={{ paddingLeft: '250px' }}>
                         <div>
                             { this.props.children }
