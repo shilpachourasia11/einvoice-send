@@ -89,6 +89,8 @@ class Layout extends Component
                 this.setState({ currentUserData : userData, dataLoaded : true });
                 this.setLocale(userData.languageId);
             });
+
+            return(<span></span>);
         }
     }
 }
