@@ -7,7 +7,8 @@ import translations from './i18n';
 class Layout extends Component
 {
     static contextTypes = {
-      locale: PropTypes.string
+      locale: PropTypes.string,
+      router: React.PropTypes.object
     };
 
     static childContextTypes = {
@@ -23,7 +24,8 @@ class Layout extends Component
         this.state = {
             i18n : new I18nManager('en', [ ]),
             locale : 'en',
-            currentUserData : { }
+            currentUserData : { },
+            dataLoaded : false
         };
 
         this.state.i18n.register('ServiceConfigFlow', translations);
@@ -31,10 +33,10 @@ class Layout extends Component
 
     componentDidMount()
     {
-        this.loadUserData().then(userData =>
+        return this.loadUserData().then(userData =>
         {
-            this.setState({ currentUserData : userData });
-            this.setLocale(userData.languageId);
+            this.setState({ currentUserData : userData, dataLoaded : true });
+            return this.setLocale(userData.languageid);
         });
     }
 
@@ -53,7 +55,7 @@ class Layout extends Component
         i18n.register('ServiceConfigFlow', translations);
 
         var currentUserData = this.state.currentUserData;
-        currentUserData.languageId = locale;
+        currentUserData.languageid = locale;
 
         this.setState({
             i18n : i18n,
@@ -74,19 +76,28 @@ class Layout extends Component
 
     render()
     {
-        return (
-            <span>
-                <SidebarMenu />
-                <section className="content">
-                    <HeaderMenu currentUserData={ this.state.currentUserData } />
-                    <div className="container-fluid" style={{ paddingLeft: '250px' }}>
-                        <div>
-                            { this.props.children }
+        if(this.state.dataLoaded)
+        {
+            var isBuyer = this.state.currentUserData.customerid && typeof this.state.currentUserData.customerid === 'string';
+
+            return (
+                <span>
+                    <SidebarMenu isBuyer={ isBuyer } />
+                    <section className="content">
+                        <HeaderMenu currentUserData={ this.state.currentUserData } />
+                        <div className="container-fluid" style={{ paddingLeft: '250px' }}>
+                            <div>
+                                { this.props.children }
+                            </div>
                         </div>
-                    </div>
-                </section>
-            </span>
-        );
+                    </section>
+                </span>
+            );
+        }
+        else
+        {
+            return(<span></span>);
+        }
     }
 }
 
