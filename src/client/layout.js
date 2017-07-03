@@ -27,6 +27,12 @@ class Layout extends Component
         };
 
         this.state.i18n.register('ServiceConfigFlow', translations);
+
+        this.loadUserData().then(userData =>
+        {
+            this.setState({ currentUserData : userData });
+            this.setLocale(userData.languageId);
+        });
     }
 
     getChildContext()
@@ -65,12 +71,6 @@ class Layout extends Component
 
     render()
     {
-        this.loadUserData().then(userData =>
-        {
-            this.setState({ currentUserData : userData });
-            this.setLocale(userData.languageId);
-        });
-
         return (
             <span>
                 <SidebarMenu />
