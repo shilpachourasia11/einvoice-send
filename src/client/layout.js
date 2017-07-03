@@ -27,7 +27,10 @@ class Layout extends Component
         };
 
         this.state.i18n.register('ServiceConfigFlow', translations);
+    }
 
+    componentDidMount()
+    {
         this.loadUserData().then(userData =>
         {
             this.setState({ currentUserData : userData });
