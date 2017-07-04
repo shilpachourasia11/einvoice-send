@@ -36,6 +36,101 @@ export default class ServiceConfigFlow1 extends React.Component {
 
     getOcHtmlTermsAndConditions() {
 
+        // let invoiceActionTable = '<img src="static/img/InvoiceActionTable.jpg">';
+        let invoiceActionTable = `
+            <table border="1" cellpadding="2" style="width:80%;margin-left:auto;margin-right:auto">
+                <tr>
+                    <th>Data/Value</th>
+                    <th>Mandatory</th>
+                    <th>Description</th>
+                    <th>If value is missing</th>
+                </tr>
+                <tr>
+                    <td>Customer ID</td>
+                    <td>Yes</td>
+                    <td>Identify buyer unit</td>
+                    <td>Reject to customer</td>
+                </tr>
+                <tr>
+                    <td>Invoice number</td>
+                    <td></td>
+                    <td></td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td>Invoice date</td>
+                    <td></td>
+                    <td>CCYYMMDD</td>
+                    <td>Current date CCYYMMDD</td>
+                </tr>
+                <tr>
+                    <td>Due date</td>
+                    <td></td>
+                    <td>CCYYMMDD</td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td>VAT amount</td>
+                    <td></td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td>Total amount</td>
+                    <td></td>
+                    <td>0.00</td>
+                    <td>0.00</td>
+                </tr>
+                <tr>
+                    <td>Currency</td>
+                    <td></td>
+                    <td>ISO, on currency per invoice</td>
+                    <td>Default based on coutry settings</td>
+                </tr>
+                <tr>
+                    <td>Payment reference</td>
+                    <td></td>
+                    <td>I.e. OCR/KID/FIK</td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td>Supplier account ID</td>
+                    <td></td>
+                    <td>One value per invoice and same same type of value to be captured for all invoices, like
+                        <ul>
+                            <li>Bank account number (BBAN/IBAN)</li>
+                            <li>Bankgiro</li>
+                            <li>Plusgiro</li>
+                        </ul>
+                    </td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td>BIC (for IBAN accounts only)</td>
+                    <td></td>
+                    <td></td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td>Sender's VAT ID</td>
+                    <td></td>
+                    <td></td>
+                    <td>N/A</td>
+                </tr>
+                <tr>
+                    <td>Invoice Type</td>
+                    <td></td>
+                    <td>Debit(1), Credit(0)</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>Sendes's name, supplier name</td>
+                    <td></td>
+                    <td>Only valid if OC is the receiving Customer system</td>
+                    <td>N/A</td>
+                </tr>
+            </table>`;
+
         // TODO: Fetch text from Server
         let enTuC = `
             In order to use our Service the paper invoices needs to be directed to the OpusCapita production
@@ -50,7 +145,9 @@ export default class ServiceConfigFlow1 extends React.Component {
             actions is shown in the table below.
             <br/>
             <br/>
-            <img src="static/img/InvoiceActionTable.jpg">
+            ` +
+            invoiceActionTable +
+            `
             <br/>
             <br/>
             Prerequisites for receiving of paper documents for invoice digitizing (scanning)
@@ -76,38 +173,41 @@ export default class ServiceConfigFlow1 extends React.Component {
             `;
 
         let deTuC = `
-            Um unseren Digitalisierungs-Service zu nutzen, müssen Sie uns Ihre Papierrechnungen unseren
-            OpusCapita Betriebseinrichtungen zusenden. Hierzu ist eine eindeutige Kunden-Id pro
-            Einkaufsorganisation zwingend erforderlich. Jede Rechnung muss die korrekte Rechnungsadresse
-            mit einer der passenden Kunden-Id enthalten. Sollte der Kunde nicht eindeutig identifiziert
-            werden, wird die Papierrechnung abgelehnt und als Kopie an den Kunden per E-Mail weitergeleitet.
+            Um unseren Digitalisierungs-Service zu nutzen, müssen Sie uns Ihre Papierrechnungen zusenden.
+            Hierbei ist eine eindeutige Kunden-Id pro Einkaufsorganisation zwingend erforderlich.
+            Jede Rechnung muss die korrekte Rechnungsadresse mit der passenden Kunden-Id enthalten.
+            Sollte der Kunde nicht eindeutig identifiziert werden können, wird die automatisierte
+            Verarbeitung abgebrochen und die Rechnung als Kopie an den Kunden per E-Mail weitergeleitet.
             <br/>
-            Die eindeutige Kunden-Id ist ein Pflichtfeld und muss aus der Papierrechnung bestimmt werden können.
+            Die eindeutige Kunden-Id ist ein Pflichtfeld und muss über die Papierrechnung bestimmt werden können.
             Ohne diese Information könnnen wir eine Weiterleitung der Rechnung an den Kunden nicht garantieren.
             Kopf- und Fußdaten müssen passend und verständlich hinterlegt sein, so werden Kopf- und Fußdaten
             zum Beispiel nicht in den Rechnungsdetails oder im Anhang ausgewertet.
-            Folgende Kopf- und Fußdaten werden im Service weiterverarbeitet. Zu fehlenden Pflichtfeld finden
-            Sie die Aktivitäten in folgender Tabelle.
+            </br>
+            Folgende Kopf- und Fußdaten werden im Service weiterverarbeitet. Fehlen Pflichtfelder, so finden
+            Sie Information zu der Behandlung in folgender Tabelle:
             <br/>
             <br/>
-            <img src="static/img/InvoiceActionTable.jpg">
+            ` +
+            invoiceActionTable +
+            `
             <br/>
             <br/>
-            Voraussetzungen für die Verarbeitung von Papierrechnungen für die Rechnungsdigitalisierung:
+            Voraussetzungen für die Verarbeitung von Papierrechnungen in der Rechnungsdigitalisierung:
             <ul/>
                 <li>Die Standardgröße für zu scannende Dokumente in DIN A4.</li>
-                <li>Kleinere Dokumente werden entweder in ihrer tatsächlichen Größe gescannt oder zuvor auf einem DIN A4 Blatt plaziert.</li>
+                <li>Kleinere Dokumente werden entweder in ihrer tatsächlichen Größe eingescannt oder zuvor auf einem DIN A4 Blatt plaziert.</li>
                 <li>Die Scan-Auflösung beträgt 300 dpi.</li>
                 <li>Wir arbeiten mit schwarz-weiß Bilddateien.</li>
-                <li>Jede Rechnung wird zusammen mit ihren Anhängen gescannt und in einer einzelnen Datei abgelegt<./li>
+                <li>Jede Rechnung wird zusammen mit ihren Anhängen gescannt und in einer einzelnen Datei abgelegt.</li>
                 <li>Alle Rechnungen werden verarbeitet und gescannt. Rechnungsanhänge passieren zusammen mit der Rechnung den kompletten Verarbeitungsprozess.</li>
-                <li>Falls Papierrechnung und Anhänge mehr als 500 Seiten benötigen, dann werden die Rechnungen ohne Anhang verarbeitet.</li>
+                <li>Falls Papierrechnung und Anhänge mehr als 500 Seiten benötigen, werden die Rechnungen ohne Anhang verarbeitet.</li>
                     <ul>
                         <li>In solch einem Fall wird OpusCapita eine Zusatzinformation zur gescannten Rechnung hinzufügen.</li>
                     </ul>
 
                 <li>Rechnungen mit Formaten größer als DIN A4 - bis zu DIN A3 - und Rechnungen mit Formaten kleiner als DIN A5 erfordern eine manuelle Bearbeitung.</li>
-                <li>Dokumente jenseits von Rechnungen sowie optisch nicht erfassbare Rechnungen (zerrissen, schwer beschädigt, etc.), unleserliche Dokumente oder Rechnungen, die die Größevorgaben nicht einhalten, werden zu einer uns vorliegenden Kundenadresse weitergeleitet.</li>
+                <li>Dokumente jenseits von Rechnungen sowie optisch nicht erfassbare Rechnungen (zerrissen, schwer beschädigt, etc.), unleserliche Dokumente oder Rechnungen, die die Größevorgaben nicht einhalten, werden zu der vorliegenden Kundenadresse weitergeleitet.</li>
                 <li>Werbung, Kundenmagazine, Preislisten, Broschüren und Rechnungskopien werden aus dem Verarbeitungsprozess entfernt und vernichtet.</li>
                 <li>Geschenke, die an die Adresse für die Papierrechnungen gegangen sind, werden zurückgeschickt. Alle entstandenden Kosten werden dem Kunden in Rechnung gestellt.</li>
                 <li>Empfangene Post, die nicht an den Kunden adressiert ist, geht zurück an den lokalen Postversorger.</li>
