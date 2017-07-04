@@ -6,7 +6,7 @@ export default {
 
     ServiceConfigFlowStart : {
         header: "Konfiguration des In-Channel-Services",
-        hello : "Einladung durch Kunden {customerName}",
+        hello : "Einladung von Ihrem Kunden {customerName}",
         intro1 : "Ihr Kunde {customerName} hat Sie eingeladen, um am OpusCapita Business Network teilzuhaben.",
         intro2 : "Bitte bestimmen Sie unten, wie Sie Ihre Rechnungen bereitstellen wollen.",
         helloWithoutCustomer: "Entschuldigung, für Sie liegt aktuell Einladung (Voucher) vor.",
