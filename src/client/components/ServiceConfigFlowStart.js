@@ -121,6 +121,11 @@ console.log("**** Voucher: ", this.props.voucher);
                     <h4>{hello}</h4>
                     <p>
                         {intro1}
+                        {!this.props.voucher.customerId &&
+                            <Button bsStyle="link" onClick={() => this.props.loadVoucher()}>
+                                {this.context.i18n.getMessage('ServiceConfigFlowStart.reloadVoucher')}
+                            </Button>
+                        }
                         <br/>
                         {intro2}
                     </p>
