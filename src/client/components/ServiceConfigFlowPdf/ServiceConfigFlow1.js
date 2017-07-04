@@ -77,7 +77,7 @@ export default class ServiceConfigFlow1 extends React.Component {
         let deTuC = `
             Um Rechnungen in den Verarbeitungsprozess einstellen zu können, müssen folgende Anforderungen vom Versender für PDFs per E-Mail eingehalten werden:
             <ul>
-                <li>Die E-Mail-Adresse muss im Empfänger-Feld (“TO”) der E-Mail-Adresse hinterlegt sein.
+                <li>Die E-Mail-Adresse muss im Empfänger-Feld (“An”) der E-Mail-Adresse hinterlegt sein.
                     Mehr als eine E-Mail-Adresse wird im Empfänger-Feld nicht unterstützt.</li>
                 <li>Der Sender der E-Mail-Rechnung sollte kein “no-reply” verwenden, damit mögliche Fehler bei der Versendung erhalten werden können.</li>
                 <li>Aktzeptiert werden nur PDF- oder TIFF-Anhänge.
@@ -86,7 +86,7 @@ export default class ServiceConfigFlow1 extends React.Component {
                         <li>Unterstütze TIFF-Formate: TIFF CCITT 4 Fax B&W (300 dpi)</li>
                     </ul>
                 </li>
-                <li>Nur PDF- und TIFF-Anhänge werden unterstützt. Enthält die E-Mail weitere nicht-unterstütze
+                <li>PDF- und TIFF-Anhänge werden unterstützt. Enthält die E-Mail weitere nicht-unterstütze
                     Anhänge (.docx, etc.), werden diese ignoriert.</li>
                 <li>Ein valider Anhang entspricht einer Rechnung. Enthält ein Anhang mehrere Rechnungen, wird
                 nur eine Rechnung angelegt - die erste Rechnung wird interpretiert und überprüft.</li>
@@ -96,14 +96,14 @@ export default class ServiceConfigFlow1 extends React.Component {
                 <li>Die maximale Layoutgröße für einen Anhang beträgt DIN A3 (ohne minimale Größenbeschränkung).
                 <li>Die maximal Seitenanzahl je Attachment (= Rechnung) beträg 500 Seiten.</li>
                 <li>Verschlüsselung oder Passwortschutz wird für PDF-Datien nicht unterstützt.</li>
-                <li>Schriftsätze (Fonts) müssen im PDF mitgeliefert werden, so Text-Layout enthalten ist.</li>
+                <li>Schriftsätze (Fonts) müssen im PDF mitgeliefert werden, so ein Text-Layout enthalten ist.</li>
                 <li>Sollten Sie die Rechnung erst auf Papier ausdrucken, um Sie dann für die Versendung per E-Mail an OpusCapita einzuscannen:
                     <ul>
                         <li>Wählen Sie als Druckqualität mindestens 500 dpi</li>
                         <li>Drucken Sie in schwarz-weiß</li>
                         <li>Der ausgewählte Schriftsatz solle leicht zu lesen sein (z.B. Arial)</li>
                         <li>Das Scannen sollte mit mindestes 300 dpi erfolgen.</li>
-                        <li>Die E-Mail sollte Standard-Protokollen, wie MIME 1.0/1.1 mit RFC 5322, 2231 und 2045 entsprechen.</li>
+                        <li>Die E-Mail sollte Standard-Protokollen wie MIME 1.0/1.1 mit RFC 5322, 2231 und 2045 entsprechen.</li>
                     </ul>
                 </li>
             </ul>
@@ -112,7 +112,7 @@ export default class ServiceConfigFlow1 extends React.Component {
             <br/>
             <br/>
             Bitte beachten Sie: Die E-Mail-Adresse ist fest der Rechnungsdigitalisierung zugeordnet. Jeder, dem diese E-Mail-Adresse bekannt ist, kann PDF-Rechnungen versenden.
-            Der E-Mail-Text, inklusive Absender und Empfänger, wird der Rechnung bzw. den Rechnungen angehängt und durchläuft die Verarbeitung.
+            Der E-Mail-Text, inklusive Absender- und Empfängerinformation, wird der Rechnung bzw. den Rechnungen angehängt und durchläuft die Verarbeitung.
             Wir verwenden einen Spam-Filter.
             `;
 
