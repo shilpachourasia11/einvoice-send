@@ -7,6 +7,7 @@ services:
      - registrator
      - redis
      - nginx
+     - user
 ##     - blob
     labels:
       SERVICE_NAME: 'einvoice-send'
@@ -70,6 +71,23 @@ services:
     ports:
      - '3012:3012'
     command: "npm run dev"
+
+  user:
+    image: opuscapita/user:dev
+    depends_on:
+     - mysql
+     - consul
+     - registrator
+    labels:
+      SERVICE_NAME: 'user'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      USER_NAME: 'svc_user'
+      PASSWORD: 'user'
+    ports:
+     - '3008:3008'
+    command: 'npm run dev'
 
   registrator:
     image: gliderlabs/registrator

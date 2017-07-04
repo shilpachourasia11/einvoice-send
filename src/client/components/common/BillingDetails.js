@@ -19,7 +19,7 @@ export default class BillingDetails extends React.Component {
         //
         if (this.props.inputType && this.props.voucher[this.props.inputType + "Enabled"]) {
             return (
-                <span style={styleFree}>{this.context.i18n.getMessage('ServiceConfigFlowStart.freeFor', {customer : this.props.voucher.customerName})}</span>
+                <span style={styleFree}>{this.context.i18n.getMessage('ServiceConfigFlowStart.freeFor', {customerName : this.props.voucher.customerName})}</span>
             );
         }
         else {

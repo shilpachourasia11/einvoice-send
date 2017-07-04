@@ -102,8 +102,8 @@ console.log("+ setInputType - Error: ", e);
         let intro1;
         let intro2;
         if (this.props.voucher.customerId) {
-            hello = this.context.i18n.getMessage('ServiceConfigFlowStart.hello', { customer: this.props.voucher.customerId});
-            intro1 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro1', { customer: this.props.voucher.customerId});
+            hello = this.context.i18n.getMessage('ServiceConfigFlowStart.hello', { customerName: this.props.voucher.customerName});
+            intro1 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro1', { customerName: this.props.voucher.customerName});
             intro2 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro2');
         }
         else {

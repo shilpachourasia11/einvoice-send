@@ -13,7 +13,7 @@ export default class ServiceConfigFlow3 extends React.Component {
 
     static defaultProps = {
         hasValidFile : false,
-        filename : "<undefined>"
+        filename : null
     };
 
     constructor(props)
@@ -107,8 +107,9 @@ export default class ServiceConfigFlow3 extends React.Component {
                     <section className="oc-drag-and-drop">
                         <div className="drag-and-drop-canvas text-center" id="file-upload" onDragOver={ e => e.preventDefault() } onDrop={ e => this.onFileDrop(e) }>
                             <h2>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Upload.dropHere')}</h2>
-                            {/* TODO: <h4>or <a href="#">browse</a> for a file to upload.</h4> */}
-                            <h4>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Upload.uploaded')} {this.state.filename} </h4>
+                            {this.state.filename &&
+                                <h4>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Upload.uploaded')} {this.state.filename} </h4>
+                            }
                         </div>
                     </section>
 

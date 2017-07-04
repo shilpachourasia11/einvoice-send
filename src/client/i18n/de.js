@@ -6,15 +6,15 @@ export default {
 
     ServiceConfigFlowStart : {
         header: "Konfiguration des In-Channel-Services",
-        hello : "Einladung durch Kunden {customer}",
-        intro1 : "Ihr Kunde {customer} hat Sie eingeladen, um am OpusCapita Business Network teilzuhaben.",
+        hello : "Einladung von Ihrem Kunden {customerName}",
+        intro1 : "Ihr Kunde {customerName} hat Sie eingeladen, um am OpusCapita Business Network teilzuhaben.",
         intro2 : "Bitte bestimmen Sie unten, wie Sie Ihre Rechnungen bereitstellen wollen.",
-        helloWithoutCustomer: "Entschuldigung, für Sie liegt keine Einladung (Voucher) vor.",
-        intro1WithoutCustomer: "Bitte kontaktieren Sie Ihren Kunden für eine Einladung.",
-        freeFor: "Frei für Sie für Kunde {customer}",
+        helloWithoutCustomer: "Entschuldigung, für Sie liegt aktuell keine Einladung (Voucher) vor.",
+        intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben: Die Generierung der Einladung benötigt einen Moment. Bitte versuchen Sie es in Kürze erneut.",
+        freeFor: "Frei für Sie für Kunde {customerName}",
 
         eInvoice: "eInvoice",
-        eInvoiceDesc: "Wählen Sie die passende E-Invoicing-Option und wir werden die Verbindung für Sie aufsetzen.",
+        eInvoiceDesc: "Sie wünschen eine elektronische Rechnungsstellung?  Wählen Sie die passende Optionen und wir werden die Verbindung für Sie aufsetzen.",
 
         pdf : "PDF per Email",
         pdfDesc: "Sie möchten Ihre Rechnung als Anhang einer E-Mail verschicken? Kein Problem. In der Vervollständigung der Registrierung finden Sie mehr Informationen hierzu.",
@@ -32,8 +32,8 @@ export default {
         readOCTaC: "Ich habe die allgemeine Geschäftsbedingungen gelesen und verstanden.",
 
         Pdf:{
-            subheader: "You have successfully registered on behalf of {customer}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail..",
-            intro: "Email Invoice Digitizing enables {this.props.voucher.customerName} to receive invoices as email attachments. OpusCapita has therefor allocated an email address per buyer unit. The address will have the following format:",
+            subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
+            intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen. OpusCapita legt dazu für Sie eine eine E-Mail-Adresse an. Die Adressen wird das Format haben:",
             emailTemplate: "{customerId}.FI.P.101234-3@docinbound.com",
 
             Upload: {
@@ -51,7 +51,7 @@ export default {
             }
         },
         Paper:{
-            subheader: "You have successfully registered on behalf of {customer}. Please read through the following prerequisites and requirements and accept the terms in order to send your first paper- invoice to our global digitizing (scanning) service.",
+            subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre Papierrechnung an unseren globalen Digitalisierung-Service senden.",
             Approve: {
                 header: "Die nächsten Schritte",
                 subheader: "Sie haben uns alle notwendigen Daten bereitgestellt.",

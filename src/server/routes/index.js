@@ -81,7 +81,7 @@ module.exports.init = function(app, db, config)
         app.post('/api/config/inchannel/current', (req, res) => this.addInChannelConfig(req, res, true));
         app.post('/api/config/inchannel', (req, res) => this.addInChannelConfig(req, res));
 
-        app.get('/api/test', (req, res) => res.json(req.opuscapita.userData()));
+        app.get('/api/userdata', (req, res) => res.json(req.opuscapita.userData()));
 
 
         // blob access, like upload of PDF, download of TermsAndConditions, ...
@@ -247,7 +247,7 @@ console.log(">> updateInChannelConfig", supplierId);
 
 
 function generateSupplierTenantId(suppierId) {
-    return "s-" + suppierId.toLowerCase();
+    return "s_" + suppierId;
 }
 
 
@@ -268,8 +268,6 @@ module.exports.addPdfExample = function(req, res)
         supplierId = 'ABC';    // ??? Remove - only for test!
     }
 
-    supplierId = supplierId.toLowerCase();
-
     /*
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     console.log(req.headers);
@@ -285,6 +283,10 @@ module.exports.addPdfExample = function(req, res)
     });
     */
 
+    let blob = new BlobClient({
+        serviceClient : req.opuscapita.serviceClient
+    });
+
     const file = req.file;
 
     if (file && req.file.buffer) {
@@ -297,13 +299,15 @@ module.exports.addPdfExample = function(req, res)
         let targetfilename = "/private/einvoice-send/InvoiceTemplate.pdf";
 console.log("******** Storing file " + filename + " at " + tenantId + " + " + targetfilename);
 
-        this.blob.createStorage(tenantId)   // ??? comment by Chris    ????
+
+// TODO: ??? createFile(..., true) will do a createStorage directly.
+        blob.createStorage(tenantId)
         .then((result) => {
-            return this.blob.createFile(tenantId, targetfilename, buffer)
+            return blob.createFile(tenantId, targetfilename, buffer)
             .catch((err) => {
                 // file already exist.
                 if (err) {
-                    return this.blob.storeFile(tenantId, targetfilename, buffer);
+                    return blob.storeFile(tenantId, targetfilename, buffer);
                 }
             });
         })
@@ -335,7 +339,12 @@ module.exports.getPdfExample = function(req, res)
     let tenantId = generateSupplierTenantId(supplierId)
     let filename = "/private/einvoice-send/InvoiceTemplate.pdf"
 
-    this.blob.readFile(tenantId, filename)
+
+    let blob = new BlobClient({
+        serviceClient : req.opuscapita.serviceClient
+    });
+
+    blob.readFile(tenantId, filename)
     .spread((buffer, fileInfo) => {
         if (buffer) {
             writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
