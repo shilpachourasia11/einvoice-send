@@ -88,7 +88,6 @@ module.exports.init = function(app, db, config)
         //
         app.post('/api/config/inchannelfile', upload.single('file'), (req, res) => this.addPdfExample(req, res));
         app.get('/api/config/inchannelfile', (req, res) => this.getPdfExample(req, res));
-        app.get('/api/config/inchannelfile2', (req, res) => {console.log("----------- file2"); this.getPdfExample(req, res); });
 
         app.post('/api/blob/addfile/:tenantId', upload.single('file'), (req, res) => this.addfile(req, res));
         app.get('/api/blob/storefile/:tenantId', (req, res) => this.storeFile(req, res));
@@ -119,6 +118,10 @@ module.exports.init = function(app, db, config)
         // app.put('/api/config/voucher', (req, res) => this.updateVoucher(req, res));
         // app.put('/api/config/voucher/:supplierId', (req, res) => this.updateVoucher(req, res));
         app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
+
+
+        // forwarding of REST calls
+        app.get('/api/customer/:customerId', (req, res) => this.sendCustomer(req, res));
 
 
         // Supplier finally approved the final step:
@@ -885,6 +888,21 @@ module.exports.updateVoucher = function(req, res)
 ... ??? ToDo
 }
 */
+
+
+module.exports.sendCustomer = function(req, res)
+{
+    let customerId = req.params.customerId;
+
+    req.opuscapita.serviceClient.get("customer", "/api/customers/" + customerId, true)
+    .spread((customer, response) => {
+        res.status(200).json(customer);
+    })
+    .catch((e) => {
+        console.log("getCustomer Error: ", e);
+        res.status("400").json({message: e.message});
+    })
+}
 
 
 
