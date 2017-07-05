@@ -104,8 +104,7 @@ export default class App extends React.Component
     }
 
     getCustomer = (customerId) => {
-        return ajax.get('/einvoice-send/api/customer/' + customerId, true)
-            .set('Content-Type', 'application/json')
+        return ajax.get('/einvoice-send/api/customer/' + customerId)
         .then((result) => {
             return JSON.parse(result.text);
         })
