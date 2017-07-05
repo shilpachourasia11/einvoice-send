@@ -9,9 +9,10 @@ export default {
         hello : "Einladung von Ihrem Kunden {customerName}",
         intro1 : "Ihr Kunde {customerName} hat Sie eingeladen, um am OpusCapita Business Network teilzuhaben.",
         intro2 : "Bitte bestimmen Sie unten, wie Sie Ihre Rechnungen bereitstellen wollen.",
-        helloWithoutCustomer: "Entschuldigung, für Sie liegt aktuell Einladung (Voucher) vor.",
-        intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben: Die Generierung der Einladung benötigt einen Moment. Bitte versuchen Sie es in Kürze erneut.",
+        helloWithoutCustomer: "Entschuldigung, für Sie liegt aktuell keine Einladung (Voucher) vor.",
+        intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben, die Generierung der Einladung benötigt einen Moment. ",
         freeFor: "Frei für Sie für Kunde {customerName}",
+        reloadVoucher: "Auf neue Einladung prüfen",
 
         eInvoice: "eInvoice",
         eInvoiceDesc: "Sie wünschen eine elektronische Rechnungsstellung?  Wählen Sie die passende Optionen und wir werden die Verbindung für Sie aufsetzen.",
