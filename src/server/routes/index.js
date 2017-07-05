@@ -71,9 +71,7 @@ module.exports.init = function(app, db, config)
         // TODO: What about a default in dev mode???
         //
         app.get('/api/config/inchannel/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
-
         app.put('/api/config/inchannel/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
-
         app.post('/api/config/inchannel', (req, res) => this.addInChannelConfig(req, res));
 
         app.get('/api/userdata', (req, res) => res.json(req.opuscapita.userData()));
@@ -88,7 +86,7 @@ module.exports.init = function(app, db, config)
         app.get('/api/blob/storefile/:tenantId', (req, res) => this.storeFile(req, res));
         app.get('/api/blob/list/:tenantId', (req, res) => this.listFolder(req, res));
 
-        app.get('/api/inchannel/octermsandconditions', (req, res) => this.sendOCTermsAndConditions(req, res));
+//        app.get('/api/inchannel/octermsandconditions', (req, res) => this.sendOCTermsAndConditions(req, res));
         app.get('/api/inchannel/termsandconditions/:customerId', (req, res) => this.sendCustomerTermsAndConditions(req, res));
 
 
@@ -96,17 +94,16 @@ module.exports.init = function(app, db, config)
         // TODO: Create own express Router
         //
         app.get('/api/config/inchannelcontract/:customerId/:supplierId', (req, res) => this.sendInChannelContract(req, res));
-        app.get('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.sendInChannelContract(req, res));
-
-        app.post('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.addInChannelContract(req, res));  // ???
-
-        app.put('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.updateInChannelContract(req, res));  // ???
+        app.put('/api/config/inchannelcontract/:customerId/:supplierId', (req, res) => this.updateInChannelContract(req, res));  // ???
+        app.post('/api/config/inchannelcontract', (req, res) => this.addInChannelContract(req, res));  // ???
+//        app.get('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.sendInChannelContract(req, res));
+//        app.post('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.addInChannelContract(req, res));  // ???
+//        app.put('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.updateInChannelContract(req, res));  // ???
 
 
         // Voucher
         //
         app.get('/api/config/voucher/:supplierId', (req, res) => this.sendOneVoucher(req, res));
-
         // app.put('/api/config/voucher', (req, res) => this.updateVoucher(req, res));
         // app.put('/api/config/voucher/:supplierId', (req, res) => this.updateVoucher(req, res));
         app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
@@ -117,8 +114,8 @@ module.exports.init = function(app, db, config)
 
 
         // Supplier finally approved the final step:
-        //
         app.put('/api/config/finish', (req, res) => this.approveInChannelConfig(req, res));
+// ???
 
     });
 }
@@ -146,8 +143,7 @@ module.exports.sendInChannelConfig = function(req, res)
 
 module.exports.addInChannelConfig = function(req, res)
 {
-    var supplierId = req.params.supplierId;
-
+    var supplierId = req.body.supplierId;
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
         if (exists)
@@ -168,6 +164,7 @@ module.exports.addInChannelConfig = function(req, res)
     })
     .catch(e =>
     {
+        console.log("--> addInChannelConfig - error: ", e);
         res.status('400').json({ message : e.message });
     });
 }
