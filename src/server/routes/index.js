@@ -103,6 +103,7 @@ module.exports.init = function(app, db, config)
         //
         app.get('/api/config/inchannelcontract/:customerId/:supplierId', (req, res) => this.sendInChannelContract(req, res));
         app.get('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.sendInChannelContract(req, res));
+        app.get('/api/config/inchannelcontracts/:customerId', (req, res) => this.sendInChannelContractsForCustomer(req, res));
 
         app.post('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.addInChannelContract(req, res));  // ???
         app.post('/api/config/inchannelcontract', (req, res) => this.addInChannelContract(req, res));
@@ -630,6 +631,19 @@ console.log(">> sendInChannelContract - businesspartner: ", bp.supplierId, bp.cu
     }
     catch(e) {
         res.status('400').json({message: e.message});
+    }
+}
+
+module.exports.sendInChannelContractsForCustomer = function(req, res)
+{
+    const customerId = req.params.customerId;
+    if (process.env.NODE_ENV === 'development' || req.opuscapita.userData('customerId') === customerId) {
+        return InChannelContract.allForCustomer(customerId).then(data => {
+            (data && res.json(data)) || res.status('404').json({ message : 'No entry found for customer ' + customerId});
+        })
+    }
+    else {
+        return res.status('403').json({ message : 'Operation is not authorized' });
     }
 }
 
