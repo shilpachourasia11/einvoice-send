@@ -68,13 +68,10 @@ export default class App extends React.Component
         })
         .then((voucher) => {
             this.setState({voucher : voucher});
-
             return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
-                .set('Content-Type', 'application/json')
-                .promise()
-            .then((result) => {
-                console.log("TermsAndConditions for customer " + voucher.customerId + ": ", result);
-                this.setState({customerTermsAndConditions : result.text});
+            .then((buffer) => {
+                console.log("TermsAndConditions for customer " + voucher.customerId + ": ", buffer);
+                this.setState({customerTermsAndConditions : buffer});
             })
             .catch((e) => {
                 console.log("Terms and Conditions: No customer specific terms and conditions found!")
@@ -98,7 +95,7 @@ export default class App extends React.Component
     }
 
     getVoucher = () => {
-        return ajax.get('/einvoice-send/api/config/voucher/')
+        return ajax.get('/einvoice-send/api/config/voucher/' + this.state.voucher.supplierId)
             .set('Content-Type', 'application/json')
             .promise();
     }
