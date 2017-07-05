@@ -97,8 +97,6 @@ export default class App extends React.Component
         })
     }
 
-
-
     getVoucher = () => {
         return ajax.get('/einvoice-send/api/config/voucher/')
             .set('Content-Type', 'application/json')
@@ -106,16 +104,15 @@ export default class App extends React.Component
     }
 
     getCustomer = (customerId) => {
-        // How - depending on new grants with field level security.
-        return new Promise.resolve(customerId);
-/*
-        return ajax.get('/customers/api/customers/' + customerId, true)
+        return ajax.get('/einvoice-send/api/customer/' + customerId, true)
             .set('Content-Type', 'application/json')
+        .then((result) => {
+            return JSON.parse(result.text);
+        })
         .catch((e) =>  {
             console.log("Error - Did not receive details about customer with Id: " + customerId + " - error: ", e);
             return new Promise.resolve(null);
         });
-*/
     }
 
 
