@@ -70,13 +70,36 @@ module.exports.init = function(app, db, config)
         // TODO: Refactoring of endpoints: Only one endpoint /api/config/inchannel
         // TODO: What about a default in dev mode???
         //
-        app.get('/api/config/inchannel/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
-        app.put('/api/config/inchannel/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
-        app.post('/api/config/inchannel', (req, res) => this.addInChannelConfig(req, res));
+        app.get('/api/config/inchannels/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
+        app.put('/api/config/inchannels/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
+        app.post('/api/config/inchannels', (req, res) => this.addInChannelConfig(req, res));
+
+        app.put('/api/config/inchannels/:supplierId/finish', (req, res) => this.approveInChannelConfig(req, res));
 
         app.get('/api/userdata', (req, res) => res.json(req.opuscapita.userData()));
 
 
+        // InChannelContract
+        // TODO: Create own express Router
+        //
+        app.get('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.sendInChannelContract(req, res));
+        app.put('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.updateInChannelContract(req, res));
+        app.post('/api/config/inchannelcontracts/:tenantId', (req, res) => this.addInChannelContract(req, res));  // ???
+
+
+        // Voucher
+        //
+        // TODO: search only for Vouchers with state != 'closed'
+        app.get('/api/config/vouchers/:supplierId', (req, res) => this.sendOneVoucher(req, res));
+        // TODO: voucher vs. vouchers - for first step of adjustments, we keep "voucher". As soon as onboarding is adjusted: remove
+        app.post('/api/config/vouchers', (req, res) => this.addVoucher(req, res));
+        app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
+
+        // forwarding of REST calls
+        app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
+
+
+// TODO: Remove after adjustments of Blob service and clients!
         // blob access, like upload of PDF, download of TermsAndConditions, ...
         //
         app.post('/api/config/inchannelfile', upload.single('file'), (req, res) => this.addPdfExample(req, res));
@@ -86,37 +109,8 @@ module.exports.init = function(app, db, config)
         app.get('/api/blob/storefile/:tenantId', (req, res) => this.storeFile(req, res));
         app.get('/api/blob/list/:tenantId', (req, res) => this.listFolder(req, res));
 
-//        app.get('/api/inchannel/octermsandconditions', (req, res) => this.sendOCTermsAndConditions(req, res));
+        app.get('/api/inchannel/octermsandconditions', (req, res) => this.sendOCTermsAndConditions(req, res));
         app.get('/api/inchannel/termsandconditions/:customerId', (req, res) => this.sendCustomerTermsAndConditions(req, res));
-
-
-        // InChannelContract
-        // TODO: Create own express Router
-        //
-        app.get('/api/config/inchannelcontract/:customerId/:supplierId', (req, res) => this.sendInChannelContract(req, res));
-        app.put('/api/config/inchannelcontract/:customerId/:supplierId', (req, res) => this.updateInChannelContract(req, res));  // ???
-        app.post('/api/config/inchannelcontract', (req, res) => this.addInChannelContract(req, res));  // ???
-//        app.get('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.sendInChannelContract(req, res));
-//        app.post('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.addInChannelContract(req, res));  // ???
-//        app.put('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.updateInChannelContract(req, res));  // ???
-
-
-        // Voucher
-        //
-        app.get('/api/config/voucher/:supplierId', (req, res) => this.sendOneVoucher(req, res));
-        // app.put('/api/config/voucher', (req, res) => this.updateVoucher(req, res));
-        // app.put('/api/config/voucher/:supplierId', (req, res) => this.updateVoucher(req, res));
-        app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
-
-
-        // forwarding of REST calls
-        app.get('/api/customer/:customerId', (req, res) => this.sendCustomer(req, res));
-
-
-        // Supplier finally approved the final step:
-        app.put('/api/config/finish', (req, res) => this.approveInChannelConfig(req, res));
-// ???
-
     });
 }
 
@@ -574,11 +568,38 @@ function check4BusinessPartner(req, predefinedCustomerId, predefinedSupplierId) 
 }
 
 
+function determineBusinessPartners(tenantId1, tenantId2) {
+
+    let allowedPrefixes = [ 'c_', 's_' ];
+    let prefix1 = tenantId1.substring(0,2);
+    let prefix2 = tenantId2.substring(0,2);
+
+    let supplierId;
+    let customerId;
+
+    if (!prefix1 || !prefix2 || prefix1 == prefix2 || !allowedPrefixes.includes(prefix1) || !allowedPrefixes.includes(prefix2)) {
+        throw new Error("Proper Tenant definition is required! Please provide 's_<supplierId>' and 'c_<customerId>' as part of the URL. (" + tenantId1 + ", " + tenantId2 + ")'");
+    }
+
+    if (tenantId1.startsWith("s_")) {
+        supplierId = tenantId1.substring(2);
+        customerId = tenantId2.substring(2);
+    }
+    else {
+        customerId = tenantId1.substring(2);
+        supplierId = tenantId2.substring(2);
+    }
+
+    return {supplierId: supplierId, customerId, customerId};
+}
+
+
+
 
 module.exports.sendInChannelContract = function(req, res)
 {
     try {
-        let bp = check4BusinessPartner(req, req.params.customerId, req.params.supplierId);
+        let bp = determineBusinessPartners(req.params.tenantId1, req.params.tenantId2);
 
 console.log(">> sendInChannelContract - businesspartner: ", bp.supplierId, bp.customerId);
 
@@ -596,30 +617,36 @@ console.log(">> sendInChannelContract - businesspartner: ", bp.supplierId, bp.cu
 module.exports.addInChannelContract = function(req, res)
 {
 console.log(">> addInChannelContract - started! req.body: ", req.body);
-
     try {
-        let bp = check4BusinessPartner(req, req.body.customerId, req.body.supplierId);
+        let tenantId = req.params.tenantId;
+        let supplierId;
+        let customerId;
 
-        if (req.body.customerId && bp.customerId != req.body.customerId) {
-            throw new Error ("Customer " + req.body.supplierId + " is not allowed to add an InChannelContract for customer " + bp.supplierId + ".");
+        let obj = req.body || {};
+
+        if (tenantId.startsWith("s_")){
+            supplierId = tenantId.substring(2);
+            obj.supplierId = supplierId;       // or shall we throw an error if values distinct?
         }
-        if (req.body.supplierId && bp.supplierId != req.body.supplierId) {
-            throw new Error ("Supplier " + req.body.supplierId + " is not allowed to add an InChannelContract for supplier " + bp.supplierId + ".");
+        else if (tenantId.startsWith("c_")) {
+            customerId = tenantId.substring(2);
+            obj.customerId = customerId;       // or shall we throw an error if values distinct?
+        }
+        else {
+            throw new Error("No valid tenant provided! Please provide a valid tenant identifier that starts with either 's_' or 'c_'. Provided value was " + tenantId);
         }
 
-console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.customerId);
+        if (!customerId || !supplierId) {
+            throw new Error("Please provide a supplierId and a customerId in either the URI or the payload.")
+        }
 
-        InChannelContract.exists(bp.customerId, bp.supplierId)
+        InChannelContract.exists(customerId, supplierId)
         .then(exists => {
             if (exists) {
-                res.status('409').json({ message : 'This customer-supplier relation (' + bp.customerId + '+' + bp.supplierId + ') already owns an in-channel configuration.' });
+                res.status('409').json({ message : 'This customer-supplier relation (' + customerId + '+' + supplierId + ') already owns an in-channel configuration.' });
             }
             else {
-                var obj = req.body || { };
-                obj.supplierId = bp.supplierId;
-                obj.customerId = bp.customerId;
-                obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "byTest"; // ??? only for test
-
+                obj.createdBy = req.opuscapita.userData('id');
                 return InChannelContract.add(obj, true)
                 .then(icc => this.events.emit(icc, 'inChannelContract.added').then(() => icc))
                 .then(icc => res.status(200).json(icc));
@@ -627,9 +654,7 @@ console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.cus
         });
     }
     catch(e) {
-        // logger.error (...)  ???
         console.log("addInChannelContract error: ", e);
-
         res.status('400').json({ message : e.message });
     };
 }
@@ -638,7 +663,7 @@ module.exports.updateInChannelContract = function(req, res)
 {
 console.log(">> updateInChannelContract - started! req.body: ", req.body);
     try {
-        let bp = check4BusinessPartner(req, req.body.customerId, req.body.supplierId);
+        let bp = determineBusinessPartners(req.params.tenantId1, req.params.tenantId2);
 
         if (req.body.customerId && bp.customerId != req.body.customerId) {
             throw new Error ("Customer " + req.body.supplierId + " is not allowed to update an InChannelContract for customer " + bp.supplierId + ".");
@@ -653,10 +678,8 @@ console.log(">> updateInChannelContract - businesspartner: ", bp.customerId, bp.
         .then((exists) => {
             if(exists) {
                 var obj = req.body || { }
-
-                obj.supplierId = bp.supplierId;
-                obj.changedBy = req.opuscapita.userData('id') || req.params.changedBy;
-                obj.changedOn = new Date();  // ??? via db?
+                obj.changedBy = req.opuscapita.userData('id');
+                obj.changedOn = new Date();                     // TODO: directly via db. ???
 
                 return InChannelContract.update(bp.customerId, bp.supplierId, obj)
                 .then( () => {
@@ -688,31 +711,30 @@ console.log(">> updateInChannelContract - businesspartner: ", bp.customerId, bp.
  * @return {[type]}     [description]
  */
 module.exports.approveInChannelConfig = function(req, res) {
-    let supplierId = req.opuscapita.userData('supplierId');
-    if (req.params.supplierId) {
-        supplierId = req.params.supplierId;
-    }
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
+
+    let supplierId = req.params.supplierId;
 
 console.log(">> approveInChannelConfig", supplierId);
 
     return new Promise((resolve, reject) => {
         Api.inChannelConfigExists(supplierId)
         .then(exists => {
-// console.log(">> approveInChannelConfig - exists: ", exists);
+console.log(">> approveInChannelConfig - exists: ", exists);
             if(exists) {
                 var obj = {
                     supplierId : supplierId,
-                    changedBy : req.opuscapita.userData('id') || "byTest",       // ??? only for test
+                    changedBy : req.opuscapita.userData('id'),
                     status : 'activated'   // 'preparation'
                 };
                 return Api.updateInChannelConfig(supplierId, obj, true)
                 .then(config => {
-// console.log(">> approveInChannelConfig - update done: ", config);
+console.log(">> approveInChannelConfig - update done: ", config);
                     return this.events.emit(config, 'inChannelConfig.updated');
                 })
+// ???
+//                .then(() => {
+//                    voucher.setState("closed");
+//                })
                 // .then(() => {
                 // console.log(">> approveInChannelConfig - emit done.");
                     // return this.forwardPdfExample(req, res, supplierId); - for inputType = pdf
@@ -764,39 +786,26 @@ console.log(">> sendVoucher - businesspartner: ", bp.supplierId, bp.customerId);
 
 module.exports.sendOneVoucher = function(req, res)
 {
-    try {
-        let bp = determineBusinessPartner(req, null, req.params.supplierId);
+    let supplierId = req.params.supplierId;
 
-console.log(">> sendOneVoucher - businesspartner: ", bp.customerId, bp.supplierId);
+console.log(">> sendOneVoucher - businesspartner: ", supplierId);
 
-        return new Promise((resolve, reject) => {
-            if (bp.customerId && bp.supplierId) {
-                resolve(Voucher.getOne(bp.customerId, bp.supplierId));
-            }
-            if (bp.supplierId) {
-                resolve(Voucher.getOneBySupplier(bp.supplierId));
-            }
-            else {  // only for test ???
-                resolve(Voucher.getAny());
-            }
-        })
-        .then(data => {
-            if (data) {
-                console.log(">> sendOneVoucher - data: ", data.dataValues);
-                (data && res.json(data)) || res.status('200').json(data);
-            }
-            else {
-                (data && res.json(data)) || res.status('404').json({ message : 'No Voucher object found for the supplier-customer pair ' + bp.supplierId + "+" + bp.customerId});
-            }
-        })
-        .catch((error) => {
-            console.log("sendOneVoucher: ", error);
-            res.status('400').json({message: error.message});
-        })
-    }
-    catch(error) {
+    return new Promise((resolve, reject) => {
+        resolve(Voucher.getOneBySupplier(supplierId));
+    })
+    .then(data => {
+        if (data) {
+console.log(">> sendOneVoucher - data: ", data.dataValues);
+            (data && res.json(data)) || res.status('200').json(data);
+        }
+        else {
+            (data && res.json(data)) || res.status('404').json({ message : 'No Voucher object found for supplier ' + supplierId});
+        }
+    })
+    .catch((error) => {
+        console.log("sendOneVoucher: ", error);
         res.status('400').json({message: error.message});
-    }
+    })
 }
 
 

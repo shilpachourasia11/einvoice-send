@@ -47,7 +47,7 @@ export default class ServiceConfigFlowStart extends React.Component
     }
 
     updateInChannelConfig = (supplierId, values) => {
-        return ajax.put('/einvoice-send/api/config/inchannel/' + supplierId)
+        return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId)
             .set('Content-Type', 'application/json')
             .send(values)
             .promise();
@@ -58,7 +58,7 @@ export default class ServiceConfigFlowStart extends React.Component
 
 console.log("createInChannelConfig - values: ", values);
 
-        return ajax.post('/einvoice-send/api/config/inchannel')
+        return ajax.post('/einvoice-send/api/config/inchannels')
             .set('Content-Type', 'application/json')
             .send(values)
             .promise();

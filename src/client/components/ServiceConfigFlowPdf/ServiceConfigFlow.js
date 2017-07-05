@@ -59,14 +59,14 @@ export default class ServiceConfigFlow extends React.Component
     //
     getInChannelConfig = (supplierId) =>
     {
-        return ajax.get('/einvoice-send/api/config/inchannel/' + supplierId)
+        return ajax.get('/einvoice-send/api/config/inchannels/' + supplierId)
             .set('Content-Type', 'application/json')
             .promise();
     }
 
     addInChannelConfig = (supplierId) =>
     {
-        return ajax.post('/einvoice-send/api/config/inchannel')
+        return ajax.post('/einvoice-send/api/config/inchannels')
             .set('Content-Type', 'application/json')
             .send({
                 supplierId : supplierId,
@@ -78,7 +78,7 @@ export default class ServiceConfigFlow extends React.Component
     }
 
     updateInChannelConfig = (supplierId, values) => {
-        return ajax.put('/einvoice-send/api/config/inchannel/' + supplierId)
+        return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId)
             .set('Content-Type', 'application/json')
             .send(values)
             .promise();
@@ -88,7 +88,7 @@ export default class ServiceConfigFlow extends React.Component
     // InChannelContract
     //
     getInChannelContract = (customerId, supplierId) => {
-        return ajax.get('/einvoice-send/api/config/inchannelcontract/' + customerId + '/' + supplierId)
+        return ajax.get('/einvoice-send/api/config/inchannelcontracts/' + customerId + '/' + supplierId)
             .set('Content-Type', 'application/json')
             .promise();
     }
@@ -96,7 +96,7 @@ export default class ServiceConfigFlow extends React.Component
     addInChannelContract = (customerId, supplierId, status) => {
 console.log("++ addInChannelContract -> customerId =" + customerId + ", status = " + status);
         status = status || 'new';
-        return ajax.post('/einvoice-send/api/config/inchannelcontract')
+        return ajax.post('/einvoice-send/api/config/inchannelcontracts')
             .set('Content-Type', 'application/json')
             .send({
                 supplierId : supplierId,
@@ -110,7 +110,7 @@ console.log("++ addInChannelContract -> customerId =" + customerId + ", status =
 
     updateInChannelContract = (customerId, supplierId, status) => {
 console.log("++ updateInChannelContract -> customerId / status: ", customerId, status);
-        return ajax.put('/einvoice-send/api/config/inchannelcontract/' + customerId + "/" + supplierId)
+        return ajax.put('/einvoice-send/api/config/inchannelcontracts/' + customerId + "/" + supplierId)
             .set('Content-Type', 'application/json')
             .send({
                 inputType : 'pdf',
@@ -158,9 +158,9 @@ console.log("InchannelConfig found: ", data);
 
 
     finalApprove = () => {
+        let supplierId = this.props.voucher.supplierId;
 console.log(" ---- 1. finalApprove");
-        return ajax.put('/einvoice-send/api/config/finish')
-            .promise()
+        return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId + '/finish')
         .then(() => {
 console.log(" ---- 2. finalApprove");
             this.props.finalizeFlow();
