@@ -70,15 +70,10 @@ module.exports.init = function(app, db, config)
         // TODO: Refactoring of endpoints: Only one endpoint /api/config/inchannel
         // TODO: What about a default in dev mode???
         //
-        app.get('/api/config/inchannel', (req, res) => this.sendInChannelConfig(req, res));
-        app.get('/api/config/inchannel/current', (req, res) => this.sendInChannelConfig(req, res, true));
         app.get('/api/config/inchannel/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
 
-        app.put('/api/config/inchannel', (req, res) => this.updateInChannelConfig(req, res));
-        app.put('/api/config/inchannel/current', (req, res) => this.updateInChannelConfig(req, res, true));
         app.put('/api/config/inchannel/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
 
-        app.post('/api/config/inchannel/current', (req, res) => this.addInChannelConfig(req, res, true));
         app.post('/api/config/inchannel', (req, res) => this.addInChannelConfig(req, res));
 
         app.get('/api/userdata', (req, res) => res.json(req.opuscapita.userData()));
@@ -104,15 +99,12 @@ module.exports.init = function(app, db, config)
         app.get('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.sendInChannelContract(req, res));
 
         app.post('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.addInChannelContract(req, res));  // ???
-        app.post('/api/config/inchannelcontract', (req, res) => this.addInChannelContract(req, res));
 
         app.put('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.updateInChannelContract(req, res));  // ???
-        app.put('/api/config/inchannelcontract', (req, res) => this.updateInChannelContract(req, res));
 
 
         // Voucher
         //
-        app.get('/api/config/voucher', (req, res) => this.sendOneVoucher(req, res));
         app.get('/api/config/voucher/:supplierId', (req, res) => this.sendOneVoucher(req, res));
 
         // app.put('/api/config/voucher', (req, res) => this.updateVoucher(req, res));
@@ -131,25 +123,16 @@ module.exports.init = function(app, db, config)
     });
 }
 
-module.exports.sendInChannelConfig = function(req, res, useCurrentUser)
+module.exports.sendInChannelConfig = function(req, res)
 {
-    // TODO: Refactoring of supplierId determination
-    let supplierId = req.opuscapita.userData('supplierId');
-    if (req.params.supplierId) {
-        supplierId = req.params.supplierId;
-    }
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
+    var supplierId = req.params.supplierId;
 
-console.log(">> ", supplierId);
-
-    Api.inChannelConfigExists(supplierId)
-    .then(exists => {
+    Api.inChannelConfigExists(supplierId).then(exists =>
+    {
         if(exists)
         {
-            return Api.getInChannelConfig(supplierId)
-            .then(config => {
+            return Api.getInChannelConfig(supplierId).then(config =>
+            {
                 (config && res.json(config)) || res.status('404').json({ message : 'No configuration found for this supplier.' });
             });
         }
@@ -161,23 +144,12 @@ console.log(">> ", supplierId);
     .catch(e => res.status('400').json({ message : e.message }));
 }
 
-module.exports.addInChannelConfig = function(req, res, useCurrentUser)
+module.exports.addInChannelConfig = function(req, res)
 {
-    let supplierId = req.opuscapita.userData('supplierId');
-    if (req.params.supplierId) {
-        supplierId = req.params.supplierId;
-    }
+    var supplierId = req.params.supplierId;
 
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
-
-    // var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.body.supplierId;
-
-console.log(">> addInChannelConfig - supplierId", supplierId);
-
-    Api.inChannelConfigExists(supplierId)
-    .then(exists => {
+    Api.inChannelConfigExists(supplierId).then(exists =>
+    {
         if (exists)
         {
             res.status('409').json({ message : 'This supplier already owns an in-channel configuration.' });
@@ -189,33 +161,20 @@ console.log(">> addInChannelConfig - supplierId", supplierId);
             obj.supplierId = supplierId;
             obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "byTest";  // ??? test test test!!!
 
-console.log(">> addInChannelConfig - obj", obj);
-
             return Api.addInChannelConfig(obj, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.added').then(() => config))
                 .then(config => res.status(202).json(config));
         }
     })
-    .catch(e => {
-        // logger.error (...)  ???
-        console.log("addInChannelConfig error: ", e);
+    .catch(e =>
+    {
         res.status('400').json({ message : e.message });
     });
 }
 
-module.exports.updateInChannelConfig = function(req, res, useCurrentUser)
+module.exports.updateInChannelConfig = function(req, res)
 {
-    let supplierId = req.opuscapita.userData('supplierId');
-    if (req.params.supplierId) {
-        supplierId = req.params.supplierId;
-    }
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
-
-    // var supplierId = useCurrentUser ? req.opuscapita.userData('supplierId') : req.params.supplierId;
-
-console.log(">> updateInChannelConfig", supplierId);
+    var supplierId = req.params.supplierId;
 
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
@@ -224,19 +183,19 @@ console.log(">> updateInChannelConfig", supplierId);
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.changedBy = req.opuscapita.userData('id') || req.params.changedBy || "byTest"; // ??? Remove!
+            obj.changedBy = req.opuscapita.userData('id') || "byTest"; // ??? Remove!
 
             return Api.updateInChannelConfig(supplierId, obj, true)
-            .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
-            .then(config => res.status(202).json(config));
+                .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
+                .then(config => res.status(202).json(config));
         }
         else
         {
             res.status('404').json({ message : 'This supplier has no in-channel to be updated.' });
         }
     })
-    .catch(e => {
-        console.log("Error: ", e);
+    .catch(e =>
+    {
         res.status('400').json({ message : e.message });
     });
 }
@@ -619,7 +578,7 @@ function check4BusinessPartner(req, predefinedCustomerId, predefinedSupplierId) 
 
 
 
-module.exports.sendInChannelContract = function(req, res, useCurrentUser)
+module.exports.sendInChannelContract = function(req, res)
 {
     try {
         let bp = check4BusinessPartner(req, req.params.customerId, req.params.supplierId);
