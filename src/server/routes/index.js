@@ -468,10 +468,10 @@ module.exports.sendOCTermsAndConditions = function(req, res) {
 module.exports.sendCustomerTermsAndConditions = function(req, res) {
 
     let customerId = req.params.customerId;
-    let tenantId = "c-" + customerId;
+    let tenantId = "c_" + customerId;
     let filename = "/public/einvoice-send/TermsAndConditions.txt";
 
-console.log(">> sendCustomerTermsAndConditions - customerId: " + customerId + " -> tenantId: ", tenantId);
+console.log(">> sendCustomerTermsAndConditions - customerId: " + customerId + ", tenantId: " + tenantId + ", filename: " + filename);
 
     this.blob.storageExists(tenantId)
     .then((doesExist) => {
