@@ -6,6 +6,9 @@ import Promise from 'bluebird';
 
 import BillingDetails from './common/BillingDetails'
 
+import InChannelConfig from '../../api/InChannelConfig.js';
+
+
 
 // A workaround to prevent a browser warning about unknown properties 'active', 'activeKey' and 'activeHref'
 // in DIV element.
@@ -46,46 +49,21 @@ export default class ServiceConfigFlowStart extends React.Component
         this.setState({invoiceSendingType : event.target.value});
     }
 
-    updateInChannelConfig = (supplierId, values) => {
-        return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId)
-            .set('Content-Type', 'application/json')
-            .send(values)
-            .promise();
-    }
-
-    createInChannelConfig = (supplierId, values) => {
-        values.supplierId = supplierId;
-
-console.log("createInChannelConfig - values: ", values);
-
-        return ajax.post('/einvoice-send/api/config/inchannels')
-            .set('Content-Type', 'application/json')
-            .send(values)
-            .promise();
-    }
-
-
-    // pdf, einvoice, portal or paper
+    // Selection of pdf, einvoice, portal or paper
     setInputType = function() {
 
-        var data = {
-            inputType: this.state.invoiceSendingType,
-            status: 'new',
-            voucherId: this.props.voucher.voucherId
-        };
-
-console.log("+ setInputType: ", data);
-
         let supplier = this.props.voucher.supplierId;
+        let inputType = this.state.invoiceSendingType,
+        let voucherId = this.props.voucher.voucherId
 
         return new Promise((resolve, reject) => {
-            return this.updateInChannelConfig(supplier, data)
+            return InChannelConfig.update(supplier, inputType, voucherId)
             .then(() => {
                 resolve();
             })
             .catch((e) => {
-console.log("+ setInputType - Error: ", e);
-                return this.createInChannelConfig(supplier, data)
+                // console.log("setInputType InChannelConfig.update - Error: ", e);
+                return InChannelConfig.create(supplier, inputType, voucherId)
                 .then(() => {
                     console.log("InChannelConfig did not exist and was successfully created.");
                     resolve();
@@ -216,7 +194,7 @@ console.log("**** Voucher: ", this.props.voucher);
                 <div className="form-submit text-right">
                     <Button bsStyle="primary" disabled={ !this.state.invoiceSendingType }
                         onClick={ () =>  this.setInputType() }>
-                        Save &amp; Continue
+                        {this.context.i18n.getMessage('saveAndContinue')}
                     </Button>
                 </div>
             </div>

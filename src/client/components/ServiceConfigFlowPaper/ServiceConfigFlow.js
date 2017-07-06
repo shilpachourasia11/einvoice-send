@@ -49,9 +49,11 @@ export default class ServiceConfigFlow extends React.Component
         i18n : React.PropTypes.object.isRequired,
     };
 
+
     ////////////////////////////////////////
     // Events
     ////////////////////////////////////////
+
     setApprovedOcTc = (supplierId) => {
         return InChannelConfig.update(supplierId, {'status':'approved'});
     }
@@ -84,12 +86,9 @@ console.log("InChannelConfig found: ", data);
         })
     }
 
-
     finalApprove = () => {
-        let supplierId = this.props.voucher.supplierId;
 console.log(" ---- 1. finalApprove");
-        return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId + '/finish')
-            .promise()
+        InChannelConfig.approve(this.props.voucher.supplierId)
         .then(() => {
 console.log(" ---- 2. finalApprove");
             this.props.finalizeFlow();
@@ -98,10 +97,6 @@ console.log(" ---- 2. finalApprove");
             alert ("The forwarding to the Invoice mapping team did not succeed. Please retry.")
         })
     }
-
-
-
-
 
     setCurrentTab = (tabNo) => {
         this.setState({ currentTab : tabNo });
@@ -116,8 +111,6 @@ console.log(" ---- 2. finalApprove");
         this.setApprovedCustomerTc()
         .then(() => this.setCurrentTab(tabNo));
     }
-
-
 
 
     render()

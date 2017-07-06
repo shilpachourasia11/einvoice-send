@@ -25,5 +25,12 @@ module.exports.update = (supplierId, values) => {
 console.log("++ updateInChannelConfig -> values: ", values);
     return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId)
         .set('Content-Type', 'application/json')
-        .send(values).promise();
+        .send(values)
+        .promise();
+}
+
+module.exports.approve = (supplierId) => {
+    return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId + '/finish')
+        .set('Content-Type', 'application/json')
+        .promise()
 }

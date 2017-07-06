@@ -39,15 +39,13 @@ export default class App extends React.Component
             voucher : this.props.voucher,
             customerTermsAndConditions : this.props.customerTermsAndConditions
         }
-
-        console.log("--------------> ", this.props)
     }
 
 
     componentWillMount() {
         this.loadUserData()
         .then((userData) => {
-console.log("UserData: ", userData);
+            // console.log("UserData: ", userData);
             this.setState({user : userData});
             this.loadVoucher();
         })
@@ -67,7 +65,7 @@ console.log("UserData: ", userData);
         .then((result) => {    // .spread((voucher, response) => {
 
             let voucher = JSON.parse(result.text);
-            console.log("--> app.js - received voucher: ", voucher);
+            console.log("Voucher found: ", voucher);
 
             // How will evaluation of allowed input types and billings be determined???
             // Convention for now: Use boolen to enable or disable the different input types:
@@ -88,7 +86,7 @@ console.log("UserData: ", userData);
             // return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
             return ajax.get('/blob/public/api/c_' + voucher.customerId + '/files/public/einvoice-send/TermsAndConditions.html')
             .then((response) => {
-                console.log("TermsAndConditions for customer " + voucher.customerId + ": ", response);
+                console.log("Terms and Conditions: Found for customer " + voucher.customerId + ": ", response);
                 this.setState({customerTermsAndConditions : response.text});
             })
             .catch((e) => {
@@ -135,8 +133,6 @@ console.log("UserData: ", userData);
     ///////////////////////////////////////////
 
     navigate2Flow = (inputType) => {
-console.log(">> navigate2Flow is called!");
-        // this.history.push("/" + inputType + "/1");
         this.history.push("/" + inputType);
     }
 

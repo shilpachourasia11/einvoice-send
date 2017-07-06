@@ -38,8 +38,19 @@ module.exports.init = function(app, db, config)
     ])
     .then(() => {
         this.events = new RedisEvents({ consul : { host : 'consul' } });
-        // this.blobclient = new BlobClient({});  ??? why does it not work for variable blobclient ???
-        this.blob       = new BlobClient({});
+
+        //  Test event subscriptions:
+        this.events.subscribe('inChannelConfig.updated', (data) => {
+            console.log("**************************** inChannelConfig.updated", data);
+        });
+        this.events.subscribe('inChannelContract.updated', (data) => {
+            console.log("**************************** inChannelContract.updated", data);
+        });
+        this.events.subscribe('voucher.created', (data) => {
+            console.log("**************************** voucher.created", data);
+        });
+
+        this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
 
         app.use(checkContentType);
 

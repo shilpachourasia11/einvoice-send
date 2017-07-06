@@ -97,9 +97,8 @@ console.log("InchannelConfig found: ", data);
 
 
     finalApprove = () => {
-        let supplierId = this.props.voucher.supplierId;
 console.log(" ---- 1. finalApprove");
-        return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId + '/finish')
+        InChannelConfig.approve(this.props.voucher.supplierId)
         .then(() => {
 console.log(" ---- 2. finalApprove");
             this.props.finalizeFlow();
