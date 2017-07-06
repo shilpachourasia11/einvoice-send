@@ -68,7 +68,9 @@ export default class App extends React.Component
         })
         .then((voucher) => {
             this.setState({voucher : voucher});
-            return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
+
+            // return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
+            return ajax.get('/blob/public/api/c_' + voucher.customerId + '/file?path=/public/einvoice-send/TermsAndConditions.html')
             .then((response) => {
                 console.log("TermsAndConditions for customer " + voucher.customerId + ": ", response);
                 this.setState({customerTermsAndConditions : response.text});

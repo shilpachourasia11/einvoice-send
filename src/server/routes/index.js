@@ -638,7 +638,7 @@ module.exports.updateInChannelContract = function(req, res)
 {
 console.log(">> updateInChannelContract - started! req.body: ", req.body);
     try {
-        let bp = check4BusinessPartner(req, req.body.customerId, req.body.supplierId);
+        let bp = check4BusinessPartner(req, req.params.customerId, req.params.supplierId);
 
         if (req.body.customerId && bp.customerId != req.body.customerId) {
             throw new Error ("Customer " + req.body.supplierId + " is not allowed to update an InChannelContract for customer " + bp.supplierId + ".");
