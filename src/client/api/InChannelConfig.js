@@ -7,16 +7,16 @@ module.exports.get = (supplierId) =>
         .promise();
 }
 
-module.exports.add = (supplierId) =>
+module.exports.add = (supplierId, inputType, voucherId) =>
 {
 console.log("++ addInChannelConfig -> paper/new - VoucherId: ", this.props.voucher);
     return ajax.post('/einvoice-send/api/config/inchannels')
         .set('Content-Type', 'application/json')
         .send({
             supplierId : supplierId,
-            inputType : 'paper',
+            inputType : inputType,
             status: 'new',
-            voucherId: this.props.voucher.voucherId
+            voucherId: voucherId
         })
         .promise();
 }

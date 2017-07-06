@@ -67,15 +67,15 @@ console.log("** customerId: ", customerId);
             .then((data) => resolve(data))
             .catch((e) => {
 console.log("*** eror: ", e);
-                InChannelConfig.add(supplierId)
+                InChannelConfig.add(supplierId, 'paper', this.props.voucher.voucherId)
                 .then((data) => resolve(data))
             })
         })
         .then((data) => {
 console.log("InChannelConfig found: ", data);
-            return InChannelContract.add(customerId, supplierId, 'approved')
+            return InChannelContract.add(customerId, supplierId, 'paper', this.props.voucher.voucherId, 'approved')
             .catch((e) => {
-                return InChannelContract.update(customerId, supplierId, 'approved');
+                return InChannelContract.update(customerId, supplierId, 'paper', 'approved');
             })
         })
         .catch((e) => {
