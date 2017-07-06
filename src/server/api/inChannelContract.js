@@ -39,10 +39,7 @@ module.exports.get = function(customerId, supplierId)
 module.exports.allForCustomer = function(customerId)
 {
     return this.db.models.InChannelContract.findAll(
-        {where: {customerId: customerId}, order: [['changedOn', 'ASC']]})
-    .then((data) => {
-        return data;
-    });
+        {where: {customerId: customerId}, order: [['changedOn', 'ASC']]});
 }
 
 module.exports.add = function(data)
