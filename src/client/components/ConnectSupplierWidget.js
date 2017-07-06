@@ -1,11 +1,48 @@
-import React from 'react';
+import React, { PropTypes, Component } from 'react';
+import _ from 'underscore';
+import request from 'superagent-bluebird-promise';
 import { Line, LineChart, XAxis, YAxis, Legend, CartesianGrid } from 'recharts';
 
-export default class ConnectSupplierWidget extends React.Component
+export default class ConnectSupplierWidget extends Component
 {
+  static propTypes = {
+    actionUrl: PropTypes.string.isRequired,
+    customerId: PropTypes.string.isRequired,
+    locale: PropTypes.string.isRequired
+  };
+
+  constructor(props)
+  {
+    super(props);
+
+    this.state = {
+      inChannelContracts: []
+    }
+  };
+
+  componentDidMount()
+  {
+    const { actionUrl, customerId } = this.props;
+    request.get(`${actionUrl}/einvoice-send/api/config/inchannelcontracts/${customerId}`).
+      set('Content-Type', 'application/json').
+      then(response => {
+        this.setState({ inChannelContracts: response.body });
+        return Promise.resolve(null);
+      }).
+      catch(error => Promise.resolve(null));
+  }
+
   getData()
   {
-    return [{date: '01.07.2017', supplier_count: 3 }, {date: '03.07.2017', supplier_count: 6 }, {date: '04.07.2017', supplier_count: 2 }];
+    if (_.isEmpty(this.state.inChannelContracts)) return [];
+
+    const groupedContracts = _.groupBy(this.state.inChannelContracts, contract => {
+      return new Date(contract.changedOn).toLocaleDateString(this.props.locale || 'en');
+    });
+
+    return _.map(groupedContracts, (contracts, date) => {
+      return { date: date, "supplier count": contracts.length };
+    });
   }
 
   render()
@@ -19,9 +56,9 @@ export default class ConnectSupplierWidget extends React.Component
       >
         <CartesianGrid strokeDasharray="3 3"/>
         <Legend />
-        <XAxis label="Dates" dataKey="month"/>
-        <YAxis />
-        <Line type="stepAfter" dataKey="supplier_count" stroke="#5E9CD3" />
+        <XAxis label="Dates" dataKey="date" padding={{left: 20, right: 20}}/>
+        <YAxis padding={{top: 20}}/>
+        <Line type="stepAfter" dataKey="supplier count" stroke="#5E9CD3" />
       </LineChart>
     )
   }
