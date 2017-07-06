@@ -158,7 +158,7 @@ module.exports.addInChannelConfig = function(req, res)
             obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "byTest";  // ??? test test test!!!
 
             return Api.addInChannelConfig(obj, true)
-                .then(config => this.events.emit(config, 'inChannelConfig.added').then(() => config))
+                .then(config => this.events.emit(config, 'inChannelConfig.created').then(() => config))
                 .then(config => res.status(202).json(config));
         }
     })
@@ -621,7 +621,7 @@ console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.cus
                 obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "byTest"; // ??? only for test
 
                 return InChannelContract.add(obj, true)
-                .then(icc => this.events.emit(icc, 'inChannelContract.added').then(() => icc))
+                .then(icc => this.events.emit(icc, 'inChannelContract.created').then(() => icc))
                 .then(icc => res.status(200).json(icc));
             }
         });
@@ -824,7 +824,7 @@ console.log(">> addVoucher - req.body: ", req.body);
             data.createdBy = req.opuscapita.userData('id') || data.createdBy || "byTest"; // ??? only for test
 
             return Voucher.add(data)
-            .then((voucher) => this.events.emit(voucher, 'voucher.added').then(() => voucher))
+            .then((voucher) => this.events.emit(voucher, 'voucher.created').then(() => voucher))
             .then((voucher) => {
                 res.status(200).json(voucher);
             })
