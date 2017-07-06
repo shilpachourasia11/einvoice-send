@@ -54,7 +54,7 @@ console.log("UserData: ", userData);
     }
 
     loadUserData() {
-        return ajax.get('/einvoice-send/api/userdata')
+        return ajax.get('/auth/me')
             .promise()
         .then((result) => {
             return JSON.parse(result.text);
@@ -62,7 +62,7 @@ console.log("UserData: ", userData);
     }
 
     loadVoucher = () => {
-        let supplierId = this.state.user.supplierid;
+        let supplierId = this.state.user.supplierId;
         this.getVoucher(supplierId)
         .then((result) => {    // .spread((voucher, response) => {
 
