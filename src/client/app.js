@@ -84,10 +84,12 @@ console.log("UserData: ", userData);
         })
         .then((voucher) => {
             this.setState({voucher : voucher});
-            return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
-            .then((buffer) => {
-                console.log("TermsAndConditions for customer " + voucher.customerId + ": ", buffer);
-                this.setState({customerTermsAndConditions : buffer});
+
+            // return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
+            return ajax.get('/blob/public/api/c_' + voucher.customerId + '/file?path=/public/einvoice-send/TermsAndConditions.html')
+            .then((response) => {
+                console.log("TermsAndConditions for customer " + voucher.customerId + ": ", response);
+                this.setState({customerTermsAndConditions : response.text});
             })
             .catch((e) => {
                 console.log("Terms and Conditions: No customer specific terms and conditions found!")
