@@ -9,8 +9,11 @@ export default {
         hello : "Invitation by Customer {customerName}",
         intro1 : "Your Customer {customerName} invited you to participate on the OpusCapita Business Network.",
         intro2 : "Please select below the way on how you want to provide invoices.",
+
         helloWithoutCustomer: "Sorry, we couldn't find a voucher for you.",
-        intro1WithoutCustomer: "If you just registered as a supplier: Voucher generation may take a minute. Please retry in a moment.",
+        intro1WithoutCustomer: "If you just registered as a supplier: Voucher generation may take a minute. ",
+        reloadVoucher: "Check for new Voucher",
+
         freeFor: "Free for you for {customerName}",
 
         eInvoice: "eInvoice",

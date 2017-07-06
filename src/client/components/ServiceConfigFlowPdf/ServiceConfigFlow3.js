@@ -75,19 +75,40 @@ export default class ServiceConfigFlow3 extends React.Component {
             //     console.log(">> entries: " + pair[0]+ ', '+ pair[1]);
             //}
 
-            let localthis = this;
             ajax.post('/einvoice-send/api/config/inchannelfile')
                 // https://medium.com/ecmastack/uploading-files-with-react-js-and-node-js-e7e6b707f4ef
                 // .set('Content-Type', 'Content-Type: multipart/form-data;')   // 'Content-Type: multipart/mixed;')
                 .send(formData)
-                .end(function(err, res) {
+                .end((err, res) => {
                     if (err || !res.ok) {
                         alert("The upload did not succeed. Please try again.");
                     }
                     else {
-                        localthis.setState({ hasValidFile : true, filename : file.name });
+                        this.setState({ hasValidFile : true, filename : file.name });
                     }
                 });
+
+
+/*
+console.log("############ Pushing file " + file.name + "to blob service!");
+
+            ajax.put('/blob/api/s_' + this.props.voucher.supplierId + '/file')
+                .query({
+                    path: '/private/einvoice-send/InvoiceTemplate.pdf',
+                    createMissing: true
+                })
+                .send(formData)
+            .then(() => {
+                this.setState({ hasValidFile : true, filename : file.name });
+            })
+            .catch((e) => {
+                console.log("Document upload error: ", e);
+                alert("The upload did not succeed. Please try again.");
+            });
+*/
+        }
+        else {
+
         }
     }
 

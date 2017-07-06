@@ -46,14 +46,18 @@ export default class ServiceConfigFlowStart extends React.Component
         this.setState({invoiceSendingType : event.target.value});
     }
 
-    updateInChannelConfig = (values) => {
-        return ajax.put('/einvoice-send/api/config/inchannel')  // !!! /current
+    updateInChannelConfig = (supplierId, values) => {
+        return ajax.put('/einvoice-send/api/config/inchannel/' + supplierId)
             .set('Content-Type', 'application/json')
             .send(values)
             .promise();
     }
 
-    createInChannelConfig = (values) => {
+    createInChannelConfig = (supplierId, values) => {
+        values.supplierId = supplierId;
+
+console.log("createInChannelConfig - values: ", values);
+
         return ajax.post('/einvoice-send/api/config/inchannel')
             .set('Content-Type', 'application/json')
             .send(values)
@@ -72,14 +76,16 @@ export default class ServiceConfigFlowStart extends React.Component
 
 console.log("+ setInputType: ", data);
 
+        let supplier = this.props.voucher.supplierId;
+
         return new Promise((resolve, reject) => {
-            return this.updateInChannelConfig(data)
+            return this.updateInChannelConfig(supplier, data)
             .then(() => {
                 resolve();
             })
             .catch((e) => {
 console.log("+ setInputType - Error: ", e);
-                return this.createInChannelConfig(data)
+                return this.createInChannelConfig(supplier, data)
                 .then(() => {
                     console.log("InChannelConfig did not exist and was successfully created.");
                     resolve();
@@ -121,6 +127,11 @@ console.log("**** Voucher: ", this.props.voucher);
                     <h4>{hello}</h4>
                     <p>
                         {intro1}
+                        {!this.props.voucher.customerId &&
+                            <Button bsStyle="link" onClick={() => this.props.loadVoucher()}>
+                                {this.context.i18n.getMessage('ServiceConfigFlowStart.reloadVoucher')}
+                            </Button>
+                        }
                         <br/>
                         {intro2}
                     </p>

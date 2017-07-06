@@ -42,43 +42,38 @@ export default class App extends React.Component
 
 
     componentWillMount() {
+        this.loadVoucher();
+    }
 
-console.log("-- componentWillMount is called");
 
-        let voucher;
-
+    loadVoucher = () => {
         this.getVoucher()
         .then((result) => {    // .spread((voucher, response) => {
 
-console.log("-- app.js - voucher result: ", result);
-
-            voucher = JSON.parse(result.text);
-
-            // to simplify access of related data:
-            //
-            voucher.customerName = this.getCustomerName(voucher.customerId);
+            let voucher = JSON.parse(result.text);
+            console.log("--> app.js - received voucher: ", voucher);
 
             // How will evaluation of allowed input types and billings be determined???
-            // Convention: Use boolen to enable or disable the different input types:
+            // Convention for now: Use boolen to enable or disable the different input types:
             voucher.eInvoiceEnabled = false; // !!! no flow ui available up to now
             voucher.pdfEnabled = true;
             voucher.supplierPortalEnabled = false; // !!! no flow ui available up to now
             voucher.paperEnabled = true;
 
+            return this.getCustomer(voucher.customerId)
+            .then((customer) => {
+                voucher.customer = customer
+                voucher.customerName = (customer && customer.customerName) || voucher.customerId;
+            }).then(() => voucher);
+        })
+        .then((voucher) => {
             this.setState({voucher : voucher});
 
-            console.log("-- componentWillMount - Voucher: ", voucher);
-            console.log("-- componentWillMount - this.state.Voucher: ", this.state.voucher);
-        })
-        .then(() => {
-            return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
-                .set('Content-Type', 'application/json')
-                .promise()
-            .then((result) => {
-
-console.log("-- app.js - TermsAndConditions: ", result);
-
-                this.setState({customerTermsAndConditions : result.text});
+            // return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
+            return ajax.get('/blob/public/api/c_' + voucher.customerId + '/file?path=/public/einvoice-send/TermsAndConditions.html')
+            .then((response) => {
+                console.log("TermsAndConditions for customer " + voucher.customerId + ": ", response);
+                this.setState({customerTermsAndConditions : response.text});
             })
             .catch((e) => {
                 console.log("Terms and Conditions: No customer specific terms and conditions found!")
@@ -88,6 +83,7 @@ console.log("-- app.js - TermsAndConditions: ", result);
         .catch((e) => {
             console.log("Error determined: ", e);
 
+            // Setting voucher defaults - all options disabled:
             this.setState({
                 voucher : {
                     eInvoiceEnabled : false,
@@ -100,16 +96,21 @@ console.log("-- app.js - TermsAndConditions: ", result);
         })
     }
 
-
     getVoucher = () => {
-        return ajax.get('/einvoice-send/api/config/voucher/')
+        return ajax.get('/einvoice-send/api/config/voucher/' + this.state.voucher.supplierId)
             .set('Content-Type', 'application/json')
             .promise();
     }
 
-    getCustomerName = (customerId) => {
-        // TODO: Determine the customer name
-        return (customerId == null) ? "<unknown>" : customerId;
+    getCustomer = (customerId) => {
+        return ajax.get('/einvoice-send/api/customer/' + customerId)
+        .then((result) => {
+            return JSON.parse(result.text);
+        })
+        .catch((e) =>  {
+            console.log("Error - Did not receive details about customer with Id: " + customerId + " - error: ", e);
+            return new Promise.resolve(null);
+        });
     }
 
 
@@ -138,7 +139,13 @@ console.log(">> navigate2Flow is called!");
                 this.history = el && el.props && el.props.history;
             }}>
                 <Route component={ Layout }>
-                    <Route path="/" component={ () => {return (<ServiceConfigFlowStart openFlow={this.navigate2Flow} voucher={this.state.voucher} />)} } />)} } />
+                    <Route path="/" component={ () => {
+                        return (
+                            <ServiceConfigFlowStart
+                                openFlow={this.navigate2Flow}
+                                voucher={this.state.voucher}
+                                loadVoucher={this.loadVoucher} />
+                        )} } />
 
                     <Route path="/pdf" component={ () => (<ServiceConfigFlowFramePdf currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
