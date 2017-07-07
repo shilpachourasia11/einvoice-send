@@ -57,19 +57,11 @@ module.exports.init = function(app, db, config)
             console.log("**************************** voucher.created", data);
         });
         */
-<<<<<<< HEAD
 
         this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
 
         app.use(checkContentType);
 
-=======
-
-        this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
-
-        app.use(checkContentType);
-
->>>>>>> develop
         // InChannelConfig
         //
         app.get('/api/config/inchannels/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
@@ -81,10 +73,7 @@ module.exports.init = function(app, db, config)
 
         // InChannelContract
         //
-<<<<<<< HEAD
         app.get('/api/config/inchannelcontracts/:tenantId', (req, res) => this.sendInChannelContracts(req, res));
-=======
->>>>>>> develop
         app.get('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.sendInChannelContract(req, res));
         app.put('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.updateInChannelContract(req, res));
         app.post('/api/config/inchannelcontracts/:tenantId', (req, res) => this.addInChannelContract(req, res));
