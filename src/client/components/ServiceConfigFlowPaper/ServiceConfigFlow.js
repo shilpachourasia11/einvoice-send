@@ -70,12 +70,13 @@ console.log("++ addInChannelConfig -> paper/new - VoucherId: ", this.props.vouch
                 supplierId : supplierId,
                 inputType : 'paper',
                 status: 'new',
-                voucherId: this.props.voucher.voucherId
+                voucherId: this.props.voucher.id
             })
             .promise();
     }
 
     updateInChannelConfig = (supplierId, values) => {
+        values.voucherId = this.props.voucher.id;
 console.log("++ updateInChannelConfig -> values: ", values);
         return ajax.put('/einvoice-send/api/config/inchannel/' + supplierId)
             .set('Content-Type', 'application/json')
@@ -94,7 +95,7 @@ console.log("++ addInChannelContract -> customerId =" + customerId + ", status =
                 customerId : customerId,
                 inputType : 'paper',
                 status : status,
-                voucherId: this.props.voucher.voucherId
+                voucherId: this.props.voucher.id
             })
             .promise();
     }
@@ -106,7 +107,8 @@ console.log("++ updateInChannelContract -> customerId / status: ", customerId, s
             .send({
                 customerId : customerId,
                 inputType : 'paper',
-                status : status
+                status : status,
+                voucherId: this.props.voucher.id
             })
             .promise();
     }

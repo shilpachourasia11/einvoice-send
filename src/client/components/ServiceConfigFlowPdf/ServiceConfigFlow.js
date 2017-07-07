@@ -72,12 +72,13 @@ export default class ServiceConfigFlow extends React.Component
                 supplierId : supplierId,
                 inputType : 'pdf',
                 status: 'new',
-                voucherId: this.props.voucher.voucherId
+                voucherId: this.props.voucher.id
             })
             .promise();
     }
 
     updateInChannelConfig = (supplierId, values) => {
+        values.voucherId = this.props.voucher.id;
         return ajax.put('/einvoice-send/api/config/inchannel/' + supplierId)
             .set('Content-Type', 'application/json')
             .send(values)
@@ -103,7 +104,7 @@ console.log("++ addInChannelContract -> customerId =" + customerId + ", status =
                 customerId : customerId,
                 inputType : 'pdf',
                 status : status,
-                voucherId: this.props.voucher.voucherId
+                voucherId: this.props.voucher.id
             })
             .promise();
     }
@@ -114,7 +115,8 @@ console.log("++ updateInChannelContract -> customerId / status: ", customerId, s
             .set('Content-Type', 'application/json')
             .send({
                 inputType : 'pdf',
-                status : status
+                status : status,
+                voucherId: this.props.voucher.id
             })
             .promise();
     }
