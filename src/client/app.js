@@ -12,11 +12,13 @@ import Layout from './layout.js';
 export default class App extends React.Component
 {
     static propTypes = {
+        user: React.PropTypes.object,
         voucher: React.PropTypes.object,
         customerTermsAndConditions: React.PropTypes.string
     };
 
     static defaultProps = {
+        user : null,
         voucher : {
             eInvoiceEnabled : false,
             pdfEnabled : false,
@@ -33,25 +35,37 @@ export default class App extends React.Component
         this.history = null
 
         this.state = {
+            user : this.props.user,
             voucher : this.props.voucher,
             customerTermsAndConditions : this.props.customerTermsAndConditions
         }
-
-        console.log("--------------> ", this.props)
     }
 
 
     componentWillMount() {
-        this.loadVoucher();
+        this.loadUserData()
+        .then((userData) => {
+            // console.log("UserData: ", userData);
+            this.setState({user : userData});
+            this.loadVoucher();
+        })
     }
 
+    loadUserData() {
+        return ajax.get('/auth/me')
+            .promise()
+        .then((result) => {
+            return JSON.parse(result.text);
+        });
+    }
 
     loadVoucher = () => {
-        this.getVoucher()
+        let supplierId = this.state.user.supplierId;
+        this.getVoucher(supplierId)
         .then((result) => {    // .spread((voucher, response) => {
 
             let voucher = JSON.parse(result.text);
-            console.log("--> app.js - received voucher: ", voucher);
+            console.log("Voucher found: ", voucher);
 
             // How will evaluation of allowed input types and billings be determined???
             // Convention for now: Use boolen to enable or disable the different input types:
@@ -72,7 +86,7 @@ export default class App extends React.Component
             // return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
             return ajax.get('/blob/public/api/c_' + voucher.customerId + '/files/public/einvoice-send/TermsAndConditions.html')
             .then((response) => {
-                console.log("TermsAndConditions for customer " + voucher.customerId + ": ", response);
+                console.log("Terms and Conditions: Found for customer " + voucher.customerId + ": ", response);
                 this.setState({customerTermsAndConditions : response.text});
             })
             .catch((e) => {
@@ -96,14 +110,14 @@ export default class App extends React.Component
         })
     }
 
-    getVoucher = () => {
-        return ajax.get('/einvoice-send/api/config/voucher/' + this.state.voucher.supplierId)
+    getVoucher = (supplierId) => {
+        return ajax.get('/einvoice-send/api/config/vouchers/' + supplierId)
             .set('Content-Type', 'application/json')
             .promise();
     }
 
     getCustomer = (customerId) => {
-        return ajax.get('/einvoice-send/api/customer/' + customerId)
+        return ajax.get('/einvoice-send/api/customers/' + customerId)
         .then((result) => {
             return JSON.parse(result.text);
         })
@@ -119,8 +133,6 @@ export default class App extends React.Component
     ///////////////////////////////////////////
 
     navigate2Flow = (inputType) => {
-console.log(">> navigate2Flow is called!");
-        // this.history.push("/" + inputType + "/1");
         this.history.push("/" + inputType);
     }
 

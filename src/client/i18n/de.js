@@ -2,6 +2,7 @@ export default {
     previous: "Zurück",
     submit: "Weiter",
     accept: "OK",
+    saveAndContinue: "Speichern & Weiter",
     congratulations: "Glückwunsch!",
 
     ServiceConfigFlowStart : {

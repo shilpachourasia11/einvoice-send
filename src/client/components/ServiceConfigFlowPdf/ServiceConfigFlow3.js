@@ -64,8 +64,6 @@ export default class ServiceConfigFlow3 extends React.Component {
 
         if (ok2proceed) {
 
-            console.log("File for upload to server: ", file);
-
             var formData = new FormData();
             formData.append('file', file);
             formData.append('name', file.name);

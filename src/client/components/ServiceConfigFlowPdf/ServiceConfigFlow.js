@@ -7,6 +7,10 @@ import ServiceConfigFlow2 from '../common/ServiceConfigFlowTaCCustomer.js'
 import ServiceConfigFlow3 from './ServiceConfigFlow3.js'
 import ServiceConfigFlow4 from './ServiceConfigFlow4.js'
 
+import InChannelConfig from '../../api/InChannelConfig.js';
+import InChannelContract from '../../api/InChannelContract.js';
+
+
 // A workaround to prevent a browser warning about unknown properties 'active', 'activeKey' and 'activeHref'
 // in DIV element.
 const MyDiv = () =>
@@ -49,107 +53,41 @@ export default class ServiceConfigFlow extends React.Component
     };
 
 
-
-    ///////////////////////////////////////////////////
-    // Helper methods to fetch or post data from/to server
-    ///////////////////////////////////////////////////
-
-    //
-    // InChannelConfig
-    //
-    getInChannelConfig = (supplierId) =>
-    {
-        return ajax.get('/einvoice-send/api/config/inchannel/' + supplierId)
-            .set('Content-Type', 'application/json')
-            .promise();
-    }
-
-    addInChannelConfig = (supplierId) =>
-    {
-        return ajax.post('/einvoice-send/api/config/inchannel')
-            .set('Content-Type', 'application/json')
-            .send({
-                supplierId : supplierId,
-                inputType : 'pdf',
-                status: 'new',
-                voucherId: this.props.voucher.id
-            })
-            .promise();
-    }
-
-    updateInChannelConfig = (supplierId, values) => {
-        values.voucherId = this.props.voucher.id;
-        return ajax.put('/einvoice-send/api/config/inchannel/' + supplierId)
-            .set('Content-Type', 'application/json')
-            .send(values)
-            .promise();
-    }
-
-    //
-    // InChannelContract
-    //
-    getInChannelContract = (customerId, supplierId) => {
-        return ajax.get('/einvoice-send/api/config/inchannelcontract/' + customerId + '/' + supplierId)
-            .set('Content-Type', 'application/json')
-            .promise();
-    }
-
-    addInChannelContract = (customerId, supplierId, status) => {
-console.log("++ addInChannelContract -> customerId =" + customerId + ", status = " + status);
-        status = status || 'new';
-        return ajax.post('/einvoice-send/api/config/inchannelcontract')
-            .set('Content-Type', 'application/json')
-            .send({
-                supplierId : supplierId,
-                customerId : customerId,
-                inputType : 'pdf',
-                status : status,
-                voucherId: this.props.voucher.id
-            })
-            .promise();
-    }
-
-    updateInChannelContract = (customerId, supplierId, status) => {
-console.log("++ updateInChannelContract -> customerId / status: ", customerId, status);
-        return ajax.put('/einvoice-send/api/config/inchannelcontract/' + customerId + "/" + supplierId)
-            .set('Content-Type', 'application/json')
-            .send({
-                inputType : 'pdf',
-                status : status,
-                voucherId: this.props.voucher.id
-            })
-            .promise();
-    }
-
-
     /////////////////////////////////////////////////////////
     // Events
     /////////////////////////////////////////////////////////
 
-    setApprovedOcTc = (supplierId) => {
-        return this.updateInChannelConfig(supplierId, {'status':'approved'});
-    }
-
     setApprovedCustomerTc = () => {
         var customerId = this.props.voucher.customerId;
         var supplierId = this.props.voucher.supplierId;
-
-console.log("** customerId: ", customerId);
+        var voucherId  = this.props.voucher.id;
 
         return new Promise((resolve, reject) => {
-            this.getInChannelConfig(supplierId)
+            InChannelConfig.get(supplierId)
             .then((data) => resolve(data))
             .catch((e) => {
-console.log("*** eror: ", e);
-                this.addInChannelConfig(supplierId)
+                let values =  {
+                    inputType: InChannelConfig.types.pdf,
+                    voucherId: voucherId
+                }
+                InChannelConfig.add(supplierId, values)
                 .then((data) => resolve(data))
             })
         })
         .then((data) => {
-console.log("InchannelConfig found: ", data);
-            return this.addInChannelContract(customerId, supplierId, 'approved')
+            let inChannelContractData = {
+                customerId: customerId,
+                inputType: InChannelConfig.types.pdf,
+                voucherId: voucherId,
+                status: InChannelContract.status.approved
+            }
+
+            InChannelContract.get(supplierId, customerId)
+            .then((contract) => {
+                return InChannelContract.update(supplierId, customerId, inChannelContractData);
+            })
             .catch((e) => {
-                return this.updateInChannelContract(customerId, supplierId, 'approved');
+                return InChannelContract.add(supplierId, inChannelContractData)
             })
         })
         .catch((e) => {
@@ -160,14 +98,12 @@ console.log("InchannelConfig found: ", data);
 
 
     finalApprove = () => {
-console.log(" ---- 1. finalApprove");
-        return ajax.put('/einvoice-send/api/config/finish')
-            .promise()
+        InChannelConfig.approve(this.props.voucher.supplierId)
         .then(() => {
-console.log(" ---- 2. finalApprove");
             this.props.finalizeFlow();
         })
         .catch((e) => {
+            console.log("Error appeared: ", e);
             alert ("The forwarding to the Invoice mapping team did not succeed. Please retry.")
         })
     }
@@ -178,7 +114,7 @@ console.log(" ---- 2. finalApprove");
     }
 
     approveOcTc = (tabNo) => {
-        this.setApprovedOcTc(this.props.voucher.supplierId)
+        InChannelConfig.update(this.props.voucher.supplierId, {'status':'approved'})
         .then(() => this.setCurrentTab(tabNo));
     }
 

@@ -23,7 +23,7 @@ export default class ConnectSupplierWidget extends Component
   componentDidMount()
   {
     const { actionUrl, customerId } = this.props;
-    request.get(`${actionUrl}/einvoice-send/api/config/inchannelcontracts/${customerId}`).
+    request.get(`${actionUrl}/einvoice-send/api/config/inchannelcontracts/c_${customerId}`).
       set('Content-Type', 'application/json').
       then(response => {
         this.setState({ inChannelContracts: response.body });

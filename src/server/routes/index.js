@@ -14,12 +14,9 @@ const fs = require('fs');
 const writeFile = Promise.promisify(fs.writeFile);
 
 
-/* Questions:
-TODO: which statuses shall we support?
-- created
-- active
-- mappingStarted
-- approvedToC
+/* Conventions:
+InChannelConfig.status = new | approved | activated   // inPreparation
+InChannelContract.status = new | approved
 */
 
 
@@ -41,10 +38,8 @@ module.exports.init = function(app, db, config)
     ])
     .then(() => {
         this.events = new RedisEvents({ consul : { host : 'consul' } });
-        // this.blobclient = new BlobClient({});  ??? why does it not work for variable blobclient ???
-        this.blob       = new BlobClient({});
 
-/*
+        /*
         //  Test event subscriptions:
         this.events.subscribe('inChannelConfig.created', (data) => {
             console.log("**************************** inChannelConfig.created", data);
@@ -61,85 +56,57 @@ module.exports.init = function(app, db, config)
         this.events.subscribe('voucher.created', (data) => {
             console.log("**************************** voucher.created", data);
         });
-*/
+        */
 
+        this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
 
-        // app.use(checkContentType);  ???
+        app.use(checkContentType);
 
-        var upload  = Multer({
-          storage: Multer.memoryStorage(),
-          fileFilter: (req, file, cb) => {
-            cb(null, true);
-/*
-??? Reactivate!!!
-            // console.log("---> file: ", file);
-            var filename = file.originalname;
-            var extension = filename.substr(filename.lastIndexOf('.') + 1);
-            if (extension.toLowerCase() == 'pdf') {
-              cb(null, true)
-            }
-            else {
-              cb(null, false)
-            }
-*/
-          }
-        });
-
-
-        // TODO: Move to own Routes: inchannel, inchannelcontract, voucher, ...
-        // TODO: Refactoring of endpoints: Only one endpoint /api/config/inchannel
-        // TODO: What about a default in dev mode???
+        // InChannelConfig
         //
-        app.get('/api/config/inchannel/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
-        app.put('/api/config/inchannel/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
-        app.post('/api/config/inchannel', (req, res) => this.addInChannelConfig(req, res));
+        app.get('/api/config/inchannels/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
+        app.put('/api/config/inchannels/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
+        app.post('/api/config/inchannels', (req, res) => this.addInChannelConfig(req, res));
+        app.put('/api/config/inchannels/:supplierId/finish', (req, res) => this.approveInChannelConfig(req, res));
 
         app.get('/api/userdata', (req, res) => res.json(req.opuscapita.userData()));
 
-
-        // blob access, like upload of PDF, download of TermsAndConditions, ...
-        //
-        app.post('/api/config/inchannelfile', upload.single('file'), (req, res) => this.addPdfExample(req, res));
-        app.get('/api/config/inchannelfile', (req, res) => this.getPdfExample(req, res));
-
-        app.post('/api/blob/addfile/:tenantId', upload.single('file'), (req, res) => this.addfile(req, res));
-        app.get('/api/blob/storefile/:tenantId', (req, res) => this.storeFile(req, res));
-        app.get('/api/blob/list/:tenantId', (req, res) => this.listFolder(req, res));
-
-//        app.get('/api/inchannel/octermsandconditions', (req, res) => this.sendOCTermsAndConditions(req, res));
-        app.get('/api/inchannel/termsandconditions/:customerId', (req, res) => this.sendCustomerTermsAndConditions(req, res));
-
-
         // InChannelContract
-        // TODO: Create own express Router
         //
-        app.get('/api/config/inchannelcontracts/:customerId', (req, res) => this.sendInChannelContractsForCustomer(req, res));
-        app.get('/api/config/inchannelcontract/:customerId/:supplierId', (req, res) => this.sendInChannelContract(req, res));
-        app.put('/api/config/inchannelcontract/:customerId/:supplierId', (req, res) => this.updateInChannelContract(req, res));  // ???
-        app.post('/api/config/inchannelcontract', (req, res) => this.addInChannelContract(req, res));  // ???
-//        app.get('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.sendInChannelContract(req, res));
-//        app.post('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.addInChannelContract(req, res));  // ???
-//        app.put('/api/config/inchannelcontract/:relatedTenantId', (req, res) => this.updateInChannelContract(req, res));  // ???
-
+        app.get('/api/config/inchannelcontracts/:tenantId', (req, res) => this.sendInChannelContracts(req, res));
+        app.get('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.sendInChannelContract(req, res));
+        app.put('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.updateInChannelContract(req, res));
+        app.post('/api/config/inchannelcontracts/:tenantId', (req, res) => this.addInChannelContract(req, res));
 
         // Voucher
         //
-        app.get('/api/config/voucher/:supplierId', (req, res) => this.sendOneVoucher(req, res));
-        // app.put('/api/config/voucher', (req, res) => this.updateVoucher(req, res));
-        // app.put('/api/config/voucher/:supplierId', (req, res) => this.updateVoucher(req, res));
+        // TODO: search only for Vouchers with state != 'closed'
+        app.get('/api/config/vouchers/:supplierId', (req, res) => this.sendOneVoucher(req, res));
+        app.post('/api/config/vouchers', (req, res) => this.addVoucher(req, res));
+        // TODO: voucher vs. vouchers - for first step of adjustments, we keep "voucher". As soon as onboarding is adjusted: remove
         app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
 
-
         // forwarding of REST calls
-        app.get('/api/customer/:customerId', (req, res) => this.sendCustomer(req, res));
-
-
-        // Supplier finally approved the final step:
-        app.put('/api/config/finish', (req, res) => this.approveInChannelConfig(req, res));
-// ???
-
+        app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
     });
 }
+
+
+function checkContentType(req, res, next)
+{
+    var method = req.method.toLowerCase();
+    var contentType = req.headers['content-type'] && req.headers['content-type'].toLowerCase();
+
+    if(method !== 'get' && !(contentType == 'application/json' || contentType == 'application/'))
+        res.status(400).json({ message : 'Invalid content type. Has to be "application/json".' });
+    else
+        next();
+}
+
+
+//////////////////////////////////////////////////////////////
+// InChannelConfig
+//////////////////////////////////////////////////////////////
 
 module.exports.sendInChannelConfig = function(req, res)
 {
@@ -159,7 +126,10 @@ module.exports.sendInChannelConfig = function(req, res)
             res.status('404').json({ message : 'This supplier has no in-channel configuration.' });
         }
     })
-    .catch(e => res.status('400').json({ message : e.message }));
+    .catch(e => {
+        console.log("sendInChannelConfig - Error: ", e);
+        res.status('400').json({ message : e.message })
+    });
 }
 
 module.exports.addInChannelConfig = function(req, res)
@@ -176,16 +146,15 @@ module.exports.addInChannelConfig = function(req, res)
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "byTest";  // ??? test test test!!!
+            obj.createdBy = req.opuscapita.userData('id');
 
             return Api.addInChannelConfig(obj, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.created').then(() => config))
                 .then(config => res.status(202).json(config));
         }
     })
-    .catch(e =>
-    {
-        console.log("--> addInChannelConfig - error: ", e);
+    .catch(e => {
+        console.log("addInChannelConfig - Error: ", e);
         res.status('400').json({ message : e.message });
     });
 }
@@ -201,7 +170,7 @@ module.exports.updateInChannelConfig = function(req, res)
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.changedBy = req.opuscapita.userData('id') || "byTest"; // ??? Remove!
+            obj.changedBy = req.opuscapita.userData('id');
 
             return Api.updateInChannelConfig(supplierId, obj, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
@@ -212,396 +181,103 @@ module.exports.updateInChannelConfig = function(req, res)
             res.status('404').json({ message : 'This supplier has no in-channel to be updated.' });
         }
     })
-    .catch(e =>
-    {
+    .catch(e => {
+        console.log("updateInChannelConfig - Error: ", e);
         res.status('400').json({ message : e.message });
     });
 }
 
 
-
-
-
-////////////////////////////////////////////////////////////////////
-
-
-
-function generateSupplierTenantId(suppierId) {
-    return "s_" + suppierId;
-}
-
-
 /**
- * Store PDF example file for invoice-mapping in blob
+ * The Supplier finally approved his configurations. This results in
+ * 1. Set approved state in InChannelConfig
+ * 2. push the uploaded example pdf to xxx
+ * What else???
  *
- * @param  {object} [req]{@link http://expressjs.com/de/api.html#req}
- * @param  {object} [res]{@link http://expressjs.com/de/api.html#res}
- * @return {Promise} [Promise]{@link http://bluebirdjs.com/docs/api-reference.html}
- */
-module.exports.addPdfExample = function(req, res)
-{
-    let supplierId = req.opuscapita.userData('supplierId');
-    if (req.params.supplierId) {
-        supplierId = req.params.supplierId;
-    }
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
-
-    /*
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    console.log(req.headers);
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    console.log(req.body) // form fields
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    console.log(req.file); // form file
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    req.on('data', (data) => {
-      console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-      console.log(data.toString());
-      console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-    });
-    */
-
-    let blob = new BlobClient({
-        serviceClient : req.opuscapita.serviceClient
-    });
-
-    const file = req.file;
-
-    if (file && req.file.buffer) {
-        const buffer = req.file.buffer;
-        const filename = req.file.originalname;
-
-        // writeFile("./" + filename, buffer)  // for test only
-
-        let tenantId = generateSupplierTenantId(supplierId);
-        let targetfilename = "/private/einvoice-send/InvoiceTemplate.pdf";
-console.log("******** Storing file " + filename + " at " + tenantId + " + " + targetfilename);
-
-
-// TODO: ??? createFile(..., true) will do a createStorage directly.
-        blob.createStorage(tenantId)
-        .then((result) => {
-            return blob.createFile(tenantId, targetfilename, buffer)
-            .catch((err) => {
-                // file already exist.
-                if (err) {
-                    return blob.storeFile(tenantId, targetfilename, buffer);
-                }
-            });
-        })
-        .then((result) => {
-            console.log("The file " + filename + " was stored it in the blob storage.");
-            res.status('200').json({ message : 'PDF file ' + filename + ' received.' });
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status('400').json({ message : err.message });
-        });
-    }
-    else {
-      res.status('400').json({ message : 'No PDF file received.' });
-    }
-}
-
-
-module.exports.getPdfExample = function(req, res)
-{
-    let supplierId = req.opuscapita.userData('supplierId');
-    if (req.params.supplierId) {
-        supplierId = req.params.supplierId;
-    }
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
-
-    let tenantId = generateSupplierTenantId(supplierId)
-    let filename = "/private/einvoice-send/InvoiceTemplate.pdf"
-
-
-    let blob = new BlobClient({
-        serviceClient : req.opuscapita.serviceClient
-    });
-
-    blob.readFile(tenantId, filename)
-    .spread((buffer, fileInfo) => {
-        if (buffer) {
-            writeFile("./uploadedInvoiceExample.pdf" , buffer);  // for test only   ???
-            res.status('200').json({ message : 'PDF file ' + filename + ' found.' });
-        }
-        else {
-            console.log("---- Error with the access of the stored blob: ", buffer);
-            res.status('400').json({message : 'Error with the access of the stored blob at ' + filename});
-        }
-    })
-    .catch((err) => {
-        console.log(err);
-        res.status('400').json({ message : err.message });
-    });
-}
-
-
-
-//////////////////////////////////////////////////////////////////
-// Test methods
-//////////////////////////////////////////////////////////////////
-
-module.exports.listFolder = function(req, res)
-{
-    let tenantId = req.params.tenantId;
-    let filename = req.query.path  || "/public/einvoice-send";
-
-    console.log("Called Listing for " + tenantId + ": " + filename);
-
-    // this.blob.listEntries(tenantId, "/private/" + filename)
-    this.blob.listEntries(tenantId, filename)
-    .then((entries) => {
-        res.status('200').json({ files : entries});
-    })
-    .catch((err) => {
-        console.log(err);
-        res.status('400').json({ message : err.message });
-    });
-}
-
-module.exports.addfile = function(req, res)
-{
-    const file = req.file;
-    let filename = file.originalname;
-    let blobtarget = "/private/" + filename;
-
-    let blobpath = req.query.targetpath;
-    if (blobpath) {
-        blobtarget = blobpath
-    }
-
-    let tenantId = req.params.tenantId;
-
-    console.log("Called AddFile for " + tenantId + " in " + filename + " to " + blobtarget);
-
-    if (file && req.file.buffer) {
-        const buffer = req.file.buffer;
-        this.blob.createStorage(tenantId)
-        .then((result) => {
-            return this.blob.createFile(tenantId, blobtarget, buffer)
-            .catch((err) => {
-                if (err) {
-                    return this.blob.storeFile(tenantId, blobtarget, buffer)
-                }
-            });
-        })
-        .then((result) => {
-            console.log("Received the file " + filename + " stored it in the blob storage.");
-            res.status('200').json({ message : 'File ' + filename + ' received and stored at ' + blobtarget });
-        })
-        .catch((err) => {
-            console.log(err);
-            res.status('400').json({ message : err.message });
-        });
-    }
-    else {
-      res.status('400').json({ message : 'No file received.' });
-    }
-}
-
-module.exports.storeFile = function(req, res) {
-
-    let tenantId = req.params.tenantId;
-    let filename = req.query.path;
-    let targetfilename = req.query.targetpath;
-
-    console.log("Calls StoreFile for " + tenantId + " of " + filename + " to " + targetfilename);
-
-    this.blob.readFile(tenantId, filename)
-    .spread((buffer, fileinfo) => {
-        if (buffer) {
-            writeFile(targetfilename , buffer);
-            res.status('200').json({ message : 'file ' + filename + ' was stored at ' + targetfilename});
-        }
-        else {
-            console.log("---- Error with the access of the stored blob: ", buffer);
-            res.status('400').json({message : 'Error with the access of the stored blob at ' + filename});
-        }
-    })
-    .catch((err) => {
-        console.log(err);
-        res.status('400').json({ message : err.message });
-    });
-}
-
-
-
-
-/**
- * As soon as the supplier finished his configuration, we have to forward the
- * PDF example file to the Mapping-team.
- * TODO: Explain the process.
- *
- * @param  {[type]} req [description]
- * @param  {[type]} res [description]
- * @return {Promise} [Promise]{@link http://bluebirdjs.com/docs/api-reference.html}
- */
-module.exports.forwardPdfExample = function(req, res, supplierId) {
-
-console.log(">>>>>> Pushing the PDF example that was uploaded for supplier " + supplierId + " to ???");
-
-    // TODO: What to do???
-
-    let tenantId = generateSupplierTenantId(supplierId);
-    let filename = "/private/einvoice-send/InvoiceTemplate.pdf";
-
-    return this.blob.readFile(tenantId, filename)
-    .spread((buffer, fileInfo) => {
-        if (buffer) {
-            // TODO: Up to now it is not defined what to do with the file. tbd!
-            // writeFile("./uploadedInvoiceExample.pdf" , buffer)
-            res.status('200').json({ message : 'PDF file ' + filename + ' found.' });
-        }
-        else {
-            console.log("---- Error with the access of the stored blob: ", buffer);
-            res.status('400').json({message : 'Error with the access of the stored blob at ' + filename});
-        }
-    })
-    .catch((err) => {
-        console.log(err);
-        res.status('400').json({ message : err.message });
-    });
-}
-
-// later. Probably.
-module.exports.sendOCTermsAndConditions = function(req, res) {
-
-    console.log(">> sendOCTermsAndConditions");
-
-    this.blob.readFile("OpusCapita", "/public/einvoice-send/TermsAndConditions")
-    .spread((result, fileInfo) => res.status(200).send(text))
-    .catch((e) => res.status('400').json({message: e.message}));
-}
-
-
-/**
- * Delivers the Customer specific terms and conditions as text
  * @param  {[type]} req [description]
  * @param  {[type]} res [description]
  * @return {[type]}     [description]
  */
-module.exports.sendCustomerTermsAndConditions = function(req, res) {
+module.exports.approveInChannelConfig = function(req, res) {
 
-    let customerId = req.params.customerId;
-    let tenantId = "c_" + customerId;
-    let filename = "/public/einvoice-send/TermsAndConditions.txt";
+    let supplierId = req.params.supplierId;
 
-console.log(">> sendCustomerTermsAndConditions - customerId: " + customerId + ", tenantId: " + tenantId + ", filename: " + filename);
-
-    this.blob.storageExists(tenantId)
-    .then((doesExist) => {
-        if (doesExist) {
-            this.blob.readFile(tenantId, filename)
-            .spread((buffer, fileInfo) => {
-                if (buffer) {
-                    let text = buffer.toString();
-                    res.status('200').send(text)
-                }
-                else {
-                    res.status('400').json({message : 'No data found for customer ' + customerId + ' at ' + filename});
-                }
-            })
-        }
-        else {
-            // return Promise.reject(new Error('No data found for customer ' + customerId));
-            res.status('400').json({ message : 'No data found for customer ' + customerId });
-        }
+    return new Promise((resolve, reject) => {
+        Api.inChannelConfigExists(supplierId)
+        .then(exists => {
+            if(exists) {
+                var obj = {
+                    supplierId : supplierId,
+                    changedBy : req.opuscapita.userData('id'),
+                    status : 'activated'   // 'preparation'
+                };
+                return Api.updateInChannelConfig(supplierId, obj, true)
+                .then(config => {
+                    return this.events.emit(config, 'inChannelConfig.updated');
+                })
+// ???
+//                .then(() => {
+//                    voucher.setState("closed");
+//                })
+                // .then(() => {
+                // TODO: How to initiated external processes on e.g. gdp (Global Ditigizing Platform)? To be defined!
+                //    return Promise.resolve();
+                //})
+                .catch((e) => {
+                    console.log("approveInChannelConfig - Error: ", e);
+                    res.status('400').json({ message : e.message })
+                })
+            }
+            else {
+                reject();
+            }
+        })
+        .then(() => resolve());
     })
-    .catch((err) => {
-        console.log(err);
-        res.status('400').json({ message : err.message });
+    .then(() => {
+        res.status(200).send();
+    })
+    .catch(e => {
+        console.log("approveInChannelConfig - Error: ", e);
+        res.status('400').json({ message : e.message })
     });
 }
 
 
+//////////////////////////////////////////////////////////////
+// InChannelContract
+//////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////
+function determineBusinessPartners(tenantId1, tenantId2) {
 
+    let allowedPrefixes = [ 'c_', 's_' ];
+    let prefix1 = tenantId1.substring(0,2);
+    let prefix2 = tenantId2.substring(0,2);
 
+    let supplierId;
+    let customerId;
 
-
-/**
- * We have three different ways on how the business partners (Supplier and
- * Customer) could get defined:
- * 1. Explizit in the REST call URL.
- * 2. Explizit in the REST body.
- * 3. One businessparter implizit (see userData) plus the other one in the URL.
- *
- * Rule 3 overrules the others!
- * Rules 1 and 2 are not handled differently in this method. The caller already
- * defines his priority by passing the correct data as parameters of this method.
- *
- * @param  {[type]} req                  [description]
- * @param  {[type]} predefinedCustomerId [description]
- * @param  {[type]} predefinedSupplierId [description]
- * @return {[type]}                      [description]
- */
-function determineBusinessPartner(req, predefinedCustomerId, predefinedSupplierId) {
-
-console.log(" - predefinedCustomerId", predefinedCustomerId);
-console.log(" - predefinedSupplierId", predefinedSupplierId);
-console.log(" - req.params.relatedTenantId", req.params.relatedTenantId);
-console.log(" - req.params.supplier", req.params.supplierId);
-console.log(" - req.params.customerId", req.params.customerId)
-
-    let supplierId = predefinedSupplierId;
-    let customerId = predefinedCustomerId;
-
-    // Implizit Supplier assignment has highest priority
-    if (req.opuscapita.userData('supplierId')) {
-        supplierId = req.opuscapita.userData('supplierId');
-        if (req.params.relatedTenantId) {
-            customerId = req.params.relatedTenantId;
-        }
+    if (!prefix1 || !prefix2 || prefix1 == prefix2 || !allowedPrefixes.includes(prefix1) || !allowedPrefixes.includes(prefix2)) {
+        throw new Error("Proper Tenant definition is required! Please provide 's_<supplierId>' and 'c_<customerId>' as part of the URL. (" + tenantId1 + ", " + tenantId2 + ")'");
     }
 
-    if (req.opuscapita.userData('customerId')) {
-        customerId = req.opuscapita.userData('customerId');
-        if (req.params.relatedTenantId) {
-            supplierId = req.params.relatedTenantId;
-        }
+    if (tenantId1.startsWith("s_")) {
+        supplierId = tenantId1.substring(2);
+        customerId = tenantId2.substring(2);
+    }
+    else {
+        customerId = tenantId1.substring(2);
+        supplierId = tenantId2.substring(2);
     }
 
     return {supplierId: supplierId, customerId, customerId};
 }
 
-function check4BusinessPartner(req, predefinedCustomerId, predefinedSupplierId) {
-
-    let bp = determineBusinessPartner(req, predefinedCustomerId, predefinedSupplierId);
-
-    // only for testing ??? ???
-    if (!bp.supplierId) {
-        bp.supplierId = 'ABC';    // ??? Remove - only for test!
-        bp.customerId = bp.customerId || predefinedCustomerId || req.params.relatedTenantId;
-    }
-
-
-    if (!bp.supplierId && !bp.customerId) {
-        throw new Error ("A supplierId and customerId (assigment and/or parameter ) is required.")
-    }
-    if (!bp.supplierId) {
-        throw new Error ("A supplierId/assignment is required.")
-    }
-    if (!bp.customerId) {
-        throw new Error ("A customerId/assignment is required.")
-    }
-    return bp;
-}
-
-
 
 module.exports.sendInChannelContract = function(req, res)
 {
     try {
-        let bp = check4BusinessPartner(req, req.params.customerId, req.params.supplierId);
-
-console.log(">> sendInChannelContract - businesspartner: ", bp.supplierId, bp.customerId);
+        let bp = determineBusinessPartners(req.params.tenantId1, req.params.tenantId2);
 
         return InChannelContract.get(bp.customerId, bp.supplierId)
         .then(data => {
@@ -609,46 +285,70 @@ console.log(">> sendInChannelContract - businesspartner: ", bp.supplierId, bp.cu
         })
     }
     catch(e) {
+        console.log("sendInChannelContract - Error: ", e);
         res.status('400').json({message: e.message});
     }
 }
 
-module.exports.sendInChannelContractsForCustomer = function(req, res)
+module.exports.sendInChannelContracts = function(req, res)
 {
-    const customerId = req.params.customerId;
-    return InChannelContract.allForCustomer(customerId).then(data => {
-        (data && res.json(data)) || res.status('404').json({ message : 'No entry found for customer ' + customerId});
-    })
+    try {
+        const tenantId = req.params.tenantId;
+        let inChannelContractsPromise;
+
+        if (tenantId.startsWith("s_")){
+            inChannelContractsPromise = InChannelContract.allForSupplier(tenantId.substring(2));
+        }
+        else if (tenantId.startsWith("c_")) {
+            inChannelContractsPromise = InChannelContract.allForCustomer(tenantId.substring(2));
+        }
+        else {
+            throw new Error("No valid tenant provided! Please provide a valid tenant identifier that starts with either 's_' or 'c_'. Provided value was " + tenantId);
+        }
+
+        return inChannelContractsPromise.then(data => {
+            (data && res.json(data)) || res.status('404').json({ message : 'No entry found for tenant ' + tenantId});
+        })
+    }
+    catch(error) {
+        req.opuscapita.logger.error('Error when getting InChannelContracts: %s', error);
+        res.status('400').json({ message : error.message });
+    }
 }
 
 
 module.exports.addInChannelContract = function(req, res)
 {
-console.log(">> addInChannelContract - started! req.body: ", req.body);
-
     try {
-        let bp = check4BusinessPartner(req, req.body.customerId, req.body.supplierId);
+        let tenantId = req.params.tenantId;
+        let supplierId;
+        let customerId;
 
-        if (req.body.customerId && bp.customerId != req.body.customerId) {
-            throw new Error ("Customer " + req.body.supplierId + " is not allowed to add an InChannelContract for customer " + bp.supplierId + ".");
+        let obj = req.body || {};
+
+        if (tenantId.startsWith("s_")){
+            supplierId = tenantId.substring(2);
+            obj.supplierId = supplierId;       // or shall we throw an error if values distinct?
         }
-        if (req.body.supplierId && bp.supplierId != req.body.supplierId) {
-            throw new Error ("Supplier " + req.body.supplierId + " is not allowed to add an InChannelContract for supplier " + bp.supplierId + ".");
+        else if (tenantId.startsWith("c_")) {
+            customerId = tenantId.substring(2);
+            obj.customerId = customerId;       // or shall we throw an error if values distinct?
+        }
+        else {
+            throw new Error("No valid tenant provided! Please provide a valid tenant identifier that starts with either 's_' or 'c_'. Provided value was " + tenantId);
         }
 
-console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.customerId);
+        if (!(customerId || supplierId)) {
+            throw new Error("Please provide a supplierId or a customerId tenant in the URI.")
+        }
 
-        InChannelContract.exists(bp.customerId, bp.supplierId)
+        InChannelContract.exists(customerId, supplierId)
         .then(exists => {
             if (exists) {
-                res.status('409').json({ message : 'This customer-supplier relation (' + bp.customerId + '+' + bp.supplierId + ') already owns an in-channel configuration.' });
+                res.status('409').json({ message : 'This customer-supplier relation (' + customerId + '+' + supplierId + ') already owns an in-channel configuration.' });
             }
             else {
-                var obj = req.body || { };
-                obj.supplierId = bp.supplierId;
-                obj.customerId = bp.customerId;
-                obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "byTest"; // ??? only for test
-
+                obj.createdBy = req.opuscapita.userData('id');
                 return InChannelContract.add(obj, true)
                 .then(icc => this.events.emit(icc, 'inChannelContract.created').then(() => icc))
                 .then(icc => res.status(200).json(icc));
@@ -656,18 +356,15 @@ console.log(">> addInChannelContract - businesspartner: ", bp.supplierId, bp.cus
         });
     }
     catch(e) {
-        // logger.error (...)  ???
-        console.log("addInChannelContract error: ", e);
-
+        console.log("addInChannelContract - Error: ", e);
         res.status('400').json({ message : e.message });
     };
 }
 
 module.exports.updateInChannelContract = function(req, res)
 {
-console.log(">> updateInChannelContract - started! req.body: ", req.body);
     try {
-        let bp = check4BusinessPartner(req, req.params.customerId, req.params.supplierId);
+        let bp = determineBusinessPartners(req.params.tenantId1, req.params.tenantId2);
 
         if (req.body.customerId && bp.customerId != req.body.customerId) {
             throw new Error ("Customer " + req.body.supplierId + " is not allowed to update an InChannelContract for customer " + bp.supplierId + ".");
@@ -676,16 +373,12 @@ console.log(">> updateInChannelContract - started! req.body: ", req.body);
             throw new Error ("Supplier " + req.body.supplierId + " is not allowed to update an InChannelContract for supplier " + bp.supplierId + ".");
         }
 
-console.log(">> updateInChannelContract - businesspartner: ", bp.customerId, bp.supplierId);
-
         InChannelContract.exists(bp.customerId, bp.supplierId)
         .then((exists) => {
             if(exists) {
                 var obj = req.body || { }
-
-                obj.supplierId = bp.supplierId;
-                obj.changedBy = req.opuscapita.userData('id') || req.params.changedBy;
-                obj.changedOn = new Date();  // ??? via db?
+                obj.changedBy = req.opuscapita.userData('id');
+                obj.changedOn = new Date();                     // TODO: directly via db. ???
 
                 return InChannelContract.update(bp.customerId, bp.supplierId, obj)
                 .then( () => {
@@ -702,136 +395,41 @@ console.log(">> updateInChannelContract - businesspartner: ", bp.customerId, bp.
         });
     }
     catch(e) {
+        console.log("updateInChannelContract - Error: ", e);
         res.status('400').json({ message : e.message });
     }
 }
 
-/**
- * The Supplier finally approved his configurations. This results in
- * 1. Set approved state in InChannelConfig
- * 2. push the uploaded example pdf to xxx
- * What else???
- *
- * @param  {[type]} req [description]
- * @param  {[type]} res [description]
- * @return {[type]}     [description]
- */
-module.exports.approveInChannelConfig = function(req, res) {
-    let supplierId = req.opuscapita.userData('supplierId');
-    if (req.params.supplierId) {
-        supplierId = req.params.supplierId;
-    }
-    if (!supplierId) {
-        supplierId = 'ABC';    // ??? Remove - only for test!
-    }
-
-console.log(">> approveInChannelConfig", supplierId);
-
-    return new Promise((resolve, reject) => {
-        Api.inChannelConfigExists(supplierId)
-        .then(exists => {
-// console.log(">> approveInChannelConfig - exists: ", exists);
-            if(exists) {
-                var obj = {
-                    supplierId : supplierId,
-                    changedBy : req.opuscapita.userData('id') || "byTest",       // ??? only for test
-                    status : 'activated'   // 'preparation'
-                };
-                return Api.updateInChannelConfig(supplierId, obj, true)
-                .then(config => {
-// console.log(">> approveInChannelConfig - update done: ", config);
-                    return this.events.emit(config, 'inChannelConfig.updated');
-                })
-                // .then(() => {
-                // console.log(">> approveInChannelConfig - emit done.");
-                    // return this.forwardPdfExample(req, res, supplierId); - for inputType = pdf
-                //    return Promise.resolve();
-                //})
-                .catch((error) => {
-                    console.log("An error occured: ", error);
-                    res.status('400').json({ message : error.message })
-                })
-            }
-            else {
-                reject();
-            }
-        })
-        .then(() => resolve());
-    })
-    .then(() => {
-        res.status(200).send();
-    })
-    .catch(e => {
-        // logger.error
-        console.log("An error occured: ", e);
-        res.status('400').json({ message : e.message })
-    });
-}
 
 
 //////////////////////////////////////////////////////////////////////
 // Voucher
 //////////////////////////////////////////////////////////////////////
 
-module.exports.sendVoucher = function(req, res)
-{
-    try {
-        let bp = determineBusinessPartner(req, req.params.customerId, req.params.supplierId);
-
-console.log(">> sendVoucher - businesspartner: ", bp.supplierId, bp.customerId);
-
-
-        return Voucher.get(bp.customerId, bp.supplierId)
-        .then(data => {
-            (data && res.json(data)) || res.status('404').json({ message : 'No Voucher object found for the supplier-customer pair ' + bp.supplierId + "+" + bp.customerId});
-        })
-    }
-    catch(e) {
-        res.status('400').json({message: e.message});
-    }
-}
-
 module.exports.sendOneVoucher = function(req, res)
 {
-    try {
-        let bp = determineBusinessPartner(req, null, req.params.supplierId);
+    let supplierId = req.params.supplierId;
 
-console.log(">> sendOneVoucher - businesspartner: ", bp.customerId, bp.supplierId);
-
-        return new Promise((resolve, reject) => {
-            if (bp.customerId && bp.supplierId) {
-                resolve(Voucher.getOne(bp.customerId, bp.supplierId));
-            }
-            if (bp.supplierId) {
-                resolve(Voucher.getOneBySupplier(bp.supplierId));
-            }
-            else {  // only for test ???
-                resolve(Voucher.getAny());
-            }
-        })
-        .then(data => {
-            if (data) {
-                console.log(">> sendOneVoucher - data: ", data.dataValues);
-                (data && res.json(data)) || res.status('200').json(data);
-            }
-            else {
-                (data && res.json(data)) || res.status('404').json({ message : 'No Voucher object found for the supplier-customer pair ' + bp.supplierId + "+" + bp.customerId});
-            }
-        })
-        .catch((error) => {
-            console.log("sendOneVoucher: ", error);
-            res.status('400').json({message: error.message});
-        })
-    }
-    catch(error) {
-        res.status('400').json({message: error.message});
-    }
+    return new Promise((resolve, reject) => {
+        resolve(Voucher.getOneBySupplier(supplierId));
+    })
+    .then(data => {
+        if (data) {
+            (data && res.json(data)) || res.status('200').json(data);
+        }
+        else {
+            (data && res.json(data)) || res.status('404').json({ message : 'No Voucher object found for supplier ' + supplierId});
+        }
+    })
+    .catch((e) => {
+        console.log("sendOneVoucher - Error: ", e);
+        res.status('400').json({message: e.message});
+    })
 }
 
 
 module.exports.addVoucher = function(req, res)
 {
-console.log(">> addVoucher - req.body: ", req.body);
     let data = req.body;
     let customerId = data.customerId;
     let supplierId = data.supplierId;
@@ -850,7 +448,7 @@ console.log(">> addVoucher - req.body: ", req.body);
         }
         else {
             data.status = data.status || "new";
-            data.createdBy = req.opuscapita.userData('id') || data.createdBy || "byTest"; // ??? only for test
+            data.createdBy = req.opuscapita.userData('id');
 
             return Voucher.add(data)
             .then((voucher) => this.events.emit(voucher, 'voucher.created').then(() => voucher))
@@ -859,21 +457,16 @@ console.log(">> addVoucher - req.body: ", req.body);
             })
         }
     })
-    .catch((error) => {
-        // logger.error (...)  ???
-        console.log("addVoucher error: ", error);
-        res.status('400').json({ message : error.message });
+    .catch((e) => {
+        console.log("addVoucher - Error: ", e);
+        res.status('400').json({ message : e.message });
     });
 }
 
 
-/*
-module.exports.updateVoucher = function(req, res)
-{
-... ??? ToDo
-}
-*/
-
+//////////////////////////////////////////////////////
+// REST forwards to access data from other services
+//////////////////////////////////////////////////////
 
 module.exports.sendCustomer = function(req, res)
 {
@@ -884,22 +477,7 @@ module.exports.sendCustomer = function(req, res)
         res.status(200).json(customer);
     })
     .catch((e) => {
-        console.log("getCustomer Error: ", e);
+        console.log("getCustomer - Error: ", e);
         res.status("400").json({message: e.message});
     })
-}
-
-
-
-
-
-function checkContentType(req, res, next)
-{
-    var method = req.method.toLowerCase();
-    var contentType = req.headers['content-type'] && req.headers['content-type'].toLowerCase();
-
-    if(method !== 'get' && !(contentType == 'application/json' || contentType == 'application/'))  // multipart ???
-        res.status(400).json({ message : 'Invalid content type. Has to be "application/json".' });
-    else
-        next();
 }
