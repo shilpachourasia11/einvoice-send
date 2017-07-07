@@ -8,26 +8,22 @@ module.exports.status = {
 }
 
 
-module.exports.get = (customerId, supplierId) => {
+module.exports.get = (supplierId, customerId) => {
     return ajax.get('/einvoice-send/api/config/inchannelcontracts/c_' + customerId + '/s_' + supplierId)
         .promise();
 }
 
-module.exports.add = (customerId, supplierId, obj) => {
-    obj.customerId = customerId;
-    obj.supplierId = supplierId;
-console.log("++ addInChannelContract -> customerId =" + customerId + ", inputType = " + inputType + ", status = " + status);
+module.exports.add = (supplierId, obj) => {
+    // console.log("++ addInChannelContract -> supplierId = " + supplierId + ", obj: ", obj);
     status = status || 'new';
-    return ajax.post('/einvoice-send/api/config/inchannelcontracts')
+    return ajax.post('/einvoice-send/api/config/inchannelcontracts/s_' + supplierId)
         .set('Content-Type', 'application/json')
         .send(obj)
         .promise();
 }
 
-module.exports.update = (customerId, supplierId, obj) => {
-    obj.customerId = customerId;
-    obj.supplierId = supplierId;
-console.log("++ updateInChannelContract -> customerId / status: ", customerId, status);
+module.exports.update = (supplierId, customerId, obj) => {
+    // console.log("++ updateInChannelContract -> customerId = " + customerId + ", suppierId: " + supplierId + ", obj: ", obj);
     return ajax.put('/einvoice-send/api/config/inchannelcontracts/c_' + customerId + '/s_' + supplierId)
         .set('Content-Type', 'application/json')
         .send(obj)

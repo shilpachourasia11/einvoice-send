@@ -25,7 +25,7 @@ module.exports.get = (supplierId) =>
 module.exports.add = (supplierId, obj) =>
 {
     obj.supplierId = supplierId;
-console.log("++ addInChannelConfig -> obj: ", obj);
+    // console.log("++ addInChannelConfig -> obj: ", obj);
     return ajax.post('/einvoice-send/api/config/inchannels')
         .set('Content-Type', 'application/json')
         .send(obj)
@@ -34,7 +34,7 @@ console.log("++ addInChannelConfig -> obj: ", obj);
 
 module.exports.update = (supplierId, obj) => {
     obj.supplierId = supplierId;
-console.log("++ updateInChannelConfig -> obj: ", obj);
+    // console.log("++ updateInChannelConfig -> obj: ", obj);
     return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId)
         .set('Content-Type', 'application/json')
         .send(obj)

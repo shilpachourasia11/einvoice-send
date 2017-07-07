@@ -73,7 +73,7 @@ module.exports.init = function(app, db, config)
         //
         app.get('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.sendInChannelContract(req, res));
         app.put('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.updateInChannelContract(req, res));
-        app.post('/api/config/inchannelcontracts/:tenantId', (req, res) => this.addInChannelContract(req, res));  // ???
+        app.post('/api/config/inchannelcontracts/:tenantId', (req, res) => this.addInChannelContract(req, res));
 
         // Voucher
         //
@@ -123,7 +123,10 @@ module.exports.sendInChannelConfig = function(req, res)
             res.status('404').json({ message : 'This supplier has no in-channel configuration.' });
         }
     })
-    .catch(e => res.status('400').json({ message : e.message }));
+    .catch(e => {
+        console.log("sendInChannelConfig - Error: ", e);
+        res.status('400').json({ message : e.message })
+    });
 }
 
 module.exports.addInChannelConfig = function(req, res)
@@ -140,16 +143,15 @@ module.exports.addInChannelConfig = function(req, res)
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.createdBy = req.opuscapita.userData('id') || req.body.createdBy || "byTest";  // ??? test test test!!!
+            obj.createdBy = req.opuscapita.userData('id');
 
             return Api.addInChannelConfig(obj, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.created').then(() => config))
                 .then(config => res.status(202).json(config));
         }
     })
-    .catch(e =>
-    {
-        console.log("--> addInChannelConfig - error: ", e);
+    .catch(e => {
+        console.log("addInChannelConfig - Error: ", e);
         res.status('400').json({ message : e.message });
     });
 }
@@ -165,7 +167,7 @@ module.exports.updateInChannelConfig = function(req, res)
             var obj = req.body || { }
 
             obj.supplierId = supplierId;
-            obj.changedBy = req.opuscapita.userData('id') || "byTest"; // ??? Remove!
+            obj.changedBy = req.opuscapita.userData('id');
 
             return Api.updateInChannelConfig(supplierId, obj, true)
                 .then(config => this.events.emit(config, 'inChannelConfig.updated').then(() => config))
@@ -176,8 +178,8 @@ module.exports.updateInChannelConfig = function(req, res)
             res.status('404').json({ message : 'This supplier has no in-channel to be updated.' });
         }
     })
-    .catch(e =>
-    {
+    .catch(e => {
+        console.log("updateInChannelConfig - Error: ", e);
         res.status('400').json({ message : e.message });
     });
 }
@@ -197,12 +199,9 @@ module.exports.approveInChannelConfig = function(req, res) {
 
     let supplierId = req.params.supplierId;
 
-console.log(">> approveInChannelConfig", supplierId);
-
     return new Promise((resolve, reject) => {
         Api.inChannelConfigExists(supplierId)
         .then(exists => {
-console.log(">> approveInChannelConfig - exists: ", exists);
             if(exists) {
                 var obj = {
                     supplierId : supplierId,
@@ -211,7 +210,6 @@ console.log(">> approveInChannelConfig - exists: ", exists);
                 };
                 return Api.updateInChannelConfig(supplierId, obj, true)
                 .then(config => {
-console.log(">> approveInChannelConfig - update done: ", config);
                     return this.events.emit(config, 'inChannelConfig.updated');
                 })
 // ???
@@ -219,13 +217,12 @@ console.log(">> approveInChannelConfig - update done: ", config);
 //                    voucher.setState("closed");
 //                })
                 // .then(() => {
-                // console.log(">> approveInChannelConfig - emit done.");
-                    // return this.forwardPdfExample(req, res, supplierId); - for inputType = pdf
+                // TODO: How to initiated external processes on e.g. gdp (Global Ditigizing Platform)? To be defined!
                 //    return Promise.resolve();
                 //})
-                .catch((error) => {
-                    console.log("An error occured: ", error);
-                    res.status('400').json({ message : error.message })
+                .catch((e) => {
+                    console.log("approveInChannelConfig - Error: ", e);
+                    res.status('400').json({ message : e.message })
                 })
             }
             else {
@@ -238,8 +235,7 @@ console.log(">> approveInChannelConfig - update done: ", config);
         res.status(200).send();
     })
     .catch(e => {
-        // logger.error
-        console.log("An error occured: ", e);
+        console.log("approveInChannelConfig - Error: ", e);
         res.status('400').json({ message : e.message })
     });
 }
@@ -280,14 +276,13 @@ module.exports.sendInChannelContract = function(req, res)
     try {
         let bp = determineBusinessPartners(req.params.tenantId1, req.params.tenantId2);
 
-console.log(">> sendInChannelContract - businesspartner: ", bp.supplierId, bp.customerId);
-
         return InChannelContract.get(bp.customerId, bp.supplierId)
         .then(data => {
             (data && res.json(data)) || res.status('404').json({ message : 'No entry found for the supplier-customer pair ' + bp.supplierId + "+" + bp.customerId});
         })
     }
     catch(e) {
+        console.log("sendInChannelContract - Error: ", e);
         res.status('400').json({message: e.message});
     }
 }
@@ -295,7 +290,6 @@ console.log(">> sendInChannelContract - businesspartner: ", bp.supplierId, bp.cu
 
 module.exports.addInChannelContract = function(req, res)
 {
-console.log(">> addInChannelContract - started! req.body: ", req.body);
     try {
         let tenantId = req.params.tenantId;
         let supplierId;
@@ -315,8 +309,8 @@ console.log(">> addInChannelContract - started! req.body: ", req.body);
             throw new Error("No valid tenant provided! Please provide a valid tenant identifier that starts with either 's_' or 'c_'. Provided value was " + tenantId);
         }
 
-        if (!customerId || !supplierId) {
-            throw new Error("Please provide a supplierId and a customerId in either the URI or the payload.")
+        if (!(customerId || supplierId)) {
+            throw new Error("Please provide a supplierId or a customerId tenant in the URI.")
         }
 
         InChannelContract.exists(customerId, supplierId)
@@ -333,14 +327,13 @@ console.log(">> addInChannelContract - started! req.body: ", req.body);
         });
     }
     catch(e) {
-        console.log("addInChannelContract error: ", e);
+        console.log("addInChannelContract - Error: ", e);
         res.status('400').json({ message : e.message });
     };
 }
 
 module.exports.updateInChannelContract = function(req, res)
 {
-console.log(">> updateInChannelContract - started! req.body: ", req.body);
     try {
         let bp = determineBusinessPartners(req.params.tenantId1, req.params.tenantId2);
 
@@ -350,8 +343,6 @@ console.log(">> updateInChannelContract - started! req.body: ", req.body);
         if (req.body.supplierId && bp.supplierId != req.body.supplierId) {
             throw new Error ("Supplier " + req.body.supplierId + " is not allowed to update an InChannelContract for supplier " + bp.supplierId + ".");
         }
-
-console.log(">> updateInChannelContract - businesspartner: ", bp.customerId, bp.supplierId);
 
         InChannelContract.exists(bp.customerId, bp.supplierId)
         .then((exists) => {
@@ -375,6 +366,7 @@ console.log(">> updateInChannelContract - businesspartner: ", bp.customerId, bp.
         });
     }
     catch(e) {
+        console.log("updateInChannelContract - Error: ", e);
         res.status('400').json({ message : e.message });
     }
 }
@@ -389,31 +381,26 @@ module.exports.sendOneVoucher = function(req, res)
 {
     let supplierId = req.params.supplierId;
 
-console.log(">> sendOneVoucher - req.params: ", req.params);
-console.log(">> sendOneVoucher - businesspartner: ", supplierId);
-
     return new Promise((resolve, reject) => {
         resolve(Voucher.getOneBySupplier(supplierId));
     })
     .then(data => {
         if (data) {
-console.log(">> sendOneVoucher - data: ", data.dataValues);
             (data && res.json(data)) || res.status('200').json(data);
         }
         else {
             (data && res.json(data)) || res.status('404').json({ message : 'No Voucher object found for supplier ' + supplierId});
         }
     })
-    .catch((error) => {
-        console.log("sendOneVoucher: ", error);
-        res.status('400').json({message: error.message});
+    .catch((e) => {
+        console.log("sendOneVoucher - Error: ", e);
+        res.status('400').json({message: e.message});
     })
 }
 
 
 module.exports.addVoucher = function(req, res)
 {
-console.log(">> addVoucher - req.body: ", req.body);
     let data = req.body;
     let customerId = data.customerId;
     let supplierId = data.supplierId;
@@ -432,7 +419,7 @@ console.log(">> addVoucher - req.body: ", req.body);
         }
         else {
             data.status = data.status || "new";
-            data.createdBy = req.opuscapita.userData('id') || data.createdBy || "byTest"; // ??? only for test
+            data.createdBy = req.opuscapita.userData('id');
 
             return Voucher.add(data)
             .then((voucher) => this.events.emit(voucher, 'voucher.created').then(() => voucher))
@@ -441,10 +428,9 @@ console.log(">> addVoucher - req.body: ", req.body);
             })
         }
     })
-    .catch((error) => {
-        // logger.error (...)  ???
-        console.log("addVoucher error: ", error);
-        res.status('400').json({ message : error.message });
+    .catch((e) => {
+        console.log("addVoucher - Error: ", e);
+        res.status('400').json({ message : e.message });
     });
 }
 
@@ -462,7 +448,7 @@ module.exports.sendCustomer = function(req, res)
         res.status(200).json(customer);
     })
     .catch((e) => {
-        console.log("getCustomer Error: ", e);
+        console.log("getCustomer - Error: ", e);
         res.status("400").json({message: e.message});
     })
 }

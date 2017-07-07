@@ -31,7 +31,6 @@ module.exports.get = function(customerId, supplierId)
     return this.db.models.InChannelContract.findOne(
         {where: {supplierId: supplierId, customerId: customerId}})
     .then((data) => {
-        // console.log(">>>>>> ", data);
         return data;
     });
 }

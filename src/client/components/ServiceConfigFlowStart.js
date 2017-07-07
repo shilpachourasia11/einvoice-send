@@ -52,9 +52,6 @@ export default class ServiceConfigFlowStart extends React.Component
     // Selection of pdf, einvoice, portal or paper
     setInputType = function() {
 
-console.log("setInputType...");
-console.log("setInputType - voucher: ", this.props.voucher);
-
         let supplierId = this.props.voucher.supplierId;
         let obj = {
             inputType: this.state.invoiceSendingType,
@@ -62,16 +59,12 @@ console.log("setInputType - voucher: ", this.props.voucher);
             status: InChannelConfig.status.new
         };
 
-console.log("setInputType -  obj: ", obj);
-
-
         return new Promise((resolve, reject) => {
             return InChannelConfig.update(supplierId, obj)
             .then(() => {
                 resolve();
             })
             .catch((e) => {
-console.log("setInputType InChannelConfig.update - Error: ", e);
                 return InChannelConfig.add(supplierId, obj)
                 .then(() => {
                     console.log("InChannelConfig did not exist and was successfully created.");

@@ -62,13 +62,10 @@ export default class ServiceConfigFlow extends React.Component
         var supplierId = this.props.voucher.supplierId;
         var voucherId  = this.props.voucher.id;
 
-console.log("** customerId: ", customerId);
-
         return new Promise((resolve, reject) => {
             InChannelConfig.get(supplierId)
             .then((data) => resolve(data))
             .catch((e) => {
-                // console.log("*** eror: ", e);
                 let values =  {
                     inputType: InChannelConfig.types.pdf,
                     voucherId: voucherId
@@ -78,15 +75,19 @@ console.log("** customerId: ", customerId);
             })
         })
         .then((data) => {
-console.log("InchannelConfig found: ", data);
             let inChannelContractData = {
+                customerId: customerId,
                 inputType: InChannelConfig.types.pdf,
                 voucherId: voucherId,
                 status: InChannelContract.status.approved
             }
-            return InChannelContract.add(customerId, supplierId, inChannelContractData)
+
+            InChannelContract.get(supplierId, customerId)
+            .then((contract) => {
+                return InChannelContract.update(supplierId, customerId, inChannelContractData);
+            })
             .catch((e) => {
-                return InChannelContract.update(customerId, supplierId, inChannelContractData);
+                return InChannelContract.add(supplierId, inChannelContractData)
             })
         })
         .catch((e) => {
@@ -97,13 +98,12 @@ console.log("InchannelConfig found: ", data);
 
 
     finalApprove = () => {
-console.log(" ---- 1. finalApprove");
         InChannelConfig.approve(this.props.voucher.supplierId)
         .then(() => {
-console.log(" ---- 2. finalApprove");
             this.props.finalizeFlow();
         })
         .catch((e) => {
+            console.log("Error appeared: ", e);
             alert ("The forwarding to the Invoice mapping team did not succeed. Please retry.")
         })
     }

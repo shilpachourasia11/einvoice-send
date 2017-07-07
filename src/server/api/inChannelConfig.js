@@ -46,15 +46,11 @@ module.exports.getInChannelConfig = function(supplierId)
     // Try finding an existing config...
     return this.db.models.InChannelConfig.findById(supplierId).then(basicConfig =>
     {
-console.log(">>>> basicConfig: ", basicConfig ? basicConfig.dataValues : basicConfig);
-
         if(basicConfig)
         {
             // Try to load an extended configuration from a different model...
             return this.getModelFromInputType(basicConfig.inputType).findById(supplierId)
             .then(extendedConfig => {
-
-console.log(">>>> extendedConfig: ", extendedConfig ? extendedConfig.dataValues : extendedConfig);
 
                 // Remove fields we do not want to output.
                 // [ 'supplierId', 'createdBy', 'changedBy', 'createdOn', 'changedOn' ].forEach(key => delete extendedConfig.dataValues[key]);
@@ -128,8 +124,6 @@ module.exports.addInChannelConfig = function(config, returnConfig)
 
 module.exports.updateInChannelConfig = function(supplierId, config, returnConfig)
 {
-console.log(">>>> updateInChannelConfig - config: ", config);
-
     var basicConfig = config;
     var extendedConfig = config.settings || { };
 
@@ -150,7 +144,6 @@ console.log(">>>> updateInChannelConfig - config: ", config);
 
     return this.db.models.InChannelConfig.findById(supplierId).then(existingbasicConfig =>
     {
-// console.log(">>>> updateInChannelConfig - on: ", existingbasicConfig);
         if(existingbasicConfig)
         {
             let oldInputType = existingbasicConfig.inputType;
@@ -169,12 +162,9 @@ console.log(">>>> updateInChannelConfig - config: ", config);
                 //   2. create the required one
                 //
 
-console.log(">>>> updateInChannelConfig: update " + newInputType + ": ", extendedConfig);
-
                 let newModel = this.getModelFromInputType(newInputType);
                 return newModel.findById(supplierId)
                 .then((data) => {
-console.log(">>>> updateInChannelConfig: data to update: ", data);
                     if (data) {
                         return data.update(extendedConfig, { where : { supplierId : supplierId } })
                     }
@@ -183,7 +173,7 @@ console.log(">>>> updateInChannelConfig: data to update: ", data);
                         .then((data) => {
                             return this.getModelFromInputType(oldInputType).destroy({ where : { supplierId : supplierId } })
                             .catch((e) => {
-                                console.log("Could not delete outdated " + newInputType + " Object.", e);
+                                console.log("updateInChannelConfig - ExtendedConfig could not delete outdated " + newInputType + " Object. Error: ", e);
                                 return Promise.resolve();
                             });
                         })
@@ -195,9 +185,8 @@ console.log(">>>> updateInChannelConfig: data to update: ", data);
                         return Promise.reject(e);
                     }
                     else {
-console.log(">>>> updateInChannelConfig - error: ", e);
-                        // Update not possible. Create a new one and delete the old entry.
-
+                        console.log("updateInChannelConfig - Error: ", e);
+                        // TODO: Update not possible. Actions neccessary? Create a new one and delete the old entry.
                     }
                 })
             });
