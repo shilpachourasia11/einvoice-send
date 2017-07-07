@@ -48,18 +48,20 @@ export default {
             },
             Approve: {
                 header: "Next Steps",
-                subheader: "All required steps from your side are done.",
-                text1: "Now that you have uploaded the invoice example, we will setup the automated processing of your invoices.",
-                text2: "You will receive an notification as soon as the required setup is done. This email will also provide the email address that you have to use to send your invoices to us. Please use this email address only."
+                subheader: "All required steps from your side are done and your are now able to send your first invoice as PDF by Email.",
+                text: "",
+                textFooter: "We kindly ask you to go back to the start page and update your company information in order to strengthen your profile to become more visible to trading partners within the Eco System.",
+                textGreetings: "Thank you!"
             }
         },
         Paper:{
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first paper- invoice to our global digitizing (scanning) service.",
             Approve: {
                 header: "Next Steps",
-                subheader: "All required steps from your side are done.",
-                text1: "You will receive an notification as soon as the required setup is done. This email will also provide the address that you have to use for your invoices. Please use this address only.",
-                text2: ""
+                subheader: "All required steps from your side are done and your are now able to send your first paper-invoice.",
+                text: "",
+                textFooter: "We kindly ask you to go back to the start page and update your company information in order to strengthen your profile to become more visible to trading partners within the Eco System.",
+                textGreetings: "Thank you!"
             }
         },
         CustomerTaC: {
