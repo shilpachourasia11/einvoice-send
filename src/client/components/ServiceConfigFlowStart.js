@@ -97,8 +97,6 @@ export default class ServiceConfigFlowStart extends React.Component
             intro1 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro1WithoutCustomer');
         }
 
-console.log("**** Voucher: ", this.props.voucher);
-
         return (
             <div>
                 <h3>{this.context.i18n.getMessage('ServiceConfigFlowStart.header')}</h3>
