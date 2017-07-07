@@ -39,6 +39,7 @@ module.exports.init = function(app, db, config)
     .then(() => {
         this.events = new RedisEvents({ consul : { host : 'consul' } });
 
+        /*
         //  Test event subscriptions:
         this.events.subscribe('inChannelConfig.created', (data) => {
             console.log("**************************** inChannelConfig.created", data);
@@ -55,6 +56,7 @@ module.exports.init = function(app, db, config)
         this.events.subscribe('voucher.created', (data) => {
             console.log("**************************** voucher.created", data);
         });
+        */
 
         this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
 
