@@ -1,5 +1,20 @@
 import ajax from 'superagent-bluebird-promise';
 
+
+module.exports.status = {
+    new: "new",
+    approved: "approved",
+    activated: "activated"
+}
+
+module.exports.types = {
+    paper         : "paper",
+    pdf           : "pdf",
+    eInvoice      : "eInvoice",
+    supplierPortal: "supplierPortal"
+}
+
+
 module.exports.get = (supplierId) =>
 {
     return ajax.get('/einvoice-send/api/config/inchannels/' + supplierId)
@@ -7,25 +22,22 @@ module.exports.get = (supplierId) =>
         .promise();
 }
 
-module.exports.add = (supplierId, inputType, voucherId) =>
+module.exports.add = (supplierId, obj) =>
 {
-console.log("++ addInChannelConfig -> paper/new - VoucherId: ", this.props.voucher);
+    obj.supplierId = supplierId;
+console.log("++ addInChannelConfig -> obj: ", obj);
     return ajax.post('/einvoice-send/api/config/inchannels')
         .set('Content-Type', 'application/json')
-        .send({
-            supplierId : supplierId,
-            inputType : inputType,
-            status: 'new',
-            voucherId: voucherId
-        })
+        .send(obj)
         .promise();
 }
 
-module.exports.update = (supplierId, values) => {
-console.log("++ updateInChannelConfig -> values: ", values);
+module.exports.update = (supplierId, obj) => {
+    obj.supplierId = supplierId;
+console.log("++ updateInChannelConfig -> obj: ", obj);
     return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId)
         .set('Content-Type', 'application/json')
-        .send(values)
+        .send(obj)
         .promise();
 }
 

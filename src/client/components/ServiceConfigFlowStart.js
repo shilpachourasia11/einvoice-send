@@ -6,7 +6,7 @@ import Promise from 'bluebird';
 
 import BillingDetails from './common/BillingDetails'
 
-import InChannelConfig from '../../api/InChannelConfig.js';
+import InChannelConfig from '../api/InChannelConfig.js';
 
 
 
@@ -52,18 +52,27 @@ export default class ServiceConfigFlowStart extends React.Component
     // Selection of pdf, einvoice, portal or paper
     setInputType = function() {
 
-        let supplier = this.props.voucher.supplierId;
-        let inputType = this.state.invoiceSendingType,
-        let voucherId = this.props.voucher.voucherId
+console.log("setInputType...");
+console.log("setInputType - voucher: ", this.props.voucher);
+
+        let supplierId = this.props.voucher.supplierId;
+        let obj = {
+            inputType: this.state.invoiceSendingType,
+            voucherId: this.props.voucher.id,
+            status: InChannelConfig.status.new
+        };
+
+console.log("setInputType -  obj: ", obj);
+
 
         return new Promise((resolve, reject) => {
-            return InChannelConfig.update(supplier, inputType, voucherId)
+            return InChannelConfig.update(supplierId, obj)
             .then(() => {
                 resolve();
             })
             .catch((e) => {
-                // console.log("setInputType InChannelConfig.update - Error: ", e);
-                return InChannelConfig.create(supplier, inputType, voucherId)
+console.log("setInputType InChannelConfig.update - Error: ", e);
+                return InChannelConfig.add(supplierId, obj)
                 .then(() => {
                     console.log("InChannelConfig did not exist and was successfully created.");
                     resolve();

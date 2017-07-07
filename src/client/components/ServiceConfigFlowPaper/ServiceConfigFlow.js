@@ -54,13 +54,10 @@ export default class ServiceConfigFlow extends React.Component
     // Events
     ////////////////////////////////////////
 
-    setApprovedOcTc = (supplierId) => {
-        return InChannelConfig.update(supplierId, {'status':'approved'});
-    }
-
     setApprovedCustomerTc = () => {
         var customerId = this.props.voucher.customerId;
         var supplierId = this.props.voucher.supplierId;
+        var voucherId  = this.props.voucher.id;
 
 console.log("** customerId: ", customerId);
 
@@ -68,16 +65,25 @@ console.log("** customerId: ", customerId);
             InChannelConfig.get(supplierId)
             .then((data) => resolve(data))
             .catch((e) => {
-console.log("*** eror: ", e);
-                InChannelConfig.add(supplierId, 'paper', this.props.voucher.voucherId)
+                // console.log("*** eror: ", e);
+                let values =  {
+                    inputType: InChannelConfig.types.paper,
+                    voucherId: this.props.voucher.id
+                }
+                InChannelConfig.add(supplierId, data)
                 .then((data) => resolve(data))
             })
         })
         .then((data) => {
 console.log("InChannelConfig found: ", data);
-            return InChannelContract.add(customerId, supplierId, 'paper', this.props.voucher.voucherId, 'approved')
+            let inChannelContractData = {
+                inputType: InChannelConfig.types.paper,
+                voucherId: voucherId,
+                status: InChannelContract.status.approved
+            }
+            return InChannelContract.add(customerId, supplierId, inChannelContractData)
             .catch((e) => {
-                return InChannelContract.update(customerId, supplierId, 'paper', 'approved');
+                return InChannelContract.update(customerId, supplierId, inChannelContractData);
             })
         })
         .catch((e) => {
@@ -103,7 +109,7 @@ console.log(" ---- 2. finalApprove");
     }
 
     approveOcTc = (tabNo) => {
-        this.setApprovedOcTc(this.props.voucher.supplierId)
+        InChannelConfig.update(this.props.voucher.supplierId, {'status': InChannelConfig.status.approved})
         .then(() => this.setCurrentTab(tabNo));
     }
 

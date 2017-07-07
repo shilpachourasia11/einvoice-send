@@ -40,8 +40,14 @@ module.exports.init = function(app, db, config)
         this.events = new RedisEvents({ consul : { host : 'consul' } });
 
         //  Test event subscriptions:
+        this.events.subscribe('inChannelConfig.created', (data) => {
+            console.log("**************************** inChannelConfig.created", data);
+        });
         this.events.subscribe('inChannelConfig.updated', (data) => {
             console.log("**************************** inChannelConfig.updated", data);
+        });
+        this.events.subscribe('inChannelContract.created', (data) => {
+            console.log("**************************** inChannelContract.created", data);
         });
         this.events.subscribe('inChannelContract.updated', (data) => {
             console.log("**************************** inChannelContract.updated", data);
