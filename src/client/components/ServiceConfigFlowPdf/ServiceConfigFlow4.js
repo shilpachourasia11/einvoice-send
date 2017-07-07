@@ -36,11 +36,14 @@ export default class ServiceConfigFlow5 extends React.Component {
                 </p>
 
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Approve.text1')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Approve.text')}
                 </p>
 
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Approve.text2')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Approve.textFooter')}
+                </p>
+                <p>
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.Approve.textGreetings')}
                 </p>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>

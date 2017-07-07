@@ -36,20 +36,14 @@ export default class ServiceConfigFlow5 extends React.Component {
                 </p>
 
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.Approve.text1')}
-{/*                 <br/>
-                    OpusCapita
-                    <br/>
-                    Lindemannstraße 79
-                    <br/>
-                    44137 Dortmund
-                    <br/>
-                    Germany
-*/}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.Approve.text')}
                 </p>
 
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.Approve.text2')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.Approve.textFooter')}
+                </p>
+                <p>
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Paper.Approve.textGreetings')}
                 </p>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>
