@@ -2,9 +2,9 @@ import React from 'react';
 import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
 
-import ServiceConfigFlow1 from './ServiceConfigFlow1';
+import ServiceConfigFlow1 from './ServiceConfigFlow1.js';
 import ServiceConfigFlow2 from '../common/ServiceConfigFlowTaCCustomer.js';
-import ServiceConfigFlow3 from './ServiceConfigFlow3';
+import ServiceConfigFlow3 from './ServiceConfigFlow3.js';
 
 import InChannelConfig from '../../api/InChannelConfig.js';
 import InChannelContract from '../../api/InChannelContract.js';
@@ -16,7 +16,6 @@ const MyDiv = () =>
 {
     return <div className="connecting-line"/>;
 };
-
 
 
 export default class ServiceConfigFlow extends React.Component
@@ -65,9 +64,9 @@ export default class ServiceConfigFlow extends React.Component
             .catch((e) => {
                 let values =  {
                     inputType: InChannelConfig.types.paper,
-                    voucherId: this.props.voucher.id
+                    voucherId: voucherId
                 }
-                InChannelConfig.add(supplierId, data)
+                InChannelConfig.add(supplierId, values)
                 .then((data) => resolve(data))
             })
         })
@@ -92,6 +91,7 @@ export default class ServiceConfigFlow extends React.Component
             return Promise.reject();
         })
     }
+
 
     finalApprove = () => {
         InChannelConfig.approve(this.props.voucher.supplierId)

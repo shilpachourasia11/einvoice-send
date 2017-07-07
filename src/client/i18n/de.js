@@ -46,18 +46,20 @@ export default {
             },
             Approve: {
                 header: "Die nächsten Schritte",
-                subheader: "Sie haben uns alle notwendigen Daten bereitgestellt.",
-                text1: "Nun, da Sie uns Ihre Beispieldatei bereitgestellt haben, werden wir die automatische Verarbeitung vorbereiten.",
-                text2: "Sie werden eine Nachricht erhalten, sobald das System für Sie eingerichtet ist. Sie erhalten von uns die E-Mail-Adresse, an welche Sie die Rechnungen zu schicken haben. Bitte verwenden Sie nur diese E-Mail-Adresse."
+                subheader: "Sie haben uns alle notwendigen Daten bereitgestellt und können uns jetzt Ihre erste Rechnung als PDF per E-Mail zusenden.",
+                text: "",
+                textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit alten und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
+                textGreetings: "Vielen Dank!"
             }
         },
         Paper:{
             subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre Papierrechnung an unseren globalen Digitalisierung-Service senden.",
             Approve: {
                 header: "Die nächsten Schritte",
-                subheader: "Sie haben uns alle notwendigen Daten bereitgestellt.",
-                text1: "Sie erhalten von uns eine Benachrichtigung, sobald die Vorbereitungen abgeschlossen sind. In dieser E-Mail finden Sie die Adresse für den E-Mail-Versand der Papierrechnungen. Bitte verwenden Sie nur diese Adresse.",
-                text2: ""
+                subheader: "Sie haben uns alle notwendigen Daten bereitgestellt und können uns jetzt Ihre erste Papierrechnung zusenden.",
+                text: "",
+                textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit alten und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
+                textGreetings: "Vielen Dank!"
             }
         },
         CustomerTaC: {

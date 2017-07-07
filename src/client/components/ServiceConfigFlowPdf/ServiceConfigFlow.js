@@ -2,10 +2,10 @@ import React from 'react';
 import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
 
-import ServiceConfigFlow1 from './ServiceConfigFlow1.js'
-import ServiceConfigFlow2 from '../common/ServiceConfigFlowTaCCustomer.js'
-import ServiceConfigFlow3 from './ServiceConfigFlow3.js'
-import ServiceConfigFlow4 from './ServiceConfigFlow4.js'
+import ServiceConfigFlow1 from './ServiceConfigFlow1.js';
+import ServiceConfigFlow2 from '../common/ServiceConfigFlowTaCCustomer.js';
+import ServiceConfigFlow3 from './ServiceConfigFlow3.js';
+import ServiceConfigFlow4 from './ServiceConfigFlow4.js';
 
 import InChannelConfig from '../../api/InChannelConfig.js';
 import InChannelContract from '../../api/InChannelContract.js';
@@ -24,14 +24,12 @@ export default class ServiceConfigFlow extends React.Component
     static propTypes = {
         currentTab : React.PropTypes.number,
         lastValidTab : React.PropTypes.number,
-        cancelWorkflow : React.PropTypes.func,
         inputType: React.PropTypes.string
     };
 
     static defaultProps = {
         currentTab : 1,
         lastValidTab : 1,
-        cancelWorkflow : () => { alert('Canceled!'); },
         inputType: null
     };
 
@@ -42,7 +40,6 @@ export default class ServiceConfigFlow extends React.Component
         this.state = {
             currentTab : this.props.currentTab,
             lastValidTab : this.props.lastValidTab,
-            cancelWorkflow : this.props.cancelWorkflow,
             inputType: this.props.inputType
         };
     }
@@ -108,13 +105,12 @@ export default class ServiceConfigFlow extends React.Component
         })
     }
 
-
     setCurrentTab = (tabNo) => {
         this.setState({ currentTab : tabNo });
     }
 
     approveOcTc = (tabNo) => {
-        InChannelConfig.update(this.props.voucher.supplierId, {'status':'approved'})
+        InChannelConfig.update(this.props.voucher.supplierId, {'status': InChannelConfig.status.approved})
         .then(() => this.setCurrentTab(tabNo));
     }
 
@@ -155,10 +151,10 @@ export default class ServiceConfigFlow extends React.Component
                                             <div className="wizard-inner">
                                                 <Tab.Container activeKey={ this.state.currentTab } onSelect={ currentTab => this.setState({ currentTab }) } id="stepsContainer">
                                                     <Row className="clearfix">
-                                                        <PaperNav
+                                                        <PdfNav
                                                             currentTab={this.state.currentTab}
                                                             customerTermsAndConditions={this.props.customerTermsAndConditions} />
-                                                        <PaperTabContent
+                                                        <PdfTabContent
                                                             setCurrentTab = { (tabNo) => this.setCurrentTab(tabNo) }
                                                             approveOcTc = { (tabNo) => this.approveOcTc(tabNo) }
                                                             approveCustomerTc = { (tabNo) => this.approveCustomerTC(tabNo) }
@@ -181,8 +177,7 @@ export default class ServiceConfigFlow extends React.Component
 }
 
 
-
-class PaperNav extends React.Component {
+class PdfNav extends React.Component {
     render() {
         if (this.props.customerTermsAndConditions) {
             return (
@@ -195,10 +190,15 @@ class PaperNav extends React.Component {
                     <NavItem eventKey={2} disabled={ this.props.currentTab < 2 }>
                         <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
                     </NavItem>
+                    {/* 2017-07-97 nc: On wish of Matts, we shall deactivate the PDF upload ui for now. Reason: No usage as long as there is no recipient for it
                     <NavItem eventKey={3} disabled={ this.props.currentTab < 3 }>
                         <span className="round-tab"><i className="glyphicon glyphicon-search"/></span>
                     </NavItem>
                     <NavItem eventKey={4} disabled={ this.props.currentTab < 4 }>
+                        <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
+                    </NavItem>
+                    */}
+                    <NavItem eventKey={4} disabled={ this.props.currentTab < 3 }>
                         <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
                     </NavItem>
                 </Nav>
@@ -225,7 +225,7 @@ class PaperNav extends React.Component {
 }
 
 
-class PaperTabContent extends React.Component {
+class PdfTabContent extends React.Component {
     render() {
         if (this.props.customerTermsAndConditions) {
             return (
@@ -242,6 +242,7 @@ class PaperTabContent extends React.Component {
                             voucher = {this.props.voucher}
                             customerTermsAndConditions = {this.props.customerTermsAndConditions}/>
                     </Tab.Pane>
+                    {/* 2017-07-97 nc: On wish of Matts, we shall deactivate the PDF upload ui for now. Reason: No usage as long as there is no recipient for it
                     <Tab.Pane eventKey={3}>
                         <ServiceConfigFlow3
                             onNext={ () => { this.props.setCurrentTab(4) } }
@@ -254,6 +255,14 @@ class PaperTabContent extends React.Component {
                             onPrevious={ () => this.props.setCurrentTab(3) }
                             voucher = {this.props.voucher}/>
                     </Tab.Pane>
+                    */}
+                    <Tab.Pane eventKey={3}>
+                        <ServiceConfigFlow4
+                            onNext={ () => { this.props.finalApprove() } }
+                            onPrevious={ () => this.props.setCurrentTab(2) }
+                            voucher = {this.props.voucher}/>
+                    </Tab.Pane>
+
                 </Tab.Content>
             );
         }
