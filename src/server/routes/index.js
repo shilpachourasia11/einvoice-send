@@ -44,6 +44,26 @@ module.exports.init = function(app, db, config)
         // this.blobclient = new BlobClient({});  ??? why does it not work for variable blobclient ???
         this.blob       = new BlobClient({});
 
+/*
+        //  Test event subscriptions:
+        this.events.subscribe('inChannelConfig.created', (data) => {
+            console.log("**************************** inChannelConfig.created", data);
+        });
+        this.events.subscribe('inChannelConfig.updated', (data) => {
+            console.log("**************************** inChannelConfig.updated", data);
+        });
+        this.events.subscribe('inChannelContract.created', (data) => {
+            console.log("**************************** inChannelContract.created", data);
+        });
+        this.events.subscribe('inChannelContract.updated', (data) => {
+            console.log("**************************** inChannelContract.updated", data);
+        });
+        this.events.subscribe('voucher.created', (data) => {
+            console.log("**************************** voucher.created", data);
+        });
+*/
+
+
         // app.use(checkContentType);  ???
 
         var upload  = Multer({
