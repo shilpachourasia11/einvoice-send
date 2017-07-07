@@ -73,6 +73,7 @@ module.exports.init = function(app, db, config)
 
         // InChannelContract
         //
+        app.get('/api/config/inchannelcontracts/:tenantId', (req, res) => this.sendInChannelContracts(req, res));
         app.get('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.sendInChannelContract(req, res));
         app.put('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.updateInChannelContract(req, res));
         app.post('/api/config/inchannelcontracts/:tenantId', (req, res) => this.addInChannelContract(req, res));
@@ -242,7 +243,6 @@ module.exports.approveInChannelConfig = function(req, res) {
     });
 }
 
-
 //////////////////////////////////////////////////////////////
 // InChannelContract
 //////////////////////////////////////////////////////////////
@@ -286,6 +286,32 @@ module.exports.sendInChannelContract = function(req, res)
     catch(e) {
         console.log("sendInChannelContract - Error: ", e);
         res.status('400').json({message: e.message});
+    }
+}
+
+module.exports.sendInChannelContracts = function(req, res)
+{
+    try {
+        const tenantId = req.params.tenantId;
+        let inChannelContractsPromise;
+
+        if (tenantId.startsWith("s_")){
+            inChannelContractsPromise = InChannelContract.allForSupplier(tenantId.substring(2));
+        }
+        else if (tenantId.startsWith("c_")) {
+            inChannelContractsPromise = InChannelContract.allForCustomer(tenantId.substring(2));
+        }
+        else {
+            throw new Error("No valid tenant provided! Please provide a valid tenant identifier that starts with either 's_' or 'c_'. Provided value was " + tenantId);
+        }
+
+        return inChannelContractsPromise.then(data => {
+            (data && res.json(data)) || res.status('404').json({ message : 'No entry found for tenant ' + tenantId});
+        })
+    }
+    catch(error) {
+        req.opuscapita.logger.error('Error when getting InChannelContracts: %s', error);
+        res.status('400').json({ message : error.message });
     }
 }
 
