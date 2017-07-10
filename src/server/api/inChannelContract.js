@@ -35,6 +35,16 @@ module.exports.get = function(customerId, supplierId)
     });
 }
 
+module.exports.allForSupplier = function(supplierId)
+{
+    return this.db.models.InChannelContract.findAll({where: {supplierId: supplierId}, order: [['changedOn', 'ASC']]});
+}
+
+module.exports.allForCustomer = function(customerId)
+{
+    return this.db.models.InChannelContract.findAll({where: {customerId: customerId}, order: [['changedOn', 'ASC']]});
+}
+
 module.exports.add = function(data)
 {
     delete data.changedBy;

@@ -4,17 +4,7 @@ var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = {
-    devtool: 'eval-source-map',
-    entry: path.join(__dirname, 'src/client/index.js'),
-    output: {
-        path: path.join(__dirname, 'src/client/dist'),
-        filename: 'bundle.js',
-        //publicPath: '/static',
-        //library: 'einvoice',
-        //libraryTarget: 'umd',
-        //umdNamedDefine: true
-    },
+var config = {
     resolve: {
         modules: [process.env.NODE_PATH],
         extensions: ['.json', '.jsx', '.js']
@@ -23,13 +13,6 @@ module.exports = {
         modules: [process.env.NODE_PATH],
         extensions: ['.js']
     },
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: 'src/client/index.html',
-            inject: 'body',
-            filename: 'index.html'
-        })
-    ],
     module: {
         loaders: [{
             test: /\.jsx?$/,
@@ -49,4 +32,37 @@ module.exports = {
             loader: 'style-loader!css-loader!less-loader'
         }]
     }
-};
+}
+
+var mainConfig = Object.assign({}, config, {
+    devtool: 'eval-source-map',
+    entry: path.join(__dirname, 'src/client/index.js'),
+    output: {
+        path: path.join(__dirname, 'src/client/dist'),
+        filename: 'bundle.js',
+        publicPath: 'static/'
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: 'src/client/index.html',
+            inject: 'body',
+            filename: 'index.html'
+        })
+    ]
+});
+
+var librariesConfig = Object.assign({}, config, {
+    entry: {
+        'connect-supplier-widget': path.join(__dirname, 'src/client/components/ConnectSupplierWidget.js')
+    },
+    output: {
+        path: path.join(__dirname, 'src/client/dist'),
+        publicPath: '/static',
+        filename: 'components/[name].js',
+        library: '[name]',
+        libraryTarget: 'umd',
+        umdNamedDefine: true
+    }
+});
+
+module.exports = [mainConfig, librariesConfig];

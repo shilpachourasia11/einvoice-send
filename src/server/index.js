@@ -26,12 +26,12 @@ db.init({
         mode : server.Server.Mode.Dev,
         staticFilePath : './src/client/static',
         indexFilePath : require('path').resolve('./src/client/dist/index.html'),
-        /*middlewares : [ bouncer({
+        middlewares : [ bouncer({
             host : 'consul',
             serviceName : 'einvoice-send',
             acl : require('./acl.json'),
             aclServiceName : 'acl'
-        }).Middleware ],*/
+        }).Middleware ],
         webpack : {
             useWebpack : true
         }
