@@ -40,6 +40,7 @@ var mainConfig = Object.assign({}, config, {
     output: {
         path: path.join(__dirname, 'src/client/dist'),
         filename: 'bundle.js',
+        publicPath: '/static/'
     },
     plugins: [
         new HtmlWebpackPlugin({
