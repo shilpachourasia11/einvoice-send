@@ -1,0 +1,148 @@
+{
+    "x-tenant-manage": {
+        "translations": {
+            "name": {
+                "en": "Manage all einvoice configurations.",
+                "de": "Verwalten aller einvoice Konfigurationen."
+            },
+            "description": {
+                "en": "Enables read, write and create operations on all in-channel and in-channel-contract data including vouchers.",
+                "de": "Ermöglicht das Lesen, Schreiben und Erstellen von In-Channel-, In-Channel-Contract- und Voucher-Daten."
+            }
+        },
+        "resources": [{
+            "type": "rest",
+            "resourceId": "/api/config[%w | %p]*",
+            "actions": ["view", "edit", "create"]
+        }]
+    },
+    "inchannel-manage": {
+        "translations": {
+            "name": {
+                "en": "Manage all in-channel configurations.",
+                "de": "Verwalten aller In-Channel Konfigurationen."
+            },
+            "description": {
+                "en": "Enables read, write and create operations on all in-channel data.",
+                "de": "Ermöglicht das Lesen, Schreiben und Erstellen von In-Channel-Daten."
+            }
+        },
+        "resources": [{
+            "type": "rest",
+            "resourceId": "/api/config/inchannels[%w | %p]*",
+            "actions": ["view", "edit", "create"]
+        }]
+    },
+    "inchannel-manage-own": {
+        "translations": {
+            "name": {
+                "en": "Manage own in-channel configurations.",
+                "de": "Verwalten der eigenen In-Channel Konfigurationen."
+            },
+            "description": {
+                "en": "Enables read, write and create operations on a user's own in-channel data.",
+                "de": "Ermöglicht das Lesen, Schreiben und Erstellen der eigenen In-Channel-Daten."
+            }
+        },
+        "resources": [{
+            "type": "rest",
+            "resourceId": "/api/config/inchannels/${_current_supplier_id}",
+            "actions": ["view", "edit", "create"]
+        }]
+    },
+    "inchannelcontract-manage": {
+        "translations": {
+            "name": {
+                "en": "Manage all in-channel-contract configurations.",
+                "de": "Verwalten aller In-Channel-Contract Konfigurationen."
+            },
+            "description": {
+                "en": "Enables read, write and create operations on all in-channel-contract data.",
+                "de": "Ermöglicht das Lesen, Schreiben und Erstellen von In-Channel-Contract-Daten."
+            }
+        },
+        "resources": [{
+            "type": "rest",
+            "resourceId": "/api/config/inchannelcontracts[%w | %p]*",
+            "actions": ["view", "edit", "create"]
+        }]
+    },
+    "inchannelcontract-manage-own": {
+        "translations": {
+            "name": {
+                "en": "Manage own in-channel-contract configurations.",
+                "de": "Verwalten der eigenen In-Channel-Contract Konfigurationen."
+            },
+            "description": {
+                "en": "Enables read, write and create operations on a user's own in-channel-contract data.",
+                "de": "Ermöglicht das Lesen, Schreiben und Erstellen der eigenen In-Channel-Contract-Daten."
+            }
+        },
+        "resources": [{
+            "type": "rest",
+            "resourceId": "/api/config/inchannelcontracts/${_current_tenant_id}",
+            "actions": ["view", "edit", "create"]
+        }]
+    },
+    "voucher-manage": {
+        "translations": {
+            "name": {
+                "en": "Manage all voucher data.",
+                "de": "Verwalten aller Voucher-Daten."
+            },
+            "description": {
+                "en": "Enables read, write and created operations on voucher data.",
+                "de": "Ermöglicht das Lesen, Schreiben und Erstellen von Voicher-Daten."
+            }
+        },
+        "resources": [{
+            "type": "rest",
+            "resourceId": "/api/config/voucher[%w | %p]*",
+            "actions": ["create", "view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "/api/config/vouchers[%w | %p]*",
+            "actions": ["create", "view"]
+        }]
+    },
+    "voucher-read": {
+        "translations": {
+            "name": {
+                "en": "Read own supplier's voucher data.",
+                "de": "Lesen von Voucher-Daten des eigenen Lieferanten."
+            },
+            "description": {
+                "en": "Enables read access to voucher data of a user's supplier.",
+                "de": "Ermöglicht das lesen von Voucher-Daten des eigenen Lieferanten."
+            }
+        },
+        "resources": [{
+            "type": "rest",
+            "resourceId": "/api/config/voucher/${_current_supplier_id}",
+            "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "/api/config/vouchers/${_current_supplier_id}",
+            "actions": ["view"]
+        }]
+    },
+    "customer-read": {
+        "translations": {
+            "name": {
+                "en": "Read any customer's master file data.",
+                "de": "Lesen der Stammdaten eines beliebigen Kunden."
+            },
+            "description": {
+                "en": "Enables read access to the master file data of any customer.",
+                "de": "Ermöglicht das lesen aller Stammdaten eines beliebigen Kunden."
+            }
+        },
+        "resources": [{
+            "type": "rest",
+            "resourceId": "/api/customer/[%w | %p]",
+            "actions": ["view"]
+        }]
+    }
+}
