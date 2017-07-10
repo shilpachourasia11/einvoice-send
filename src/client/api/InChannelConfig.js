@@ -18,7 +18,6 @@ module.exports.types = {
 module.exports.get = (supplierId) =>
 {
     return ajax.get('/einvoice-send/api/config/inchannels/' + supplierId)
-        .set('Content-Type', 'application/json')
         .promise();
 }
 
