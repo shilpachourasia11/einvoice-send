@@ -1,4 +1,21 @@
 {
+    "display-ui": {
+        "translations": {
+            "name": {
+                "en": "Allows displaying the user interface.",
+                "de": "Erlaubt die Anzeige der Benutzeroberfläche."
+            },
+            "description": {
+                "en": "Allows displaying the user interface",
+                "de": "Erlaubt die Anzeige der Benutzeroberfläche."
+            }
+        },
+        "resources": [{
+            "type": "rest",
+            "resourceId": "^[/]$",
+            "actions": ["view"]
+        }]
+    },
     "x-tenant-manage": {
         "translations": {
             "name": {
