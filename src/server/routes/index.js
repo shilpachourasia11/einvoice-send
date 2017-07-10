@@ -69,8 +69,6 @@ module.exports.init = function(app, db, config)
         app.post('/api/config/inchannels', (req, res) => this.addInChannelConfig(req, res));
         app.put('/api/config/inchannels/:supplierId/finish', (req, res) => this.approveInChannelConfig(req, res));
 
-        app.get('/api/userdata', (req, res) => res.json(req.opuscapita.userData()));
-
         // InChannelContract
         //
         app.get('/api/config/inchannelcontracts/:tenantId', (req, res) => this.sendInChannelContracts(req, res));
