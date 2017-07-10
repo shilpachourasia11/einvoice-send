@@ -158,7 +158,7 @@
         },
         "resources": [{
             "type": "rest",
-            "resourceId": "/api/customer/[%w | %p]",
+            "resourceId": "/api/customers/[%w | %p]",
             "actions": ["view"]
         }]
     }
