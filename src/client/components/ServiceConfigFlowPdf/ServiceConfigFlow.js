@@ -212,10 +212,15 @@ class PdfNav extends React.Component {
                     <NavItem eventKey={1}>
                         <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
                     </NavItem>
+                    {/* 2017-07-97 nc: On wish of Matts, we shall deactivate the PDF upload ui for now. Reason: No usage as long as there is no recipient for it
                     <NavItem eventKey={2} disabled={ this.props.currentTab < 2 }>
                         <span className="round-tab"><i className="glyphicon glyphicon-search"/></span>
                     </NavItem>
                     <NavItem eventKey={3} disabled={ this.props.currentTab < 3 }>
+                        <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
+                    </NavItem>
+                    */}
+                    <NavItem eventKey={2} disabled={ this.props.currentTab < 2 }>
                         <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
                     </NavItem>
                 </Nav>
@@ -274,6 +279,7 @@ class PdfTabContent extends React.Component {
                             onNext={ () => { this.props.approveOcTc(2); }}
                             voucher = {this.props.voucher}/>
                     </Tab.Pane>
+                    {/* 2017-07-97 nc: On wish of Matts, we shall deactivate the PDF upload ui for now. Reason: No usage as long as there is no recipient for it
                     <Tab.Pane eventKey={2}>
                         <ServiceConfigFlow3
                             onNext={ () => { this.props.setCurrentTab(3) } }
@@ -283,7 +289,14 @@ class PdfTabContent extends React.Component {
                     <Tab.Pane eventKey={3}>
                         <ServiceConfigFlow4
                             onNext={ () => { this.props.finalApprove() } }
-                            onPrevious={ () => this.setCurrentTab(2) }
+                            onPrevious={ () => this.props.setCurrentTab(2) }
+                            voucher = {this.props.voucher}/>
+                    </Tab.Pane>
+                    */}
+                    <Tab.Pane eventKey={2}>
+                        <ServiceConfigFlow4
+                            onNext={ () => { this.props.finalApprove() } }
+                            onPrevious={ () => this.props.setCurrentTab(1) }
                             voucher = {this.props.voucher}/>
                     </Tab.Pane>
                 </Tab.Content>
