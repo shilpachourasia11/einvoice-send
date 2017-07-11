@@ -41,19 +41,19 @@ module.exports.init = function(app, db, config)
 
         //  Test event subscriptions:
         this.events.subscribe('inChannelConfig.created', (data) => {
-            console.log("**************************** inChannelConfig.created", data);
+            console.log("Event received for \"inChannelConfig.created\"", data);
         });
         this.events.subscribe('inChannelConfig.updated', (data) => {
-            console.log("**************************** inChannelConfig.updated", data);
+            console.log("Event received for \"inChannelConfig.updated\"", data);
         });
         this.events.subscribe('inChannelContract.created', (data) => {
-            console.log("**************************** inChannelContract.created", data);
+            console.log("Event received for \"inChannelContract.created\"", data);
         });
         this.events.subscribe('inChannelContract.updated', (data) => {
-            console.log("**************************** inChannelContract.updated", data);
+            console.log("Event received for \"inChannelContract.updated\"", data);
         });
         this.events.subscribe('voucher.created', (data) => {
-            console.log("**************************** voucher.created", data);
+            console.log("Event received for \"voucher.created\"", data);
         });
 
         this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
