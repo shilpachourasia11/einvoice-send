@@ -159,7 +159,8 @@
         "resources": [{
             "type": "rest",
             "resourceId": "/api/customers/[%w | %p]*",
-            "actions": ["view"]
+            "actions": ["view"],
+            "fields": ["customerName"]
         }]
     }
 }
