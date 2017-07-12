@@ -71,7 +71,7 @@ class Layout extends Component
 
     loadUserData()
     {
-        return ajax.get('/auth/me').then(res => JSON.parse(res.text));
+        return ajax.get('/auth/userdata').then(res => JSON.parse(res.text));
     }
 
     render()
