@@ -6,26 +6,28 @@ services:
      - consul
      - registrator
      - redis
-     - nginx
+     - kong
+     - blob
+     - auth
      - user
-##     - blob
+     - api-registry
     labels:
       SERVICE_NAME: 'einvoice-send'
       SERVICE_TAGS: 'external'
-      SERVICE_3007_CHECK_HTTP: '/api/health/check'
-      SERVICE_3007_CHECK_INTERVAL: '15s'
-      SERVICE_3007_CHECK_TIMEOUT: '3s'
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       REDIS_AUTH: ${REDIS_AUTH}
+      SERVICE_3007_CHECK_HTTP: '/api/health/check'
+      SERVICE_3007_CHECK_INTERVAL: '15s'
+      SERVICE_3007_CHECK_TIMEOUT: '3s'
     ports:
      - '3007:3007'
 
   mysql:
-    image: "mysql:5.6"
+    image: 'mysql:5.6'
     ports:
-      - "3306:3306"
+      - '3306:3306'
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -40,17 +42,71 @@ services:
       REDIS_AUTH: ${REDIS_AUTH}
     depends_on:
       - registrator
-    labels:
-      SERVICE_NAME: redis
 
-  nginx:
-    image: gr4per/nginx-rp:dev
+  postgres:
+    image: postgres:9.4
+    container_name: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: $POSTGRES_DB
+      POSTGRES_DB: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     depends_on:
-       - consul
+      - registrator
+
+  kong:
+    image: opuscapita/kong:dev
+    environment:
+      KONG_DATABASE: 'postgres'
+      KONG_PG_HOST: $KONG_PG_HOST
+      KONG_PG_PORT: $KONG_PG_PORT
+      APP_HOST: $HOST_IP
+      APP_HOST_PROTOCOL: $APP_HOST_PROTOCOL
+      APP_HOST_PORT: $APP_HOST_PORT
+      GATEWAY_SCHEME: $GATEWAY_SCHEME
+      GATEWAY_IP: $GATEWAY_IP
+      GATEWAY_PORT: $GATEWAY_PORT
+      GATEWAY_CALLBACK: $GATEWAY_CALLBACK
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      LOG_PORT: 5000
+      LOG_HOST: $LOG_HOST
+      REDIS_HOST: $HOST_IP # TODO: remove after api-gw is using config
+      REDIS_PORT: 6379 # TODO: remove after api-gw is using config
+      REDIS_AUTH: $REDIS_AUTH # TODO: remove after api-gw is using config
+      SERVICE_8001_NAME: 'kong'
+      SERVICE_8080_NAME: 'kong-http'
     ports:
       - '8080:8080'
+      - '8443:8443'
+      - '8001:8001'
+      - '7946:7946'
+      - '7946:7946/udp'
+    depends_on:
+      - postgres
+      - mysql
+    volumes:
+      - .:/usr/local/kong/logs
+
+  registrator:
+    image: gliderlabs/registrator
+    command: consul://consul:8500
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
     depends_on:
       - consul
+
+  consul:
+    image: consul:latest
+    ports:
+      - '8400:8400'
+      - '8500:8500'
+      - '8600:53/udp'
+    labels:
+      SERVICE_IGNORE: 'true'  # Do not add any of Consul's services to Consul's service discovery registry.
+    command: [agent, '-server', '-ui', '-bootstrap', '-client=0.0.0.0']
 
   blob:
     image: opuscapita/blob:dev
@@ -72,37 +128,146 @@ services:
      - '3012:3012'
     command: "npm run dev"
 
-  user:
-    image: opuscapita/user:dev
+  api-registry:
+    image: opuscapita/api-registrator:dev
+    ports:
+      - '$API_REGISTRY_PORT:$API_REGISTRY_PORT'
+    environment:
+      AUTH_SERVER: $AUTH_SERVER
+      AUTH_SERVER_PORT: $AUTH_SERVER_PORT
+      API_REGISTRY_PORT: $API_REGISTRY_PORT
+      GATEWAY_CALLBACK: $GATEWAY_CALLBACK
     depends_on:
-     - mysql
-     - consul
-     - registrator
+      - kong
+
+  acl:
+    image: opuscapita/acl:dev
     labels:
-      SERVICE_NAME: 'user'
+      - 'SERVICE_NAME=acl'
+      - 'SERVICE_TAGS=external,kong'
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      USER_NAME: 'svc_user'
-      PASSWORD: 'user'
+      SERVICE_3013_CHECK_HTTP: '/api/health/check'
+      SERVICE_3013_CHECK_INTERVAL: '15s'
+      SERVICE_3013_CHECK_TIMEOUT: '3s'
     ports:
-     - '3008:3008'
+     - '3013:3013'
+    depends_on:
+      - kong
     command: 'npm run dev'
 
-  registrator:
-    image: gliderlabs/registrator
-    command: consul://consul:8500
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock
+  auth:
+    image: opuscapita/auth:dev
+    ports:
+     - '$APP_HOST_PORT:$APP_HOST_PORT'
+    environment:
+      NODE_ENV: $NODE_ENV
+      APP_HOST: '0.0.0.0'
+      APP_HOST_PROTOCOL: $APP_HOST_PROTOCOL
+      APP_HOST_PORT: $APP_HOST_PORT
+      GATEWAY_SCHEME: $GATEWAY_SCHEME
+      GATEWAY_IP: $GATEWAY_IP
+      GATEWAY_PORT: $GATEWAY_PORT
+      GATEWAY_CALLBACK: $GATEWAY_CALLBACK
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      REDIS_AUTH: $REDIS_AUTH
+      USER_NAME: 'svc_auth'
+      PASSWORD: 'test'
+      CLIENT_KEY: $CLIENT_KEY
+      CLIENT_SECRET: $CLIENT_SECRET
+      SCOPE: $SCOPE
+      SERVICE_3005_CHECK_HTTP: '/auth/certs'
+      SERVICE_3005_CHECK_INTERVAL: '15s'
+      SERVICE_3005_CHECK_TIMEOUT: '3s'
+    depends_on:
+      - kong
+    command: 'npm run dev'
+
+  isodata:
+    image: opuscapita/isodata:dev
+    ports:
+      - '3006:3006'
     depends_on:
       - consul
-
-  consul:
-    image: consul:latest
-    ports:
-      - '8400:8400'
-      - '8500:8500'
-      - '8600:53/udp'
+      - mysql
     labels:
-      SERVICE_IGNORE: 'true'  # Do not add any of Consul's services to Consul's service discovery registry.
-    command: [agent, '-server', '-ui', '-bootstrap', '-client=0.0.0.0']
+      SERVICE_NAME: isodata
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      PORT: '3006'
+      SERVICE_3006_CHECK_HTTP: /api/health/check
+      SERVICE_3006_CHECK_INTERVAL: 15s
+      SERVICE_3006_CHECK_TIMEOUT: 3s
+    command: 'npm run dev'
+
+  user:
+    image: opuscapita/user:dev
+    depends_on:
+      - mysql
+      - consul
+      - registrator
+    labels:
+      SERVICE_NAME: 'user'
+    environment:
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      REDIS_AUTH: $REDIS_AUTH
+      USER_NAME: 'svc_user'
+      PASSWORD: 'test'
+      CLIENT_KEY: $CLIENT_KEY
+      CLIENT_SECRET: $CLIENT_SECRET
+      SCOPE: $SCOPE
+      SERVICE_3008_CHECK_HTTP: /api/health/check
+      SERVICE_3008_CHECK_INTERVAL: 15s
+      SERVICE_3008_CHECK_TIMEOUT: 3s
+    ports:
+      - '3008:3008'
+    command: 'npm run dev'
+
+  supplier:
+    image: opuscapita/supplier:dev
+    depends_on:  # as of version 1.9.0 Dockerfile's HEALTHCHECK is not supported yet.
+      - mysql
+      - isodata
+    labels:
+      SERVICE_NAME: 'supplier'  # Service name used by Registrator for adding to Consul's service discovery registry.
+      SERVICE_TAGS: 'external'
+    ports:
+      - "3001:3001"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      NODE_ENV: 'production'
+      REDIS_AUTH: $REDIS_AUTH
+      USER_NAME: 'svc_supplier'
+      PASSWORD: 'test'
+      CLIENT_KEY: $CLIENT_KEY
+      CLIENT_SECRET: $CLIENT_SECRET
+      SCOPE: $SCOPE
+      SERVICE_3001_CHECK_HTTP: /api/health/check
+      SERVICE_3001_CHECK_INTERVAL: 15s
+      SERVICE_3001_CHECK_TIMEOUT: 3s
+    command: 'npm run dev'
+
+  customer:
+    image: opuscapita/customer:dev
+    depends_on:
+      - mysql
+      - consul
+      - registrator
+      - redis
+    labels:
+      SERVICE_NAME: 'customer'
+    environment:
+      SERVICE_3009_CHECK_HTTP: /api/health/check
+      SERVICE_3009_CHECK_INTERVAL: 15s
+      SERVICE_3009_CHECK_TIMEOUT: 3s
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      REDIS_AUTH: ${REDIS_AUTH}
+    ports:
+      - '3009:3009'
+    command: 'npm run dev'
