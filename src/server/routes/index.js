@@ -377,10 +377,14 @@ module.exports.updateInChannelContract = function(req, res)
         .then((exists) => {
             if(exists) {
                 var obj = req.body || { }
-                obj.changedBy = req.opuscapita.userData('id');
-                obj.changedOn = new Date();                     // TODO: directly via db. ???
+                let userId = req.opuscapita.userData('id');
+                obj.changedBy = userId;
 
-                return InChannelContract.update(bp.customerId, bp.supplierId, obj)
+                req.opuscapita.serviceClient.get("user", "/onboardingdata/" + userId, true)
+                .spread((onboardData, response) => {
+                    obj.customerSupplierId = onboardData && onboardData.campaignDetails && onboardData.campaignDetails.supplierId;
+                    return InChannelContract.update(bp.customerId, bp.supplierId, obj)
+                })
                 .then( () => {
                     return InChannelContract.get(bp.customerId, bp.supplierId);
                 })
