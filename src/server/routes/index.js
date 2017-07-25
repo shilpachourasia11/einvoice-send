@@ -74,6 +74,7 @@ module.exports.init = function(app, db, config)
         app.put('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.updateInChannelContract(req, res));
         app.post('/api/config/inchannelcontracts/:tenantId', (req, res) => this.addInChannelContract(req, res));
 
+
         // Voucher
         //
         // TODO: search only for Vouchers with state != 'closed'
@@ -311,7 +312,6 @@ module.exports.sendInChannelContracts = function(req, res)
     }
 }
 
-
 module.exports.addInChannelContract = function(req, res)
 {
     try {
@@ -343,8 +343,13 @@ module.exports.addInChannelContract = function(req, res)
                 res.status('409').json({ message : 'This customer-supplier relation (' + customerId + '+' + supplierId + ') already owns an in-channel configuration.' });
             }
             else {
-                obj.createdBy = req.opuscapita.userData('id');
-                return InChannelContract.add(obj, true)
+                let userId = req.opuscapita.userData('id');
+                obj.createdBy = userId;
+                req.opuscapita.serviceClient.get("user", "/onboardingdata/" + userId, true)
+                .spread((onboardData, response) => {
+                    obj.customerSupplierId = onboardData && onboardData.campaignDetails && onboardData.campaignDetails.supplierId;
+                    return InChannelContract.add(obj, true)
+                })
                 .then(icc => this.events.emit(icc, 'inChannelContract.created').then(() => icc))
                 .then(icc => res.status(200).json(icc));
             }
