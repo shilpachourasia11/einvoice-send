@@ -287,27 +287,34 @@ module.exports.sendInChannelContract = function(req, res)
 
 module.exports.sendInChannelContracts = function(req, res)
 {
-    try {
-        const tenantId = req.params.tenantId;
-        let inChannelContractsPromise;
+    const tenantId = req.params.tenantId;
 
-        if (tenantId.startsWith("s_")){
-            inChannelContractsPromise = InChannelContract.allForSupplier(tenantId.substring(2));
+    let searchObj = {};
+    if (tenantId.startsWith("s_")){
+        searchObj.supplierId = tenantId.substring(2)
+        if(req.query.customerIds) {
+            searchObj.customerId = Array.isArray(req.query.customerIds) ? req.query.customerIds
+                : req.query.customerIds.replace(/\s/g, '').toLowerCase().split(',');
         }
-        else if (tenantId.startsWith("c_")) {
-            inChannelContractsPromise = InChannelContract.allForCustomer(tenantId.substring(2));
-        }
-        else {
-            throw new Error("No valid tenant provided! Please provide a valid tenant identifier that starts with either 's_' or 'c_'. Provided value was " + tenantId);
-        }
-
-        return inChannelContractsPromise.then(data => {
-            (data && res.json(data)) || res.status('404').json({ message : 'No entry found for tenant ' + tenantId});
-        })
     }
-    catch(error) {
-        req.opuscapita.logger.error('Error when getting InChannelContracts: %s', error);
-        res.status('400').json({ message : error.message });
+    else if (tenantId.startsWith("c_")) {
+        searchObj.customerId = tenantId.substring(2)
+        if(req.query.supplierIds) {
+            searchObj.supplierId = Array.isArray(req.query.supplierIds) ? req.query.supplierIds
+                : req.query.supplierIds.replace(/\s/g, '').toLowerCase().split(',');
+        }
+    }
+
+    if (tenantId && !(searchObj.customerId || searchObj.supplierId)) {
+        res.status('400').json({ message : "No valid tenant provided! Please provide a valid tenant identifier that starts with either 's_' or 'c_'. Provided value was " + tenantId });
+    }
+    else {
+        InChannelContract.getAll(searchObj)
+        .then(contacts => res.json(contacts))
+        .catch((e) => {
+            req.opuscapita.logger.error('Error when getting InChannelContracts: %s', error);
+            res.status('400').json({ message : error.message });
+        });
     }
 }
 
