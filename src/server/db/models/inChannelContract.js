@@ -23,6 +23,10 @@ module.exports.init = function(db, config)
             type : DataTypes.STRING(30),
             allowNull : false
         },
+        customerSupplierId: {
+            type : DataTypes.STRING(30),
+            allowNull : true
+        },
         billingModelId : {
             type : DataTypes.STRING(30),
             allowNull : true
@@ -47,8 +51,7 @@ module.exports.init = function(db, config)
         },
         changedBy : {
             type : DataTypes.STRING(60),
-            allowNull : false,
-            defaultValue : ''
+            allowNull : true
         },
         createdOn : {
             type : DataTypes.DATE(),
@@ -57,7 +60,8 @@ module.exports.init = function(db, config)
         },
         changedOn : {
             type : DataTypes.DATE(),
-            allowNull : true
+            allowNull : false,
+            defaultValue : DataTypes.NOW
         }
     }, {
         updatedAt : 'changedOn',
