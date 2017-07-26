@@ -307,14 +307,14 @@ module.exports.sendInChannelContracts = function(req, res)
     }
 
     if (tenantId && !(searchObj.customerId || searchObj.supplierId)) {
-        res.status('400').json({ message : "No valid tenant provided! Please provide a valid tenant identifier that starts with either 's_' or 'c_'. Provided value was " + tenantId });
+        res.status('400').json({ message : "TenantId " + tenantId + " is invalid! Please provide a valid tenant identifier that starts with either 's_' or 'c_'."});
     }
     else {
         InChannelContract.getAll(searchObj)
         .then(contacts => res.json(contacts))
         .catch((e) => {
-            req.opuscapita.logger.error('Error when getting InChannelContracts: %s', error);
-            res.status('400').json({ message : error.message });
+            req.opuscapita.logger.error('Error when getting InChannelContracts: %s', e);
+            res.status('400').json({ message : e.message });
         });
     }
 }
@@ -337,7 +337,7 @@ module.exports.addInChannelContract = function(req, res)
             obj.customerId = customerId;       // or shall we throw an error if values distinct?
         }
         else {
-            throw new Error("No valid tenant provided! Please provide a valid tenant identifier that starts with either 's_' or 'c_'. Provided value was " + tenantId);
+            throw new Error("TenantId " + tenantId + " is invalid! Please provide a valid tenant identifier that starts with either 's_' or 'c_'.");
         }
 
         if (!(customerId || supplierId)) {
