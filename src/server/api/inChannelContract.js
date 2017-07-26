@@ -35,14 +35,16 @@ module.exports.get = function(customerId, supplierId)
     });
 }
 
-module.exports.allForSupplier = function(supplierId)
+module.exports.getAll = function(searchObj)
 {
-    return this.db.models.InChannelContract.findAll({where: {supplierId: supplierId}, order: [['changedOn', 'ASC']]});
-}
+    for(var key in searchObj)
+        if(Array.isArray(searchObj[key]))
+            searchObj[key] = { '$in' : searchObj[key] };
 
-module.exports.allForCustomer = function(customerId)
-{
-    return this.db.models.InChannelContract.findAll({where: {customerId: customerId}, order: [['changedOn', 'ASC']]});
+    return this.db.models.InChannelContract.findAll({
+        where : searchObj,
+        order: [['changedOn', 'ASC']]
+    });
 }
 
 module.exports.add = function(data)
