@@ -354,7 +354,7 @@ module.exports.addInChannelContract = function(req, res)
                 obj.createdBy = userId;
                 req.opuscapita.serviceClient.get("user", "/onboardingdata/" + userId, true)
                 .spread((onboardData, response) => {
-                    obj.customerSupplierId = onboardData && onboardData.campaignDetails && onboardData.campaignDetails.supplierId;
+                    obj.customerSupplierId = onboardData && onboardData.campaignDetails && onboardData.campaignDetails.customerSupplierId;
                     return InChannelContract.add(obj, true)
                 })
                 .then(icc => this.events.emit(icc, 'inChannelContract.created').then(() => icc))
