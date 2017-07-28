@@ -27,7 +27,7 @@ module.exports.up = function(db, config)
         'changedOn',
         {
             type : DataTypes.DATE(),
-            allowNull : false,
+            allowNull : true,
             defaultValue : DataTypes.NOW
         }
     );
