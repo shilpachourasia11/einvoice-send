@@ -27,6 +27,10 @@ module.exports.init = function(db, config)
             type : DataTypes.STRING(30),
             allowNull : true
         },
+        customerSupplierId: {
+            type : DataTypes.STRING(30),
+            allowNull : true
+        },
         // new, approved
         status : {
             type : DataTypes.STRING(100),
