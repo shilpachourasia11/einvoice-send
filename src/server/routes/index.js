@@ -330,19 +330,23 @@ module.exports.addInChannelContract = function(req, res)
 
         if (tenantId.startsWith("s_")){
             supplierId = tenantId.substring(2);
-            obj.supplierId = supplierId;       // or shall we throw an error if values distinct?
+            obj.supplierId = supplierId;       // Overwrite provided data.
+            customerId = obj.customerId;
         }
         else if (tenantId.startsWith("c_")) {
             customerId = tenantId.substring(2);
             obj.customerId = customerId;       // or shall we throw an error if values distinct?
+            supplierId = obj.supplierId;
         }
         else {
             throw new Error("TenantId " + tenantId + " is invalid! Please provide a valid tenant identifier that starts with either 's_' or 'c_'.");
         }
 
         if (!(customerId || supplierId)) {
-            throw new Error("Please provide a supplierId or a customerId tenant in the URI.")
+            throw new Error("Please provide a supplierId tenant or a customerId tenant in the URI.")
         }
+
+
 
         InChannelContract.exists(customerId, supplierId)
         .then(exists => {
@@ -350,11 +354,11 @@ module.exports.addInChannelContract = function(req, res)
                 res.status('409').json({ message : 'This customer-supplier relation (' + customerId + '+' + supplierId + ') already owns an in-channel configuration.' });
             }
             else {
-                let userId = req.opuscapita.userData('id');
-                obj.createdBy = userId;
-                req.opuscapita.serviceClient.get("user", "/onboardingdata/" + userId, true)
-                .spread((onboardData, response) => {
-                    obj.customerSupplierId = onboardData && onboardData.campaignDetails && onboardData.campaignDetails.customerSupplierId;
+                obj.createdBy = req.opuscapita.userData('id');
+
+                Voucher.get(customerId, supplierId)
+                .then((voucher) => {
+                    obj.customerSupplierId = voucher.customerSupplierId;
                     return InChannelContract.add(obj, true)
                 })
                 .then(icc => this.events.emit(icc, 'inChannelContract.created').then(() => icc))
@@ -384,12 +388,11 @@ module.exports.updateInChannelContract = function(req, res)
         .then((exists) => {
             if(exists) {
                 var obj = req.body || { }
-                let userId = req.opuscapita.userData('id');
-                obj.changedBy = userId;
+                obj.changedBy = req.opuscapita.userData('id');
 
-                req.opuscapita.serviceClient.get("user", "/onboardingdata/" + userId, true)
-                .spread((onboardData, response) => {
-                    obj.customerSupplierId = onboardData && onboardData.campaignDetails && onboardData.campaignDetails.supplierId;
+                Voucher.get(bp.customerId, bp.supplierId)
+                .then((voucher) => {
+                    obj.customerSupplierId = voucher.customerSupplierId;
                     return InChannelContract.update(bp.customerId, bp.supplierId, obj)
                 })
                 .then( () => {
