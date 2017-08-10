@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { SidebarMenu, HeaderMenu } from 'ocbesbn-react-components';
+import { SidebarMenu, HeaderMenu } from '@opuscapita/react-menus';
 import ajax from 'superagent-bluebird-promise';
 import I18nManager from 'opuscapita-i18n/lib/utils/I18nManager';
 import translations from './i18n';
