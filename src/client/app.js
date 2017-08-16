@@ -141,7 +141,7 @@ export default class App extends React.Component
     }
 
     finalizeFlow = () => {
-        window.location.href = "/bnp";
+        window.location.href = "/bnp/dashboard";
     }
 
     render()
