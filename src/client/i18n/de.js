@@ -35,7 +35,7 @@ export default {
 
         Pdf:{
             subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
-            intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen. OpusCapita legt dazu für Sie eine eine E-Mail-Adresse an. Die Adressen wird das Format haben:  {customerId}.FI.P.101234-3@docinbound.com",
+            intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen.",
 
             Upload: {
                 header: "PDF Beispiel einer Rechnung",
