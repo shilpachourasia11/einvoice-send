@@ -64,7 +64,7 @@ export default {
         },
         CustomerTaC: {
             subheader: "Allgemeine Geschäftsbedingungen von {customerName}",
-            subsubheader: "Bitte prüfen Sie die Please Allgemeinen Geschäftsbedingungencheck und bestätigen diese unten auf der Seite.",
+            subsubheader: "Bitte prüfen Sie die Allgemeinen Geschäftsbedingungencheck und bestätigen diese unten auf der Seite.",
             readTaC: "Ich habe die allgemeine Geschäftsbedingungen von {customerName} gelesen und akzeptiert.",
         }
     }
