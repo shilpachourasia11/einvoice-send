@@ -28,26 +28,7 @@ services:
     ports:
      - '3007:3007'
 
-  customer:
-    image: opuscapita/customer:dev
-    depends_on:
-      - mysql
-      - consul
-      - registrator
-    labels:
-      SERVICE_NAME: 'customer'
-    environment:
-      PORT: ${CUSTOMER_PORT}
-      HOST_IP: ${HOST_IP}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      REDIS_AUTH: ${REDIS_AUTH}
-      SERVICE_3009_CHECK_HTTP: /api/health/check
-      SERVICE_3009_CHECK_INTERVAL: 15s
-      SERVICE_3009_CHECK_TIMEOUT: 3s
-    ports:
-       - '${CUSTOMER_PORT}:${CUSTOMER_PORT}'
-    command: 'npm run dev'
+  
   mysql:
     image: 'mysql:5.6'
     ports:
