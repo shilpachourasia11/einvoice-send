@@ -36,7 +36,7 @@ var config = {
 
 var mainConfig = Object.assign({}, config, {
     devtool: 'eval-source-map',
-    entry: path.join(__dirname, 'src/client/index.js'),
+    entry: ['babel-polyfill', path.join(__dirname, 'src/client/index.js')],
     output: {
         path: path.join(__dirname, 'src/client/dist'),
         filename: 'bundle.js',

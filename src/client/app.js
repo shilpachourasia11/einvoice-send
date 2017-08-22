@@ -72,7 +72,7 @@ export default class App extends React.Component
             voucher.eInvoiceEnabled = false; // !!! no flow ui available up to now
             voucher.pdfEnabled = true;
             voucher.supplierPortalEnabled = false; // !!! no flow ui available up to now
-            voucher.paperEnabled = true;
+            voucher.paperEnabled = false;
 
             return this.getCustomer(voucher.customerId)
             .then((customer) => {
