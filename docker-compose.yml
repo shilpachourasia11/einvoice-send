@@ -8,6 +8,7 @@ services:
      - redis
      - kong
      - blob
+     - customer
      - auth
      - user
      - api-registry
@@ -15,6 +16,9 @@ services:
       SERVICE_NAME: 'einvoice-send'
       SERVICE_TAGS: 'external'
     environment:
+      GATEWAY_SCHEME: $GATEWAY_SCHEME
+      GATEWAY_IP: $GATEWAY_IP
+      GATEWAY_PORT: $GATEWAY_PORT
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       REDIS_AUTH: ${REDIS_AUTH}
@@ -24,6 +28,7 @@ services:
     ports:
      - '3007:3007'
 
+  
   mysql:
     image: 'mysql:5.6'
     ports:
