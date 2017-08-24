@@ -10,9 +10,12 @@ export default {
         hello : "Einladung von Ihrem Kunden {customerName}",
         intro1 : "Ihr Kunde {customerName} hat Sie eingeladen, um am OpusCapita Business Network teilzuhaben.",
         intro2 : "Bitte bestimmen Sie unten, wie Sie Ihre Rechnungen bereitstellen wollen.",
+        intro3: "Herzlich Willkommen! Hier werden wir Ihnen die Konfiguration der eInvoice-Integration per Webservice anbieten. Leider ist diese noch nicht verfügbar. Sobald eine Integration möglich ist, werden wir uns mit Ihnen in Verbindung setzen, so Sie diesen Wunsch unten bestätigen.",
         helloWithoutCustomer: "Entschuldigung, für Sie liegt aktuell keine Einladung (Voucher) vor.",
         intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben, die Generierung der Einladung benötigt einen Moment. ",
         freeFor: "Frei für Sie für Kunde {customerName}",
+        wantEinvoice:"Ja, wir wünschen eine eInvoice-Integration",
+        backToChannel:"Wir unterstützen kein eInvoice",
         intention: "Absichtserklärung",
         reloadVoucher: "Auf neue Einladung prüfen",
 

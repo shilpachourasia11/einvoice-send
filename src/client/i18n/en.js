@@ -10,11 +10,12 @@ export default {
         hello : "Invitation by Customer {customerName}",
         intro1 : "Your Customer {customerName} invited you to participate on the OpusCapita Business Network.",
         intro2 : "Please select below the way on how you want to provide invoices.",
-
+        intro3: "Welcome! We are sorry that we cannot provide an eInvoice web integration right now, but it will be available soon. If you want to provide invoices via web service, please confirm this intention below.",
         helloWithoutCustomer: "Sorry, we couldn't find a voucher for you.",
         intro1WithoutCustomer: "If you just registered as a supplier: Voucher generation may take a minute. ",
         reloadVoucher: "Check for new Voucher",
-
+        wantEinvoice:"Yes, we want to use eInvoice",
+        backToChannel:"No, we do not support eInvoice",
         freeFor: "Free for you for {customerName}",
         intention: "Confirm your intention",
 
