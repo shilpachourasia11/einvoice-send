@@ -21,7 +21,8 @@ export default class ServiceConfigFlow1 extends React.Component {
 
         this.state = {
             accepted : this.props.accepted,
-            ocTermsAndConditions : 'loading OpusCapita Terms and Conditions...'
+            ocTermsAndConditions : 'loading OpusCapita Terms and Conditions...',
+            rejectionEmail:false
         }
     }
 
@@ -156,10 +157,11 @@ export default class ServiceConfigFlow1 extends React.Component {
                             {this.context.i18n.getMessage('ServiceConfigFlow.readOCTaC')}
                         </a>
                     </label>
+
                 </div>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>
-                    <Button bsStyle="primary" disabled={ !this.state.accepted } onClick={ () => this.props.onNext() }>
+                    <Button bsStyle="primary" disabled={ !this.state.accepted || !this.state.rejectionEmail } onClick={ () => this.props.onNext() }>
                         {this.context.i18n.getMessage('accept')}
                     </Button>
                 </div>
