@@ -13,7 +13,7 @@ export default {
         helloWithoutCustomer: "Entschuldigung, für Sie liegt aktuell keine Einladung (Voucher) vor.",
         intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben, die Generierung der Einladung benötigt einen Moment. ",
         freeFor: "Frei für Sie für Kunde {customerName}",
-        intention: "Confirm your intention",
+        intention: "Absichtserklärung",
         reloadVoucher: "Auf neue Einladung prüfen",
 
         eInvoice: "eInvoice",

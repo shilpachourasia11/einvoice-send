@@ -31,7 +31,8 @@ export default class ServiceConfigFlowStart extends React.Component
     {
         super(props);
         this.state = {
-            invoiceSendingType : this.props.invoiceSendingType
+            invoiceSendingType : this.props.invoiceSendingType,
+            intention:false
         };
     }
 
@@ -46,6 +47,9 @@ export default class ServiceConfigFlowStart extends React.Component
     /////////////////////////////////////////////
 
     onInvoiceSendingTypeChanged = (event) => {
+        if(event.target.value == "einvoice") {
+            this.setState({intention:true})
+        }
         this.setState({invoiceSendingType : event.target.value});
     }
 
@@ -56,9 +60,9 @@ export default class ServiceConfigFlowStart extends React.Component
         let obj = {
             inputType: this.state.invoiceSendingType,
             voucherId: this.props.voucher.id,
-            status: InChannelConfig.status.new
+            status: InChannelConfig.status.new,
+            intention:this.state.intention
         };
-
         return new Promise((resolve, reject) => {
             return InChannelConfig.update(supplierId, obj)
             .then(() => {
