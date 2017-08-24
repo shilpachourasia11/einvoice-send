@@ -22,7 +22,8 @@ export default class ServiceConfigFlow1 extends React.Component {
             accepted : this.props.accepted,
             ocTermsAndConditions : 'loading OpusCapita Terms and Conditions...',
             rejection:false,
-            email:''
+            email:'',
+            validate:null
         }
     }
 
@@ -127,15 +128,24 @@ export default class ServiceConfigFlow1 extends React.Component {
 
         return {__html: str};
     }
-
+// This function handles the text change event for the new text box added 
+// For now a regex validation is added. 
+// NEED: validate.js to be installed first.
     handleChange = (e)=>{
+        let regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         this.setState({
             email:e.target.value
         },()=>{
             if(this.state.email === "")
-                this.setState({rejection:false})
-            else
-                this.setState({rejection:true})
+                this.setState({rejection:false,validation:'null'})
+            else {
+                if(regex.test(this.state.email)) {
+                    this.setState({validate:'success',rejection:true})
+                }
+                else {
+                    this.setState({validate:'error',rejection:false})
+                }
+            }
         })
     }
     render()
@@ -166,9 +176,11 @@ export default class ServiceConfigFlow1 extends React.Component {
                             {this.context.i18n.getMessage('ServiceConfigFlow.readOCTaC')}
                         </a>
                     </label>
+                {/*This code till line 202, added a label and textbox and additional help text for the rejection email.*/}
                     <Form horizontal>
                         <FormGroup
                         controlId="rejection email"
+                        validationState={this.state.validate}
                         >
                             <Col componentClass={ControlLabel} sm={3}>
                                 <ControlLabel>*{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.rejection')}</ControlLabel>
