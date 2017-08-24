@@ -121,7 +121,8 @@ export default class ServiceConfigFlowStart extends React.Component
                         </label>
                     </div>
                     <div className="col-md-11">
-                        <div className={"panel panel-default " + (this.props.voucher.eInvoiceEnabled ? "" : "disabled")}>
+                        {/*<div className={"panel panel-default " + (this.props.voucher.eInvoiceEnabled ? "" : "disabled")}>*/}
+                        <div className={"panel panel-default " }>
                             <div className="panel-heading">
                                 <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoice')}
                                     <BillingDetails inputType="eInvoice" voucher={this.props.voucher} />
@@ -155,7 +156,7 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio  disabled={!this.props.voucher.supplierPortalEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'supplier' } value="supplier"/>
+                            <Radio disabled={!this.props.voucher.supplierPortalEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'supplier' } value="supplier"/>
                         </label>
                     </div>
                     <div className="col-md-11">

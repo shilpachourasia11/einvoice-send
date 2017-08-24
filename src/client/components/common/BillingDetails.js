@@ -22,6 +22,11 @@ export default class BillingDetails extends React.Component {
                 <span style={styleFree}>{this.context.i18n.getMessage('ServiceConfigFlowStart.freeFor', {customerName : this.props.voucher.customerName})}</span>
             );
         }
+        else if(this.props.inputType == "eInvoice"){
+            return (
+                <span style={styleFree}>{this.context.i18n.getMessage('ServiceConfigFlowStart.intention')}</span>
+                )
+        }
         else {
             return null;
         }

@@ -16,6 +16,7 @@ export default {
         reloadVoucher: "Check for new Voucher",
 
         freeFor: "Free for you for {customerName}",
+        intention: "Confirm your intention",
 
         eInvoice: "eInvoice",
         eInvoiceDesc: "Connect with your existing service provider for e-invoicing by simply choose your operator from our partner list and we set up your connection in no time.",
