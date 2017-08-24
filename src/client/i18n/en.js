@@ -38,6 +38,8 @@ export default {
         Pdf:{
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail.",
             intro: "Email Invoice Digitizing enables {customerName} to receive invoices as email attachments.",
+            rejection:"Rejection Email",
+            additionalHelp:"We will contact you in case of problems with the provided PDF invoice by using with this email address.",
 
             Upload: {
                 header: "Invoice PDF Example",

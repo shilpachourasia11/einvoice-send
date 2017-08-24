@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import { Button,Col } from 'react-bootstrap';
+import {Form, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 //import browserHistory from 'react-router/lib/browserHistory';
 import ajax from 'superagent-bluebird-promise';
-
 export default class ServiceConfigFlow1 extends React.Component {
 
     static propTypes = {
@@ -10,7 +10,6 @@ export default class ServiceConfigFlow1 extends React.Component {
         onNext : React.PropTypes.func.isRequired,
         ocTermsAndConditions : React.PropTypes.string
     };
-
     static defaultProps = {
         accepted : false
     };
@@ -22,7 +21,8 @@ export default class ServiceConfigFlow1 extends React.Component {
         this.state = {
             accepted : this.props.accepted,
             ocTermsAndConditions : 'loading OpusCapita Terms and Conditions...',
-            rejectionEmail:false
+            rejection:false,
+            email:''
         }
     }
 
@@ -128,7 +128,16 @@ export default class ServiceConfigFlow1 extends React.Component {
         return {__html: str};
     }
 
-
+    handleChange = (e)=>{
+        this.setState({
+            email:e.target.value
+        },()=>{
+            if(this.state.email === "")
+                this.setState({rejection:false})
+            else
+                this.setState({rejection:true})
+        })
+    }
     render()
     {
         return (
@@ -157,13 +166,35 @@ export default class ServiceConfigFlow1 extends React.Component {
                             {this.context.i18n.getMessage('ServiceConfigFlow.readOCTaC')}
                         </a>
                     </label>
-
+                    <Form horizontal>
+                        <FormGroup
+                        controlId="rejection email"
+                        >
+                            <Col componentClass={ControlLabel} sm={3}>
+                                <ControlLabel>*{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.rejection')}</ControlLabel>
+                            </Col>
+                            <Col sm={8}>
+                                <FormControl
+                                    name="email"
+                                    type="text"
+                                    placeholder="Enter Email here"
+                                    onChange = {this.handleChange}
+                                    value={this.state.email}
+                                />
+                            </Col>
+                            <FormControl.Feedback />
+                            <Col sm={12}>
+                                <HelpBlock>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.additionalHelp')}</HelpBlock>
+                            </Col>
+                        </FormGroup>
+                    </Form>
                 </div>
-
-                <div className="form-submit text-right" style={{ marginTop: '80px' }}>
-                    <Button bsStyle="primary" disabled={ !this.state.accepted || !this.state.rejectionEmail } onClick={ () => this.props.onNext() }>
-                        {this.context.i18n.getMessage('accept')}
-                    </Button>
+                <div className="col-md-12">
+                    <div className="form-submit text-right">
+                        <Button bsStyle="primary" disabled={ !this.state.accepted || !this.state.rejection } onClick={ () => this.props.onNext() }>
+                            {this.context.i18n.getMessage('accept')}
+                        </Button>
+                    </div>
                 </div>
             </div>
         )

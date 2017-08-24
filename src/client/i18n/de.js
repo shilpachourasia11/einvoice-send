@@ -36,6 +36,8 @@ export default {
         Pdf:{
             subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
             intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen.",
+            rejection:"Rückweisungs E-Mail",
+            additionalHelp:"Wir werden Sie unter dieser E-Mail-Adresse kontaktieren, so Probleme mit der Verarbeitung der PDF-Rechnung auftreten",
 
             Upload: {
                 header: "PDF Beispiel einer Rechnung",
