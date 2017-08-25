@@ -1,1 +1,5 @@
 node_modules
+./access.log
+./admin_access.log
+./error.log
+./serf.log
