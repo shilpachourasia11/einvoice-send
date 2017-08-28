@@ -146,6 +146,10 @@ export default class App extends React.Component
 
     render()
     {
+        if (!this.state.user) {
+            return null;
+        }
+
         return (
             <Router history={ hashHistory } ref={el => {
                 this.history = el && el.props && el.props.history;
@@ -155,6 +159,7 @@ export default class App extends React.Component
                         return (
                             <ServiceConfigFlowStart
                                 openFlow={this.navigate2Flow}
+                                user={this.state.user}
                                 voucher={this.state.voucher}
                                 loadVoucher={this.loadVoucher} />
                         )} } />
