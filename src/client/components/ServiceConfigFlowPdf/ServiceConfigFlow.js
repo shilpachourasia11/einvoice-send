@@ -109,8 +109,8 @@ export default class ServiceConfigFlow extends React.Component
         this.setState({ currentTab : tabNo });
     }
 
-    approveOcTc = (tabNo) => {
-        InChannelConfig.update(this.props.voucher.supplierId, {'status': InChannelConfig.status.approved})
+    approveOcTc = (tabNo,email) => {
+        InChannelConfig.update(this.props.voucher.supplierId, {'status': InChannelConfig.status.approved,'rejectionEmail':email})
         .then(() => this.setCurrentTab(tabNo));
     }
 
@@ -156,7 +156,7 @@ export default class ServiceConfigFlow extends React.Component
                                                             customerTermsAndConditions={this.props.customerTermsAndConditions} />
                                                         <PdfTabContent
                                                             setCurrentTab = { (tabNo) => this.setCurrentTab(tabNo) }
-                                                            approveOcTc = { (tabNo) => this.approveOcTc(tabNo) }
+                                                            approveOcTc = { (tabNo,email) => this.approveOcTc(tabNo,email) }
                                                             approveCustomerTc = { (tabNo) => this.approveCustomerTC(tabNo) }
                                                             finalApprove = { () => this.finalApprove() }
                                                             voucher = {this.props.voucher}
@@ -237,12 +237,12 @@ class PdfTabContent extends React.Component {
                 <Tab.Content>
                     <Tab.Pane eventKey={1}>
                         <ServiceConfigFlow1
-                            onNext={ () => { this.props.approveOcTc(2); }}
+                            onNext={ (email) => {this.props.approveOcTc(2,email); }}
                             voucher = {this.props.voucher}/>
                     </Tab.Pane>
                     <Tab.Pane eventKey={2}>
                         <ServiceConfigFlow2
-                            onNext={ () => { this.props.approveCustomerTc(3); }}
+                            onNext={ () => {this.props.approveCustomerTc(3); }}
                             onPrevious={ () => this.props.setCurrentTab(1) }
                             voucher = {this.props.voucher}
                             customerTermsAndConditions = {this.props.customerTermsAndConditions}/>
@@ -276,7 +276,7 @@ class PdfTabContent extends React.Component {
                 <Tab.Content>
                     <Tab.Pane eventKey={1} disabled="disabled">
                         <ServiceConfigFlow1
-                            onNext={ () => { this.props.approveOcTc(2); }}
+                            onNext={ (email) => {console.log(email);this.props.approveOcTc(2,email); }}
                             voucher = {this.props.voucher}/>
                     </Tab.Pane>
                     {/* 2017-07-97 nc: On wish of Matts, we shall deactivate the PDF upload ui for now. Reason: No usage as long as there is no recipient for it
