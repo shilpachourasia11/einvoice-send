@@ -55,7 +55,7 @@ export default class ServiceConfigFlowStart extends React.Component
         // Should be done based on customer definitions, but so far we do not have a structure for this purpose.
 
         // Check on existance of Supplier.VatIdentificationNo or SupplierBankAccount.AccountNumber
-        return ajax.get('/supplier/api/suppliers/' + this.props.user.supplierId + "?include=bankAccounts")  // ??? is it called twice? When is it called?
+        return ajax.get('/supplier/api/suppliers/' + this.props.user.supplierId + "?include=bankAccounts")
             .set('Content-Type', 'application/json')
             .promise()
         .then((supplier) => {
