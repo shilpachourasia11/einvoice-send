@@ -169,7 +169,7 @@ export default class ServiceConfigFlow1 extends React.Component {
 
                 <hr/>
 
-                <div className="col-md-6">
+                <div className="col-md-12">
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
@@ -180,24 +180,29 @@ export default class ServiceConfigFlow1 extends React.Component {
                     <Form horizontal>
                         <FormGroup
                         controlId="rejection email"
+                        style={{"paddingTop":"10px"}}
                         validationState={this.state.validate}
                         >
-                            <Col componentClass={ControlLabel} sm={3}>
-                                <ControlLabel>*{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.rejection')}</ControlLabel>
-                            </Col>
-                            <Col sm={8}>
-                                <FormControl
-                                    name="email"
-                                    type="text"
-                                    placeholder="Enter Email here"
-                                    onChange = {this.handleChange}
-                                    value={this.state.email}
-                                />
-                            </Col>
-                            <FormControl.Feedback />
-                            <Col sm={12}>
-                                <HelpBlock>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.additionalHelp')}</HelpBlock>
-                            </Col>
+                            <div className="col-md-4">
+                                <Col componentClass={ControlLabel} sm={5}>
+                                    <ControlLabel>*{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.rejection')}</ControlLabel>
+                                </Col>
+                                <Col sm={7} style={{"marginLeft":"-30px"}}>
+                                    <FormControl
+                                        name="email"
+                                        type="text"
+                                        placeholder="Enter Email here"
+                                        onChange = {this.handleChange}
+                                        value={this.state.email}
+                                    />
+                                </Col>
+                                <FormControl.Feedback />
+                            </div>
+                            <div className="col-md-8" style={{"marginLeft":"-65px"}}>
+                                <Col sm={12}>
+                                    <HelpBlock style={{"color":"#737373"}}>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.additionalHelp')}</HelpBlock>
+                                </Col>
+                            </div>
                         </FormGroup>
                     </Form>
                 </div>
