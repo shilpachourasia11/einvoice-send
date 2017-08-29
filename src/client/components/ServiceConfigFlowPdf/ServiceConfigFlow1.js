@@ -148,6 +148,10 @@ export default class ServiceConfigFlow1 extends React.Component {
             }
         })
     }
+    callNext=()=>{
+        console.log(this.state.email)
+        this.props.onNext(this.state.email)
+    }
     render()
     {
         return (
@@ -185,7 +189,7 @@ export default class ServiceConfigFlow1 extends React.Component {
                         >
                             <div className="col-md-4">
                                 <Col componentClass={ControlLabel} sm={5}>
-                                    <ControlLabel>*{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.rejection')}</ControlLabel>
+                                    <ControlLabel>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.rejection')}*</ControlLabel>
                                 </Col>
                                 <Col sm={7} style={{"marginLeft":"-30px"}}>
                                     <FormControl
