@@ -12,8 +12,9 @@ export default {
         intro2 : "Bitte bestimmen Sie unten, wie Sie Ihre Rechnungen bereitstellen wollen.",
         helloWithoutCustomer: "Entschuldigung, für Sie liegt aktuell keine Einladung (Voucher) vor.",
         intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben, die Generierung der Einladung benötigt einen Moment. ",
-        freeFor: "Frei für Sie für Kunde {customerName}",
         reloadVoucher: "Auf neue Einladung prüfen",
+
+        freeFor: "Frei für Sie für Kunde {customerName}",
 
         eInvoice: "eInvoice",
         eInvoiceDesc: "Sie wünschen eine elektronische Rechnungsstellung?  Wählen Sie die passende Optionen und wir werden die Verbindung für Sie aufsetzen.",
@@ -32,12 +33,13 @@ export default {
         header: "Service Konfigurations-Flow",
         backToTypeSelection: "Zurück zur Selektion",
         readOCTaC: "Ich habe die allgemeine Geschäftsbedingungen gelesen und verstanden.",
+        enterEmail: "E-Mail-Adresse",
 
         Pdf:{
             subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
             intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen.",
             rejection:"Rückweisungs E-Mail",
-            additionalHelp:"Wir werden Sie unter dieser E-Mail-Adresse kontaktieren, so Probleme mit der Verarbeitung der PDF-Rechnung auftreten",
+            additionalHelp:"Für den Fall eines Problems mit der Verarbeitung Ihrer PDF-Rechnungen benötigen wir von Ihnen eine E-Mail-Adresse, unter der wir Sie kontaktieren können.",
 
             Upload: {
                 header: "PDF Beispiel einer Rechnung",

@@ -34,12 +34,13 @@ export default {
         header: "Service Configuration Flow",
         backToTypeSelection: "Back to Type Selection",
         readOCTaC: "I have read and understood OpusCapitas terms and conditions of the service",
+        enterEmail: "Email address",
 
         Pdf:{
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail.",
             intro: "Email Invoice Digitizing enables {customerName} to receive invoices as email attachments.",
             rejection:"Rejection Email",
-            additionalHelp:"We will contact you in case of problems with the provided PDF invoice by using with this email address.",
+            additionalHelp:"In the case that problems appear when processing your PDF invoices, we need an email address that we can use to contact you.",
 
             Upload: {
                 header: "Invoice PDF Example",
