@@ -34,7 +34,7 @@ module.exports.add = (supplierId, obj) =>
 
 module.exports.update = (supplierId, obj) => {
     obj.supplierId = supplierId;
-    // console.log("++ updateInChannelConfig -> obj: ", obj);
+     console.log("++ updateInChannelConfig -> obj: ", obj);
     return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId)
         .set('Content-Type', 'application/json')
         .send(obj)

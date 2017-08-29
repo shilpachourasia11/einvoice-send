@@ -198,7 +198,7 @@ export default class ServiceConfigFlow1 extends React.Component {
                                 </Col>
                                 <FormControl.Feedback />
                             </div>
-                            <div className="col-md-8" style={{"marginLeft":"-65px"}}>
+                            <div className="col-md-8" style={{"marginLeft":"-50px"}}>
                                 <Col sm={12}>
                                     <HelpBlock style={{"color":"#737373"}}>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.additionalHelp')}</HelpBlock>
                                 </Col>
@@ -208,7 +208,7 @@ export default class ServiceConfigFlow1 extends React.Component {
                 </div>
                 <div className="col-md-12">
                     <div className="form-submit text-right">
-                        <Button bsStyle="primary" disabled={ !this.state.accepted || !this.state.rejection } onClick={ () => this.props.onNext() }>
+                        <Button bsStyle="primary" disabled={ !this.state.accepted || !this.state.rejection } onClick={ () => this.props.onNext(this.state.email) }>
                             {this.context.i18n.getMessage('accept')}
                         </Button>
                     </div>
