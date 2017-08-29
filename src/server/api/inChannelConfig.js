@@ -138,7 +138,6 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
     // Override supplierId making sure it's the same on both.
     basicConfig.supplierId = supplierId;
     extendedConfig.supplierId = supplierId;
-    console.log()
     basicConfig.changedOn = new Date();
     extendedConfig.changedOn = new Date();
 
@@ -151,7 +150,6 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
 
             // Set the createdBy field as we do not accept it to be set from outside on updates.
             extendedConfig.createdBy = existingbasicConfig.createdBy;
-            console.log('basic config------> ',basicConfig);
             return this.db.models.InChannelConfig.update(basicConfig, { where : { supplierId : supplierId } })
             .then(() => {
                 // update of the inputType means
