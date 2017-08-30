@@ -165,7 +165,6 @@ module.exports.updateInChannelConfig = function(req, res)
         if(exists)
         {
             var obj = req.body || { }
-
             obj.supplierId = supplierId;
             obj.changedBy = req.opuscapita.userData('id');
 

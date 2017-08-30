@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import { Button,Col } from 'react-bootstrap';
+import {Form, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 //import browserHistory from 'react-router/lib/browserHistory';
 import ajax from 'superagent-bluebird-promise';
-
 export default class ServiceConfigFlow1 extends React.Component {
 
     static propTypes = {
@@ -10,7 +10,6 @@ export default class ServiceConfigFlow1 extends React.Component {
         onNext : React.PropTypes.func.isRequired,
         ocTermsAndConditions : React.PropTypes.string
     };
-
     static defaultProps = {
         accepted : false
     };
@@ -21,7 +20,10 @@ export default class ServiceConfigFlow1 extends React.Component {
 
         this.state = {
             accepted : this.props.accepted,
-            ocTermsAndConditions : 'loading OpusCapita Terms and Conditions...'
+            ocTermsAndConditions : 'loading OpusCapita Terms and Conditions...',
+            rejection:false,
+            email:'',
+            validate:null
         }
     }
 
@@ -127,6 +129,31 @@ export default class ServiceConfigFlow1 extends React.Component {
         return {__html: str};
     }
 
+    // This function handles the text change event for the new text box added
+    // For now a regex validation is added.
+    // TODO: Integration of validate.js
+    handleChange = (e)=>{
+        let regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        this.setState({
+            email:e.target.value
+        },()=>{
+            if(this.state.email === "")
+                this.setState({rejection:false,validation:'null'})
+            else {
+                if(regex.test(this.state.email)) {
+                    this.setState({validate:'success',rejection:true})
+                }
+                else {
+                    this.setState({validate:'error',rejection:false})
+                }
+            }
+        })
+    }
+
+    callNext=()=>{
+        console.log(this.state.email)
+        this.props.onNext(this.state.email)
+    }
 
     render()
     {
@@ -149,7 +176,7 @@ export default class ServiceConfigFlow1 extends React.Component {
 
                 <hr/>
 
-                <div className="col-md-6">
+                <div className="col-md-12">
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
@@ -158,8 +185,36 @@ export default class ServiceConfigFlow1 extends React.Component {
                     </label>
                 </div>
 
-                <div className="form-submit text-right" style={{ marginTop: '80px' }}>
-                    <Button bsStyle="primary" disabled={ !this.state.accepted } onClick={ () => this.props.onNext() }>
+                <div>
+                    <br/><br/>
+                    <div>
+                        {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.additionalHelp')}
+                    </div>
+                    <Form horizontal>
+                        <FormGroup
+                            controlId="rejection email"
+                            validationState={this.state.validate}>
+                            <div className="col-md-12">
+                                <Col componentClass={ControlLabel} sm={3}>
+                                    <ControlLabel>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.rejection')}*</ControlLabel>
+                                </Col>
+                                <Col sm={4}>
+                                    <FormControl
+                                        name="email"
+                                        type="text"
+                                        placeholder={this.context.i18n.getMessage('ServiceConfigFlow.enterEmail')}
+                                        onChange = {this.handleChange}
+                                        value={this.state.email}/>
+                                    <FormControl.Feedback />
+                                </Col>
+                            </div>
+                        </FormGroup>
+                    </Form>
+                </div>
+
+
+                <div className="form-submit text-right">
+                    <Button bsStyle="primary" disabled={ !this.state.accepted || !this.state.rejection } onClick={ () => this.props.onNext(this.state.email) }>
                         {this.context.i18n.getMessage('accept')}
                     </Button>
                 </div>
