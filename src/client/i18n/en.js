@@ -12,10 +12,14 @@ export default {
         intro2 : "Please select below the way on how you want to provide invoices.",
         intro3: "Welcome! We are sorry that we cannot provide an eInvoice web integration right now, but it will be available soon. If you want to provide invoices via web service, please confirm this intention below.",
         helloWithoutCustomer: "Sorry, we couldn't find a voucher for you.",
-        intro1WithoutCustomer: "If you just registered as a supplier: Voucher generation may take a minute. ",
+        intro1WithoutCustomer: "If you just registered as a supplier, Voucher generation may take a minute: ",
         reloadVoucher: "Check for new Voucher",
         wantEinvoice:"Yes, we want to use eInvoice",
         backToChannel:"No, we do not support eInvoice",
+        helloWithoutValidationSuccess: "Please complete your Supplier Profile",
+        intro1WithoutValidatinoSuccess: "Your profile data requires some improvements before you can start with the configuration of the In-Channel. Please provide either your VAT Registration Number or an IBAN: ",
+        supplierProfile: "Supplier Profile",
+      
         freeFor: "Free for you for {customerName}",
         intention: "Confirm your intention",
 
@@ -36,10 +40,13 @@ export default {
         header: "Service Configuration Flow",
         backToTypeSelection: "Back to Type Selection",
         readOCTaC: "I have read and understood OpusCapitas terms and conditions of the service",
+        enterEmail: "Email address",
 
         Pdf:{
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail.",
             intro: "Email Invoice Digitizing enables {customerName} to receive invoices as email attachments.",
+            rejection:"Rejection Email",
+            additionalHelp:"In the case that problems appear when processing your PDF invoices, we need an email address that we can use to contact you.",
 
             Upload: {
                 header: "Invoice PDF Example",

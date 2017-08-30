@@ -34,6 +34,10 @@ module.exports.init = function(db, config)
         changedOn : {
             type : DataTypes.DATE(),
             allowNull : true
+        },
+        rejectionEmail: {
+            type:DataTypes.STRING(30),
+            allowNull:true
         }
     }, {
         updatedAt : 'changedOn',

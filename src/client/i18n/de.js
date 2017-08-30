@@ -17,7 +17,22 @@ export default {
         wantEinvoice:"Ja, wir wünschen eine eInvoice-Integration",
         backToChannel:"Wir unterstützen kein eInvoice",
         intention: "Absichtserklärung",
+
+        helloWithoutCustomer: "Entschuldigung, für Sie liegt aktuell keine Einladung (Voucher) vor.",
+// <<<<<<< fix/37
+//         intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben, die Generierung der Einladung benötigt einen Moment. ",
+//         reloadVoucher: "Auf neue Einladung prüfen",
+
+// =======
+        intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben, die Generierung der Einladung benötigt einen Moment: ",
         reloadVoucher: "Auf neue Einladung prüfen",
+
+        helloWithoutValidationSuccess: "Bitte vervollständigen Sie Ihr Profil",
+        intro1WithoutValidatinoSuccess: "Um mit der Konfiguration der Anbindung fortfahren zu können, fehlen noch Informationen. Bitte stellen Sie in Ihrem Profil entweder die Umsatzsteuer-Ident-Nr. oder eine IBAN bereit: ",
+        supplierProfile: "Lieferantenprofil",
+
+
+        freeFor: "Frei für Sie für Kunde {customerName}",
 
         eInvoice: "eInvoice",
         eInvoiceDesc: "Sie wünschen eine elektronische Rechnungsstellung?  Wählen Sie die passende Optionen und wir werden die Verbindung für Sie aufsetzen.",
@@ -36,10 +51,13 @@ export default {
         header: "Service Konfigurations-Flow",
         backToTypeSelection: "Zurück zur Selektion",
         readOCTaC: "Ich habe die allgemeine Geschäftsbedingungen gelesen und verstanden.",
+        enterEmail: "E-Mail-Adresse",
 
         Pdf:{
             subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
             intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen.",
+            rejection:"Rückweisungs E-Mail",
+            additionalHelp:"Für den Fall eines Problems mit der Verarbeitung Ihrer PDF-Rechnungen benötigen wir von Ihnen eine E-Mail-Adresse, unter der wir Sie kontaktieren können.",
 
             Upload: {
                 header: "PDF Beispiel einer Rechnung",
