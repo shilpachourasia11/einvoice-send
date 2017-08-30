@@ -1,5 +1,6 @@
 import React from 'react';
-import {Button} from 'react-bootstrap'
+import {Button} from 'react-bootstrap';
+import InChannelConfig from '../../api/InChannelConfig.js';
 export default class ServiceConfigFlow extends React.Component {
 	constructor(props) {
 		super(props);
@@ -9,6 +10,8 @@ export default class ServiceConfigFlow extends React.Component {
         i18n : React.PropTypes.object.isRequired,
     };
     goForward = ()=>{
+    	InChannelConfig.update(this.props.voucher.supplierId,}{intention:true,inputType:'einvoice'})
+    	console.log(this.props.voucher.supplierId);
     	this.props.gotoStart();
     }
     goBack = ()=> {
