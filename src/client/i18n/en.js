@@ -12,8 +12,12 @@ export default {
         intro2 : "Please select below the way on how you want to provide invoices.",
 
         helloWithoutCustomer: "Sorry, we couldn't find a voucher for you.",
-        intro1WithoutCustomer: "If you just registered as a supplier: Voucher generation may take a minute. ",
+        intro1WithoutCustomer: "If you just registered as a supplier, Voucher generation may take a minute: ",
         reloadVoucher: "Check for new Voucher",
+
+        helloWithoutValidationSuccess: "Please complete your Supplier Profile",
+        intro1WithoutValidatinoSuccess: "Your profile data requires some improvements before you can start with the configuration of the In-Channel. Please provide either your VAT Registration Number or an IBAN: ",
+        supplierProfile: "Supplier Profile",
 
         freeFor: "Free for you for {customerName}",
 
