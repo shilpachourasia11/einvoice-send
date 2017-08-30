@@ -237,7 +237,7 @@ class PdfTabContent extends React.Component {
                 <Tab.Content>
                     <Tab.Pane eventKey={1}>
                         <ServiceConfigFlow1
-                            onNext={ () => { this.props.approveOcTc(2); }}
+                            onNext={ () => { this.props.approveOcTc(2, email); }}
                             voucher = {this.props.voucher}/>
                     </Tab.Pane>
                     <Tab.Pane eventKey={2}>
@@ -276,7 +276,7 @@ class PdfTabContent extends React.Component {
                 <Tab.Content>
                     <Tab.Pane eventKey={1} disabled="disabled">
                         <ServiceConfigFlow1
-                            onNext={ (email) => { this.props.approveOcTc(2,email); }}
+                            onNext={ (email) => { this.props.approveOcTc(2, email); }}
                             voucher = {this.props.voucher}/>
                     </Tab.Pane>
                     {/* 2017-07-97 nc: On wish of Matts, we shall deactivate the PDF upload ui for now. Reason: No usage as long as there is no recipient for it
