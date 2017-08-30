@@ -10,7 +10,7 @@ export default class ServiceConfigFlow extends React.Component {
         i18n : React.PropTypes.object.isRequired,
     };
     goForward = ()=>{
-    	InChannelConfig.update(this.props.voucher.supplierId,}{intention:true,inputType:'einvoice'})
+    	InChannelConfig.update(this.props.voucher.supplierId,{intention:true,inputType:'einvoice'})
     	console.log(this.props.voucher.supplierId);
     	this.props.gotoStart();
     }
