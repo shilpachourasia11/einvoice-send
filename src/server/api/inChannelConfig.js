@@ -126,19 +126,17 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
 {
     var basicConfig = config;
     var extendedConfig = config.settings || { };
-
     // Remove nesed settings object.
     delete basicConfig.settings;
 
     // Remove fields we do not want to be set from outside.
     [ 'type', 'createdOn', 'changedOn', 'createdBy' ].forEach(key => delete basicConfig[key]);
     // Copy required values to the extendedConfig as it is a plain object.
-    [ 'changedBy', 'intention' ].forEach(key => extendedConfig[key] = basicConfig[key]);
+    [ 'changedBy','rejectionEmail','intention' ].forEach(key => extendedConfig[key] = basicConfig[key]);
 
     // Override supplierId making sure it's the same on both.
     basicConfig.supplierId = supplierId;
     extendedConfig.supplierId = supplierId;
-
     basicConfig.changedOn = new Date();
     extendedConfig.changedOn = new Date();
 
@@ -151,7 +149,6 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
 
             // Set the createdBy field as we do not accept it to be set from outside on updates.
             extendedConfig.createdBy = existingbasicConfig.createdBy;
-
             return this.db.models.InChannelConfig.update(basicConfig, { where : { supplierId : supplierId } })
             .then(() => {
                 // update of the inputType means

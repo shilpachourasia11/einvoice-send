@@ -20,11 +20,13 @@ const MyDiv = () =>
 export default class ServiceConfigFlowStart extends React.Component
 {
     static propTypes = {
-        invoiceSendingType : React.PropTypes.string
+        invoiceSendingType : React.PropTypes.string,
+        preValidationSuccess : React.PropTypes.bool
     };
 
     static defaultProps = {
-        invoiceSendingType : null
+        invoiceSendingType : null,
+        preValidationSuccess : false
     };
 
     constructor(props)
@@ -32,7 +34,8 @@ export default class ServiceConfigFlowStart extends React.Component
         super(props);
         this.state = {
             invoiceSendingType : this.props.invoiceSendingType,
-            intention:false
+            intention:false,
+            preValidationSuccess : this.props.preValidationSuccess
         };
     }
 
@@ -40,6 +43,31 @@ export default class ServiceConfigFlowStart extends React.Component
         i18n : React.PropTypes.object.isRequired,
     };
 
+
+    /////////////////////////////////////////////
+    // Lifecycle methods
+    /////////////////////////////////////////////
+
+    componentDidMount() {
+        this.preValidation();
+    }
+
+    preValidation = () => {
+        // Should be done based on customer definitions, but so far we do not have a structure for this purpose.
+
+        // Check on existance of Supplier.VatIdentificationNo or SupplierBankAccount.AccountNumber
+        return ajax.get('/supplier/api/suppliers/' + this.props.user.supplierId + "?include=bankAccounts")
+            .set('Content-Type', 'application/json')
+            .promise()
+        .then((supplier) => {
+            let bankAccounts = supplier.body.bankAccounts;
+            let aBankAccount = bankAccounts && bankAccounts[0] && bankAccounts[0].accountNumber;
+            let vatId = supplier.body.vatIdentificationNo;
+
+            this.setState({"preValidationSuccess" : !!vatId || !!aBankAccount});
+        })
+
+    }
 
 
     /////////////////////////////////////////////
@@ -86,38 +114,77 @@ export default class ServiceConfigFlowStart extends React.Component
     }
 
 
-    render()
-    {
-        let hello;
-        let intro1;
-        let intro2;
-        if (this.props.voucher.customerId) {
-            hello = this.context.i18n.getMessage('ServiceConfigFlowStart.hello', { customerName: this.props.voucher.customerName});
-            intro1 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro1', { customerName: this.props.voucher.customerName});
-            intro2 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro2');
-        }
-        else {
-            hello = this.context.i18n.getMessage('ServiceConfigFlowStart.helloWithoutCustomer');
-            intro1 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro1WithoutCustomer');
-        }
+    /////////////////////////////////////////////
+    // Rendering
+    /////////////////////////////////////////////
 
-        return (
-            <div>
-                <h3>{this.context.i18n.getMessage('ServiceConfigFlowStart.header')}</h3>
+    renderStandardHello = (customerName) => {
+        if (this.state.preValidationSuccess && this.props.voucher.customerId) {
+            let hello = this.context.i18n.getMessage('ServiceConfigFlowStart.hello', { customerName: this.props.voucher.customerName});
+            let intro1 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro1', { customerName: this.props.voucher.customerName});
+            let intro2 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro2');
 
+            return (
                 <div className="bs-callout bs-callout-info">
                     <h4>{hello}</h4>
                     <p>
                         {intro1}
-                        {!this.props.voucher.customerId &&
-                            <Button bsStyle="link" onClick={() => this.props.loadVoucher()}>
-                                {this.context.i18n.getMessage('ServiceConfigFlowStart.reloadVoucher')}
-                            </Button>
-                        }
                         <br/>
                         {intro2}
                     </p>
                 </div>
+            );
+        }
+    }
+
+    renderVoucherMissing = () => {
+        if (this.state.preValidationSuccess && !this.props.voucher.customerId) {
+            let hello = this.context.i18n.getMessage('ServiceConfigFlowStart.helloWithoutCustomer');
+            let intro1 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro1WithoutCustomer');
+            return (
+                <div className="bs-callout bs-callout-warning">
+                    <h4>{hello}</h4>
+                    <p>
+                        {intro1}
+                        <Button bsStyle="link" onClick={() => this.props.loadVoucher()}>
+                            {this.context.i18n.getMessage('ServiceConfigFlowStart.reloadVoucher')}
+                        </Button>
+                    </p>
+                </div>
+            );
+        }
+    }
+
+    renderValidationError = () => {
+        if (!this.state.preValidationSuccess) {
+            let hello = this.context.i18n.getMessage('ServiceConfigFlowStart.helloWithoutValidationSuccess', { customerName: this.props.voucher.customerName});
+            let intro1 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro1WithoutValidatinoSuccess', { customerName: this.props.voucher.customerName});
+            let supplierProfile = this.context.i18n.getMessage('ServiceConfigFlowStart.supplierProfile');
+            return (
+                <div className="bs-callout bs-callout-danger">
+                    <h4>{hello}</h4>
+                    <p>
+                        {intro1}
+                        <Button bsStyle="link" onClick={() => window.location.replace("/bnp/supplierInformation?backUrl=/einvoice-send")}>
+                            {supplierProfile}
+                        </Button>
+                    </p>
+                </div>
+            );
+        }
+    }
+
+
+    render()
+    {
+        return (
+            <div>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlowStart.header')}</h3>
+
+                {this.renderStandardHello()}
+                {this.renderValidationError()}
+                {this.renderVoucherMissing()}
+
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
@@ -197,7 +264,7 @@ export default class ServiceConfigFlowStart extends React.Component
                 </div>
 
                 <div className="form-submit text-right">
-                    <Button bsStyle="primary" disabled={ !this.state.invoiceSendingType }
+                    <Button bsStyle="primary" disabled={ !this.state.invoiceSendingType || !this.state.preValidationSuccess }
                         onClick={ () =>  this.setInputType() }>
                         {this.context.i18n.getMessage('saveAndContinue')}
                     </Button>
