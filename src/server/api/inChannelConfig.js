@@ -126,7 +126,6 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
 {
     var basicConfig = config;
     var extendedConfig = config.settings || { };
-    console.log('=======$$$$$$======',basicConfig);
     // Remove nesed settings object.
     delete basicConfig.settings;
 

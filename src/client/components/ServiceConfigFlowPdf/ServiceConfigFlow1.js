@@ -128,9 +128,10 @@ export default class ServiceConfigFlow1 extends React.Component {
 
         return {__html: str};
     }
-// This function handles the text change event for the new text box added 
-// For now a regex validation is added. 
-// NEED: validate.js to be installed first.
+
+    // This function handles the text change event for the new text box added
+    // For now a regex validation is added.
+    // TODO: Integration of validate.js
     handleChange = (e)=>{
         let regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         this.setState({
@@ -148,10 +149,12 @@ export default class ServiceConfigFlow1 extends React.Component {
             }
         })
     }
+
     callNext=()=>{
         console.log(this.state.email)
         this.props.onNext(this.state.email)
     }
+
     render()
     {
         return (
@@ -180,42 +183,40 @@ export default class ServiceConfigFlow1 extends React.Component {
                             {this.context.i18n.getMessage('ServiceConfigFlow.readOCTaC')}
                         </a>
                     </label>
-                {/*This code till line 202, added a label and textbox and additional help text for the rejection email.*/}
+                </div>
+
+                <div>
+                    <br/><br/>
+                    <div>
+                        {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.additionalHelp')}
+                    </div>
                     <Form horizontal>
                         <FormGroup
-                        controlId="rejection email"
-                        style={{"paddingTop":"10px"}}
-                        validationState={this.state.validate}
-                        >
-                            <div className="col-md-4">
-                                <Col componentClass={ControlLabel} sm={5}>
+                            controlId="rejection email"
+                            validationState={this.state.validate}>
+                            <div className="col-md-12">
+                                <Col componentClass={ControlLabel} sm={3}>
                                     <ControlLabel>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.rejection')}*</ControlLabel>
                                 </Col>
-                                <Col sm={7} style={{"marginLeft":"-30px"}}>
+                                <Col sm={4}>
                                     <FormControl
                                         name="email"
                                         type="text"
-                                        placeholder="Enter Email here"
+                                        placeholder={this.context.i18n.getMessage('ServiceConfigFlow.enterEmail')}
                                         onChange = {this.handleChange}
-                                        value={this.state.email}
-                                    />
-                                </Col>
-                                <FormControl.Feedback />
-                            </div>
-                            <div className="col-md-8" style={{"marginLeft":"-50px"}}>
-                                <Col sm={12}>
-                                    <HelpBlock style={{"color":"#737373"}}>{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.additionalHelp')}</HelpBlock>
+                                        value={this.state.email}/>
+                                    <FormControl.Feedback />
                                 </Col>
                             </div>
                         </FormGroup>
                     </Form>
                 </div>
-                <div className="col-md-12">
-                    <div className="form-submit text-right">
-                        <Button bsStyle="primary" disabled={ !this.state.accepted || !this.state.rejection } onClick={ () => this.props.onNext(this.state.email) }>
-                            {this.context.i18n.getMessage('accept')}
-                        </Button>
-                    </div>
+
+
+                <div className="form-submit text-right">
+                    <Button bsStyle="primary" disabled={ !this.state.accepted || !this.state.rejection } onClick={ () => this.props.onNext(this.state.email) }>
+                        {this.context.i18n.getMessage('accept')}
+                    </Button>
                 </div>
             </div>
         )
