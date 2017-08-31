@@ -234,7 +234,11 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio disabled={!this.props.voucher.supplierPortalEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'supplier' } value="supplier"/>
+                            <Radio
+                                disabled={!this.props.voucher.supplierPortalEnabled}
+                                onChange={ this.onInvoiceSendingTypeChanged }
+                                checked={ this.state.invoiceSendingType === 'supplier' }
+                                value="supplier"/>
                         </label>
                     </div>
                     <div className="col-md-11">
@@ -253,7 +257,11 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio  disabled={!this.props.voucher.paperEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={this.state.invoiceSendingType === 'paper' } value="paper"/>
+                            <Radio
+                                disabled={!this.props.voucher.paperEnabled}
+                                onChange={ this.onInvoiceSendingTypeChanged }
+                                checked={this.state.invoiceSendingType === 'paper' }
+                                value="paper"/>
                         </label>
                     </div>
                     <div className="col-md-11">
