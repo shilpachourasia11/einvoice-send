@@ -196,7 +196,7 @@ export default class ServiceConfigFlowStart extends React.Component
                         <div className={"panel panel-default " + (this.props.voucher.pdfEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
                                 <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoice')}
-                                    <BillingDetails inputType="eInvoice" voucher={this.props.voucher} />
+                                    {this.props.voucher.pdfEnabled?(<BillingDetails inputType="eInvoice" voucher={this.props.voucher} />):null}
                                 </h4>
                             </div>
                             <div className="panel-body">
