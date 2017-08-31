@@ -188,15 +188,18 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio disabled={!this.props.voucher.pdfEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'einvoice' } value="einvoice"/>
+                            <Radio
+                                disabled={!this.props.voucher.eInvoiceEnabled}
+                                onChange={ this.onInvoiceSendingTypeChanged }
+                                checked={ this.state.invoiceSendingType === 'einvoice' }
+                                value="einvoice"/>
                         </label>
                     </div>
                     <div className="col-md-11">
-                        {/*<div className={"panel panel-default " + (this.props.voucher.eInvoiceEnabled ? "" : "disabled")}>*/}
-                        <div className={"panel panel-default " + (this.props.voucher.pdfEnabled ? "" : "disabled")}>
+                        <div className={"panel panel-default " + (this.props.voucher.eInvoiceEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
                                 <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoice')}
-                                    {this.props.voucher.pdfEnabled?(<BillingDetails inputType="eInvoice" voucher={this.props.voucher} />):null}
+                                    <BillingDetails inputType="eInvoice" voucher={this.props.voucher} />
                                 </h4>
                             </div>
                             <div className="panel-body">
@@ -208,7 +211,11 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio disabled={!this.props.voucher.pdfEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'pdf' } value="pdf"/>
+                            <Radio
+                                disabled={!this.props.voucher.pdfEnabled}
+                                onChange={ this.onInvoiceSendingTypeChanged }
+                                checked={ this.state.invoiceSendingType === 'pdf' }
+                                value="pdf"/>
                         </label>
                     </div>
                     <div className="col-md-11">

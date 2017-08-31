@@ -70,7 +70,7 @@ export default class App extends React.Component
 
             // How will evaluation of allowed input types and billings be determined???
             // Convention for now: Use boolen to enable or disable the different input types:
-            voucher.eInvoiceEnabled = false; // !!! no flow ui available up to now
+            voucher.eInvoiceEnabled = true; // !!! only for the supplier to confirm their intention
             voucher.pdfEnabled = true;
             voucher.supplierPortalEnabled = false; // !!! no flow ui available up to now
             voucher.paperEnabled = false;
@@ -165,7 +165,7 @@ export default class App extends React.Component
                                 loadVoucher={this.loadVoucher} />
                         )} } />
 
-                   
+
                     <Route path="/pdf" component={ () => (<ServiceConfigFlowFramePdf currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
                     <Route path="/pdf/1" component={ () => (<ServiceConfigFlowFramePdf currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
@@ -181,7 +181,7 @@ export default class App extends React.Component
                     <Route path="/paper/3" component={ () => (<ServiceConfigFlowFramePaper currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
                     <Route path="/einvoice" component={ () => (<ServiceConfigFlow currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
-                    
+
                 </Route>
             </Router>
         );
