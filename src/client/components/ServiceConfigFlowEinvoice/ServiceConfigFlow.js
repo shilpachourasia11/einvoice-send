@@ -3,9 +3,7 @@ import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
 
 import ServiceConfigFlow1 from './ServiceConfigFlow1.js';
-// import ServiceConfigFlow2 from '../common/ServiceConfigFlowTaCCustomer.js';
-// import ServiceConfigFlow3 from './ServiceConfigFlow3.js';
-// import ServiceConfigFlow4 from './ServiceConfigFlow4.js';
+
 
 import InChannelConfig from '../../api/InChannelConfig.js';
 import InChannelContract from '../../api/InChannelContract.js';
@@ -56,7 +54,7 @@ export default class ServiceConfigFlow extends React.Component
         var visible = {
             display: (1==1) ? 'block' : 'none'
         }
-        console.log('--->>>',this.props)
+
         return (
             <div style={{ minHeight: '100vh' }}>
                 <section className="content" style={{ overflow: 'visible' }}>
@@ -107,7 +105,6 @@ export default class ServiceConfigFlow extends React.Component
 
 class EInvoiceNav extends React.Component {
     render() {
-        //if (this.props.customerTermsAndConditions) {
             return (
                 <Nav bsStyle="tabs">
                     <MyDiv/>

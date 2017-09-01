@@ -34,7 +34,6 @@ export default class ServiceConfigFlowStart extends React.Component
         super(props);
         this.state = {
             invoiceSendingType : this.props.invoiceSendingType,
-            intention:false,
             preValidationSuccess : this.props.preValidationSuccess
         };
     }
@@ -65,6 +64,7 @@ export default class ServiceConfigFlowStart extends React.Component
             let vatId = supplier.body.vatIdentificationNo;
 
             this.setState({"preValidationSuccess" : !!vatId || !!aBankAccount});
+            this.setState({"preValidationSuccess" : true});
         })
 
     }
@@ -75,9 +75,6 @@ export default class ServiceConfigFlowStart extends React.Component
     /////////////////////////////////////////////
 
     onInvoiceSendingTypeChanged = (event) => {
-        if(event.target.value == "einvoice") {
-            this.setState({intention:true})
-        }
         this.setState({invoiceSendingType : event.target.value});
     }
 
@@ -88,8 +85,7 @@ export default class ServiceConfigFlowStart extends React.Component
         let obj = {
             inputType: this.state.invoiceSendingType,
             voucherId: this.props.voucher.id,
-            status: InChannelConfig.status.new,
-            intention:this.state.intention
+            status: InChannelConfig.status.new
         };
         return new Promise((resolve, reject) => {
             return InChannelConfig.update(supplierId, obj)
