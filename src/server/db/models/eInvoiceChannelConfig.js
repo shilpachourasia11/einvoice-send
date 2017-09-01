@@ -34,7 +34,11 @@ module.exports.init = function(db, config)
         changedOn : {
             type : DataTypes.DATE(),
             allowNull : true
-        }
+        },
+        intention : {
+            type:DataTypes.BOOLEAN,
+            allowNull:true
+        },
     }, {
         updatedAt : 'changedOn',
         createdAt : 'createdOn',

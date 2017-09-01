@@ -4,6 +4,7 @@ export default {
     accept: "OK",
     saveAndContinue: "Speichern & Weiter",
     congratulations: "Glückwunsch!",
+    welcome: "Willkommen!",
 
     ServiceConfigFlowStart : {
         header: "Konfiguration des In-Channel-Services",
@@ -12,20 +13,15 @@ export default {
         intro2 : "Bitte bestimmen Sie unten, wie Sie Ihre Rechnungen bereitstellen wollen.",
 
         helloWithoutCustomer: "Entschuldigung, für Sie liegt aktuell keine Einladung (Voucher) vor.",
-// <<<<<<< fix/37
-//         intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben, die Generierung der Einladung benötigt einen Moment. ",
-//         reloadVoucher: "Auf neue Einladung prüfen",
-
-// =======
-        intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben, die Generierung der Einladung benötigt einen Moment: ",
+        intro1WithoutCustomer: "Falls Sie sich gerade erst als Lieferant registriert haben, die Generierung der Einladung benötigt einen Moment. ",
         reloadVoucher: "Auf neue Einladung prüfen",
 
         helloWithoutValidationSuccess: "Bitte vervollständigen Sie Ihr Profil",
         intro1WithoutValidatinoSuccess: "Um mit der Konfiguration der Anbindung fortfahren zu können, fehlen noch Informationen. Bitte stellen Sie in Ihrem Profil entweder die Umsatzsteuer-Ident-Nr. oder eine IBAN bereit: ",
         supplierProfile: "Lieferantenprofil",
 
-
         freeFor: "Frei für Sie für Kunde {customerName}",
+        intention: "Absichtserklärung",
 
         eInvoice: "eInvoice",
         eInvoiceDesc: "Sie wünschen eine elektronische Rechnungsstellung?  Wählen Sie die passende Optionen und wir werden die Verbindung für Sie aufsetzen.",
@@ -46,6 +42,11 @@ export default {
         readOCTaC: "Ich habe die allgemeine Geschäftsbedingungen gelesen und verstanden.",
         enterEmail: "E-Mail-Adresse",
 
+        Einvoice:{
+            intro: "Hier werden wir Ihnen die Konfiguration der eInvoice-Integration per Webservice anbieten. Leider ist diese noch nicht verfügbar. Sobald eine Integration möglich ist, werden wir uns mit Ihnen in Verbindung setzen, so Sie diesen Wunsch unten bestätigen.",
+            einvoiceWanted: "Ja, wir wünschen eine eInvoice-Integration",
+            einvoiceNotWanted: "Wir unterstützen kein eInvoice",
+        },
         Pdf:{
             subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
             intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen.",

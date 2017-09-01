@@ -64,6 +64,7 @@ export default class ServiceConfigFlowStart extends React.Component
             let vatId = supplier.body.vatIdentificationNo;
 
             this.setState({"preValidationSuccess" : !!vatId || !!aBankAccount});
+            this.setState({"preValidationSuccess" : true});
         })
 
     }
@@ -86,7 +87,6 @@ export default class ServiceConfigFlowStart extends React.Component
             voucherId: this.props.voucher.id,
             status: InChannelConfig.status.new
         };
-
         return new Promise((resolve, reject) => {
             return InChannelConfig.update(supplierId, obj)
             .then(() => {
@@ -184,7 +184,11 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio disabled={!this.props.voucher.eInvoiceEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'einvoice' } value="einvoice"/>
+                            <Radio
+                                disabled={!this.props.voucher.eInvoiceEnabled}
+                                onChange={ this.onInvoiceSendingTypeChanged }
+                                checked={ this.state.invoiceSendingType === 'einvoice' }
+                                value="einvoice"/>
                         </label>
                     </div>
                     <div className="col-md-11">
@@ -203,7 +207,11 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio disabled={!this.props.voucher.pdfEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'pdf' } value="pdf"/>
+                            <Radio
+                                disabled={!this.props.voucher.pdfEnabled}
+                                onChange={ this.onInvoiceSendingTypeChanged }
+                                checked={ this.state.invoiceSendingType === 'pdf' }
+                                value="pdf"/>
                         </label>
                     </div>
                     <div className="col-md-11">
@@ -222,7 +230,11 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio  disabled={!this.props.voucher.supplierPortalEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={ this.state.invoiceSendingType === 'supplier' } value="supplier"/>
+                            <Radio
+                                disabled={!this.props.voucher.supplierPortalEnabled}
+                                onChange={ this.onInvoiceSendingTypeChanged }
+                                checked={ this.state.invoiceSendingType === 'supplier' }
+                                value="supplier"/>
                         </label>
                     </div>
                     <div className="col-md-11">
@@ -241,7 +253,11 @@ export default class ServiceConfigFlowStart extends React.Component
                 <div className="row">
                     <div className="col-md-1">
                         <label className="oc-radio">
-                            <Radio  disabled={!this.props.voucher.paperEnabled} onChange={ this.onInvoiceSendingTypeChanged } checked={this.state.invoiceSendingType === 'paper' } value="paper"/>
+                            <Radio
+                                disabled={!this.props.voucher.paperEnabled}
+                                onChange={ this.onInvoiceSendingTypeChanged }
+                                checked={this.state.invoiceSendingType === 'paper' }
+                                value="paper"/>
                         </label>
                     </div>
                     <div className="col-md-11">
