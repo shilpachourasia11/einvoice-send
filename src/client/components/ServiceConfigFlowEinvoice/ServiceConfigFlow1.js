@@ -13,16 +13,26 @@ export default class ServiceConfigFlow1 extends React.Component {
         i18n : React.PropTypes.object.isRequired,
     };
 
-    goForward = ()=>{
-    	InChannelConfig.update(this.props.voucher.supplierId,{intention:true,inputType:'einvoice'})
+    approveIntention = ()=>{
+    	InChannelConfig.update(
+            this.props.voucher.supplierId,
+            {
+                inputType:'einvoice',
+                intention:true
+            })
     	this.props.gotoStart();
     }
 
-    goBack = ()=> {
+    rejectIntention = ()=> {
+        InChannelConfig.update(
+            this.props.voucher.supplierId,
+            {
+                inputType:'einvoice',
+                intention:false
+            })
     	this.props.gotoStart();
     }
 
-    
 	render() {
 		return (
 			<div>
@@ -35,10 +45,10 @@ export default class ServiceConfigFlow1 extends React.Component {
                 </div>
 
 				<div className="form-submit text-right">
-					<Button bsStyle = "link" onClick={()=>this.goBack()}>
+					<Button bsStyle = "link" onClick={()=>this.rejectIntention()}>
 						{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.einvoiceNotWanted')}
 					</Button>
-					<Button bsStyle = "primary" onClick={()=>this.goForward()}>
+					<Button bsStyle = "primary" onClick={()=>this.approveIntention()}>
 						{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.einvoiceWanted')}
 					</Button>
 				</div>
