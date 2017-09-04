@@ -60,6 +60,14 @@ export default class App extends React.Component
         });
     }
 
+    // later from context
+    getLocale() {
+        return ajax.get('/auth/userdata')
+        .then(res => JSON.parse(res.text))
+        .then((userdata) => userdata.languageid);
+    }
+
+
     loadVoucher = () => {
         let supplierId = this.state.user.supplierId;
         this.getVoucher(supplierId)
@@ -84,8 +92,13 @@ export default class App extends React.Component
         .then((voucher) => {
             this.setState({voucher : voucher});
 
-            // return ajax.get('/einvoice-send/api/inchannel/termsandconditions/' + voucher.customerId)
-            return ajax.get('/blob/public/api/c_' + voucher.customerId + '/files/public/einvoice-send/TermsAndConditions.html')
+            return getLocale()
+            .then((locale) =>
+                if (locale) {
+                    return ajax.get('/blob/public/api/c_' + voucher.customerId + '/files/public/einvoice-send/TermsAndConditions' + locale + '.html')
+                }
+                return ajax.get('/blob/public/api/c_' + voucher.customerId + '/files/public/einvoice-send/TermsAndConditions.html')
+            )
             .then((response) => {
                 console.log("Terms and Conditions: Found for customer " + voucher.customerId + ": ", response);
                 this.setState({customerTermsAndConditions : response.text});
