@@ -9,12 +9,14 @@ export default class ServiceConfigFlow2 extends React.Component {
 
     static propTypes = {
         accepted : React.PropTypes.bool,
+        customerTermsAndConditions : React.PropTypes.string,
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired,
     };
 
     static defaultProps = {
-        accepted : false
+        accepted : false,
+        customerTermsAndConditions : ""
     };
 
     constructor(props)
@@ -22,17 +24,36 @@ export default class ServiceConfigFlow2 extends React.Component {
         super(props)
 
         this.state = {
-            accepted : this.props.accepted
+            accepted : this.props.accepted,
+            customerTermsAndConditions : this.props.customerTermsAndConditions
         }
     }
 
-
     static contextTypes = {
         i18n : React.PropTypes.object.isRequired,
+        locale : React.PropTypes.string
     };
 
 
-    // TODO: Assure that the newest TermsAndConditions are loaded!
+    componentWillMount() {
+        this.setTermsAndConditions(this.context.locale);
+    }
+
+    setTermsAndConditions(locale) {
+        this.getCustomerTermsAndConditions(locale)
+        .then ((newTermsAndConditions) => {
+            this.setState({ customerTermsAndConditions: newTermsAndConditions.text })
+        })
+    }
+
+    getCustomerTermsAndConditions(locale) {
+        return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId + '/files/public/einvoice-send/TermsAndConditions_' + locale + '.html')
+        .catch((e) => {
+            return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId +  '/files/public/einvoice-send/TermsAndConditions.html')
+        })
+    }
+
+
 
     render()
     {
@@ -46,7 +67,7 @@ export default class ServiceConfigFlow2 extends React.Component {
                 <hr/>
 
                 <div className="bs-callout bs-callout-info">
-                    <div dangerouslySetInnerHTML={{__html: this.props.customerTermsAndConditions}}></div>
+                    <div dangerouslySetInnerHTML={{__html: this.state.customerTermsAndConditions}}></div>
                 </div>
 
                 <hr/>
