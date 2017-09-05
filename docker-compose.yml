@@ -28,7 +28,7 @@ services:
     ports:
      - '3007:3007'
 
-  
+
   mysql:
     image: 'mysql:5.6'
     ports:
@@ -129,6 +129,9 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       BLOB_KEY : ${BLOB_KEY}
       BLOB_ACCOUNT: ${BLOB_ACCOUNT}
+      SERVICE_3012_CHECK_HTTP: /api/health/check
+      SERVICE_3012_CHECK_INTERVAL: 15s
+      SERVICE_3012_CHECK_TIMEOUT: 3s
     ports:
      - '3012:3012'
     command: "npm run dev"
