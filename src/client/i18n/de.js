@@ -43,8 +43,8 @@ export default {
         enterEmail: "E-Mail-Adresse",
 
         Einvoice:{
-            intro: "Hier werden wir Ihnen die Konfiguration der eInvoice-Integration per Webservice anbieten. Leider ist diese noch nicht verfügbar. Sobald eine Integration möglich ist, werden wir uns mit Ihnen in Verbindung setzen, so Sie diesen Wunsch unten bestätigen.",
-            einvoiceWanted: "Ja, wir wünschen eine eInvoice-Integration",
+            intro: "Hier werden wir Ihnen die Konfiguration der eInvoice-Anbindung per Webservice anbieten. Leider ist diese noch nicht verfügbar. Sobald eine Anbindung möglich ist, werden wir uns mit Ihnen in Verbindung setzen, sofern Sie dies wünschen und unten bestätigen.",
+            einvoiceWanted: "Ja, wir wünschen eine eInvoice-Anbindung",
             einvoiceNotWanted: "Wir unterstützen kein eInvoice",
         },
         Pdf:{
