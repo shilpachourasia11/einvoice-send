@@ -20,7 +20,7 @@ export default {
         intro1WithoutValidatinoSuccess: "Um mit der Konfiguration der Anbindung fortfahren zu können, fehlen noch Informationen. Bitte stellen Sie in Ihrem Profil entweder die Umsatzsteuer-Ident-Nr. oder eine IBAN bereit: ",
         supplierProfile: "Lieferantenprofil",
 
-        freeFor: "Frei für Sie für Kunde {customerName}",
+        freeFor: "Kostenfrei für Sie als Lieferant der {customerName}",
         intention: "Absichtserklärung",
 
         eInvoice: "eInvoice",
