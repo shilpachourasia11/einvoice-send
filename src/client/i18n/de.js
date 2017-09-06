@@ -46,6 +46,9 @@ export default {
             intro: "Hier werden wir Ihnen die Konfiguration der eInvoice-Anbindung per Webservice anbieten. Leider ist diese noch nicht verfügbar. Sobald eine Anbindung möglich ist, werden wir uns mit Ihnen in Verbindung setzen, sofern Sie dies wünschen und unten bestätigen.",
             einvoiceWanted: "Ja, wir wünschen eine eInvoice-Anbindung",
             einvoiceNotWanted: "Wir unterstützen kein eInvoice",
+            saved:"hre Erklärung bzgl. der zukünftigen Nutzung der eInoice-Anbindung ist gespeichert.",
+            intro2:"Bitte vervollständigen Ihre Anbindungsdefinition über die Ihnen zur Verfügung stehenden Optionen",
+            continue:"Fortfahren",
         },
         Pdf:{
             subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",

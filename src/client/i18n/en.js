@@ -46,6 +46,9 @@ export default {
             intro: "We are sorry that we cannot provide an eInvoice web integration right now, but it will be available soon. If you want to provide invoices via web service, please confirm this intention below.",
             einvoiceWanted:"Yes, we want to use eInvoice",
             einvoiceNotWanted:"No, we do not support eInvoice",
+            saved:"Your decission is saved.",
+            intro2:"Please proceed with completing you inchannel configuration with the available options",
+            continue:"continue"
         },
         Pdf:{
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail.",

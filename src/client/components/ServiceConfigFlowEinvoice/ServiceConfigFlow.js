@@ -3,7 +3,7 @@ import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
 
 import ServiceConfigFlow1 from './ServiceConfigFlow1.js';
-
+import ServiceConfigFlow2 from './ServiceConfigFlow2.js'
 
 import InChannelConfig from '../../api/InChannelConfig.js';
 import InChannelContract from '../../api/InChannelContract.js';
@@ -42,6 +42,9 @@ export default class ServiceConfigFlow extends React.Component
         };
     }
 
+    setCurrentTab = (tabNo) => {
+        this.setState({ currentTab : tabNo });
+    }
 
     static contextTypes = {
         i18n : React.PropTypes.object.isRequired,
@@ -83,6 +86,7 @@ export default class ServiceConfigFlow extends React.Component
                                                             currentTab={this.state.currentTab}
                                                             customerTermsAndConditions={this.props.customerTermsAndConditions} />
                                                         <EInvoiceTabContent
+                                                            setCurrentTab = { (tabNo) => this.setCurrentTab(tabNo) }
                                                             forward={this.props.gotoStart}
                                                             back={this.props.gotoStart}
                                                             voucher = {this.props.voucher}
@@ -112,6 +116,9 @@ class EInvoiceNav extends React.Component {
                     <NavItem eventKey={1}>
                         <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
                     </NavItem>
+                    <NavItem eventKey={2} disabled={ this.props.currentTab < 3 }>
+                        <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
+                    </NavItem>
                 </Nav>
             );
         }
@@ -125,8 +132,15 @@ class EInvoiceTabContent extends React.Component {
                 <Tab.Content>
                     <Tab.Pane eventKey={1}>
                         <ServiceConfigFlow1
+                            
                             gotoStart={this.props.forward}
                             voucher = {this.props.voucher}/>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey={2}>
+                        <ServiceConfigFlow2
+                            gototStart = {this.props.forward} 
+                            onPrevious = { () => {this.props.setCurrentTab(1)} }
+                        />
                     </Tab.Pane>
                 </Tab.Content>
             );
@@ -137,7 +151,14 @@ class EInvoiceTabContent extends React.Component {
                     <Tab.Pane eventKey={1} disabled="disabled">
                         <ServiceConfigFlow1
                             gotoStart={this.props.forward}
+                            goNext={()=>{this.props.setCurrentTab(2)}}
                             voucher = {this.props.voucher}/>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey={2}>
+                        <ServiceConfigFlow2
+                            gotoStart = {this.props.forward} 
+                            onPrevious = { () => {this.props.setCurrentTab(1)} }
+                        />
                     </Tab.Pane>
                 </Tab.Content>
             );

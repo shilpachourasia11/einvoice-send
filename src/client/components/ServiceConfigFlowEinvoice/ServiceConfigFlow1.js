@@ -20,7 +20,7 @@ export default class ServiceConfigFlow1 extends React.Component {
                 inputType:'einvoice',
                 intention:true
             })
-    	this.props.gotoStart();
+    	this.props.goNext();
     }
 
     rejectIntention = ()=> {
