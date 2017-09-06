@@ -20,7 +20,7 @@ export default {
         intro1WithoutValidatinoSuccess: "Your profile data requires some improvements before you can start with the configuration of the In-Channel. Please provide either your VAT Registration Number or an IBAN: ",
         supplierProfile: "Supplier Profile",
 
-        freeFor: "Free for you for {customerName}",
+        freeFor: "At no charge for you as supplier of {customerName}",
         intention: "Confirm your intention",
 
         eInvoice: "eInvoice",
