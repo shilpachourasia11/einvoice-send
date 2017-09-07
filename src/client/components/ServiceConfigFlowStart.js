@@ -21,12 +21,14 @@ export default class ServiceConfigFlowStart extends React.Component
 {
     static propTypes = {
         invoiceSendingType : React.PropTypes.string,
-        preValidationSuccess : React.PropTypes.bool
+        preValidationSuccess : React.PropTypes.bool,
+        inChannelConfig: React.PropTypes.object
     };
 
     static defaultProps = {
         invoiceSendingType : null,
-        preValidationSuccess : false
+        preValidationSuccess : false,
+        inChannelConfig: null
     };
 
     constructor(props)
@@ -34,7 +36,8 @@ export default class ServiceConfigFlowStart extends React.Component
         super(props);
         this.state = {
             invoiceSendingType : this.props.invoiceSendingType,
-            preValidationSuccess : this.props.preValidationSuccess
+            preValidationSuccess : this.props.preValidationSuccess,
+            inChannelConfig : this.props.inChannelConfig
         };
     }
 
@@ -47,8 +50,21 @@ export default class ServiceConfigFlowStart extends React.Component
     // Lifecycle methods
     /////////////////////////////////////////////
 
-    componentDidMount() {
+    componentWillMount() {
         this.preValidation();
+
+        ajax.get('/einvoice-send/api/config/inchannels/' + this.props.user.supplierId)
+            .set('Content-Type', 'application/json')
+            .promise()
+        .then ((config) => {
+            if (config) {
+                this.setState({inChannelConfig: config.body});
+            }
+        });
+    }
+
+    componentDidMount() {
+        // this.preValidation();
     }
 
     preValidation = () => {
@@ -108,6 +124,7 @@ export default class ServiceConfigFlowStart extends React.Component
             alert("Saving the service type did not succeed. Please retry.");
         });
     }
+
 
 
     /////////////////////////////////////////////
@@ -170,6 +187,32 @@ export default class ServiceConfigFlowStart extends React.Component
         }
     }
 
+    getEinvoicState = () => {
+        if (this.state.inChannelConfig && this.state.inChannelConfig.EInvoiceChannelConfig) {
+            return "stated";
+        }
+        else {
+            return "undefined";
+        }
+    }
+
+    getPdfState = () => {
+        let pdfConfig = this.state.inChannelConfig && this.state.inChannelConfig.PdfChannelConfig;
+        let status = this.state.inChannelConfig && this.state.inChannelConfig.status;
+        if (pdfConfig) {
+            if (this.state.inChannelConfig.inputType === 'pdf') {
+                return status;
+            }
+            else {
+                // TODO: How to mark it? Configuration is done, but another type is active!
+                return "notActivated";
+            }
+        }
+        else {
+            return "undefined";
+        }
+    }
+
 
     render()
     {
@@ -194,9 +237,15 @@ export default class ServiceConfigFlowStart extends React.Component
                     <div className="col-md-11">
                         <div className={"panel panel-default " + (this.props.voucher.eInvoiceEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
-                                <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoice')}
+                                <h4 className="panel-title">
+                                    {this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoice')}
                                     <BillingDetails inputType="eInvoice" voucher={this.props.voucher} />
                                 </h4>
+                                {this.getEinvoicState() == 'undefined' ||
+                                    <div style={{ paddingTop: '10px'}}>
+                                        {(this.context.i18n.getMessage('ServiceConfigFlowStart.statuses.' + this.getEinvoicState()))}
+                                    </div>
+                                }
                             </div>
                             <div className="panel-body">
                                 {this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoiceDesc')}
@@ -220,6 +269,11 @@ export default class ServiceConfigFlowStart extends React.Component
                                 <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.pdf')}
                                     <BillingDetails inputType="pdf" voucher={this.props.voucher} />
                                 </h4>
+                                {this.getPdfState() == 'undefined' ||
+                                    <div style={{ paddingTop: '10px', color:"green"}}>
+                                        {(this.context.i18n.getMessage('ServiceConfigFlowStart.statuses.' + this.getPdfState()))}
+                                    </div>
+                                }
                             </div>
                             <div className="panel-body">
                                 {this.context.i18n.getMessage('ServiceConfigFlowStart.pdfDesc')}

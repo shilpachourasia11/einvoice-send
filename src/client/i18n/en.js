@@ -33,7 +33,17 @@ export default {
         supplierPortalDesc: "By manual key in your invoice data you can easily submit your invoice in the correct format. Continue registration and Read more under option Supplier Portal in order to proceed.",
 
         paper : "Paper Invoice",
-        paperDesc: "It is still possible to send paper invoices. Continue registration and read more under option Paper Invoice in order to proceed."
+        paperDesc: "It is still possible to send paper invoices. Continue registration and read more under option Paper Invoice in order to proceed.",
+
+        status: "Status",
+        statuses: {
+            undefined: "Is not configured.",
+            new: "Is not configured.",
+            approved: "Is configured.",
+            activated: "Is activated.",
+            notActivated: "Is not activated.",
+            stated: "Your intention is stated."
+        }
     },
 
     ServiceConfigFlow : {
