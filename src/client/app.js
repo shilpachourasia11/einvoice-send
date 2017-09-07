@@ -174,10 +174,18 @@ export default class App extends React.Component
     updateEinvoiceAndGotoStart = (intention = null) => {
         if (intention != null) {
             let config = this.state.inChannelConfig;
-            config.EInvoiceChannelConfig.intention = intention;
-            this.setState({
-                inChannelConfig: config
-            });
+            if (config) {
+                if (!config.EInvoiceChannelConfig) {
+                    config.EInvoiceChannelConfig = {};
+                }
+                config.EInvoiceChannelConfig.intention = intention;
+                this.setState({
+                    inChannelConfig: config
+                });
+            }
+            else {
+                this.loadInChannelConfig();
+            }
         }
         this.history.push("/");
     }
