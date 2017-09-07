@@ -63,7 +63,7 @@ class Layout extends Component
             currentUserData : currentUserData
         });
 
-        return ajax.put('/user/users/current/profile')
+        return ajax.put('/user/api/users/current/profile')
             .set('Content-Type', 'application/json')
             .send({ languageId : locale })
             .then(data => ajax.post('/refreshIdToken').set('Content-Type', 'application/json').promise());
