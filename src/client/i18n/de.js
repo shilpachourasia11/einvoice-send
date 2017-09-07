@@ -33,7 +33,20 @@ export default {
         supplierPortalDesc: "Sie können Rechnungnen per manueller Eingabe der notwendigen Daten hinterlegen.",
 
         paper : "Papierrechnung",
-        paperDesc: "So gewünscht, können Sie auch Papierrechnungen verschicken. Lesen Sie mehr dazu in der Registrierung."
+        paperDesc: "So gewünscht, können Sie auch Papierrechnungen verschicken. Lesen Sie mehr dazu in der Registrierung.",
+
+        status: "Status",
+        statuses: {
+            undefined: "Ist nicht konfiguriert.",
+            new: "Wurde ausgewählt, aber die Konfiguration steht noch aus.",
+            approved: "Wurde konfiguriert, aber noch nicht aktiviert.",
+            activated: "Ist aktiviert.",
+            notActivated: "Ist nicht aktiviert.",
+
+            einvoiceRequested: "Sie wünschen eine eInvoice-Anbindung.",
+            einvoiceRejected: "Sie wünschen keine eInvoice-Anbindung.",
+            stated: "Ihre Wunsch ist hinterlegt."
+        }
     },
 
     ServiceConfigFlow : {
@@ -43,9 +56,11 @@ export default {
         enterEmail: "E-Mail-Adresse",
 
         Einvoice:{
-            intro: "Hier werden wir Ihnen die Konfiguration der eInvoice-Anbindung per Webservice anbieten. Leider ist diese noch nicht verfügbar. Sobald eine Anbindung möglich ist, werden wir uns mit Ihnen in Verbindung setzen, sofern Sie dies wünschen und unten bestätigen.",
+            intro1: "Hier werden wir Ihnen die Konfiguration der eInvoice-Anbindung per Webservice anbieten. Leider ist diese noch nicht verfügbar.",
+            intro2: " Sobald eine Anbindung möglich ist, werden wir uns mit Ihnen in Verbindung setzen, sofern Sie dies wünschen und unten bestätigen.",
             einvoiceWanted: "Ja, wir wünschen eine eInvoice-Anbindung",
             einvoiceNotWanted: "Wir unterstützen kein eInvoice",
+            currentStatus: "Ihr aktueller Status: "
         },
         Pdf:{
             subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
@@ -64,7 +79,7 @@ export default {
                 header: "Die nächsten Schritte",
                 subheader: "Sie haben uns alle notwendigen Daten bereitgestellt und können uns jetzt Ihre erste Rechnung als PDF per E-Mail zusenden.",
                 text: "",
-                textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit bestehenden und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
+                textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit alten und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
                 textGreetings: "Vielen Dank!"
             }
         },
@@ -74,7 +89,7 @@ export default {
                 header: "Die nächsten Schritte",
                 subheader: "Sie haben uns alle notwendigen Daten bereitgestellt und können uns jetzt Ihre erste Papierrechnung zusenden.",
                 text: "",
-                textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit bestehenden und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
+                textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit alten und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
                 textGreetings: "Vielen Dank!"
             }
         },

@@ -44,23 +44,38 @@ module.exports.getModelFromInputType = function(inputType)
 module.exports.getInChannelConfig = function(supplierId)
 {
     // Try finding an existing config...
-    return this.db.models.InChannelConfig.findById(supplierId).then(basicConfig =>
+//    return this.db.models.InChannelConfig.findById(supplierId, include: [PdfChannelConfig]})
+    return this.db.models.InChannelConfig.findById(supplierId)
+    .then(basicConfig =>
     {
         if(basicConfig)
         {
-            // Try to load an extended configuration from a different model...
-            return this.getModelFromInputType(basicConfig.inputType).findById(supplierId)
-            .then(extendedConfig => {
+            // first workaround without schema change: search for all objects manually
+            // 1. einvoice
+            // 2. pdf
+            // TODO: adjust schema and allow search with include
+            return Promise.all([
+                this.db.models.PdfChannelConfig.findById(supplierId),
+                this.db.models.EInvoiceChannelConfig.findById(supplierId),
+                this.getModelFromInputType(basicConfig.inputType).findById(supplierId)  // TODO: kept the attic approach to keep the interface structure - to be cleansed!
+            ])
+            .spread((pdfConfig, einvoiceConfig, extendedConfig) => {
+                if (pdfConfig) {
+                    basicConfig.dataValues.PdfChannelConfig = pdfConfig;
+                }
+                if (einvoiceConfig) {
+                    basicConfig.dataValues.EInvoiceChannelConfig = einvoiceConfig;
+                }
 
-                // Remove fields we do not want to output.
-                // [ 'supplierId', 'createdBy', 'changedBy', 'createdOn', 'changedOn' ].forEach(key => delete extendedConfig.dataValues[key]);
+                // TODO: kept the attic approach to keep the interface structure - to be cleansed!
                 [ 'createdBy', 'changedBy', 'createdOn', 'changedOn' ].forEach(key => delete extendedConfig.dataValues[key]);
-
-                // Extend the basic configuration with the extend values.
                 basicConfig.dataValues.settings = extendedConfig || { };
 
                 return basicConfig.dataValues;
             })
+            .catch((e) => {
+                console.log("Error - getInChannelConfig: ", e);
+            });
         }
 
         throw new Error('The basic configuration for the passed supplier was not found.');
@@ -109,6 +124,12 @@ module.exports.addInChannelConfig = function(config, returnConfig)
     // Remove nested settings object.
     delete basicConfig.settings;
 
+    // TODO: As long as eInvoice is only an intention, we are not allowed to store the inputType for "einvoice"
+    if (basicConfig.inputType == 'einvoice') {
+        delete basicConfig.intputType;
+        delete basicConfig.status;
+    }
+
     // Remove fields we do not want to be set from outside.
     [ 'createdOn', 'changedOn', 'changedBy' ].forEach(key => delete basicConfig[key]);
     // Copy required values to the extendedConfig as it is a plain object.
@@ -147,6 +168,12 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
             let oldInputType = existingbasicConfig.inputType;
             let newInputType = basicConfig.inputType || oldInputType;
 
+            // TODO: As long as eInvoice is only an intention, we are not allowed to store the inputType for "einvoice"
+            if (newInputType == 'einvoice') {
+                basicConfig.inputType = oldInputType;
+                basicConfig.status = existingbasicConfig.status;
+            }
+
             // Set the createdBy field as we do not accept it to be set from outside on updates.
             extendedConfig.createdBy = existingbasicConfig.createdBy;
             return this.db.models.InChannelConfig.update(basicConfig, { where : { supplierId : supplierId } })
@@ -167,13 +194,6 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
                     }
                     else {
                         return newModel.create(extendedConfig)
-                        .then((data) => {
-                            return this.getModelFromInputType(oldInputType).destroy({ where : { supplierId : supplierId } })
-                            .catch((e) => {
-                                console.log("updateInChannelConfig - ExtendedConfig could not delete outdated " + newInputType + " Object. Error: ", e);
-                                return Promise.resolve();
-                            });
-                        })
                     }
                 })
                 .then(() => returnConfig ? this.getInChannelConfig(supplierId) : supplierId)

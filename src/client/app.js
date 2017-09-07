@@ -6,7 +6,7 @@ import Promise from 'bluebird';
 import ServiceConfigFlowStart      from './components/ServiceConfigFlowStart.js'
 import ServiceConfigFlowFramePdf   from './components/ServiceConfigFlowPdf/ServiceConfigFlow.js'
 import ServiceConfigFlowFramePaper from './components/ServiceConfigFlowPaper/ServiceConfigFlow.js'
-import ServiceConfigFlow from './components/ServiceConfigFlowEinvoice/ServiceConfigFlow.js'
+import ServiceConfigFlowEInvoice   from './components/ServiceConfigFlowEinvoice/ServiceConfigFlow.js'
 import Layout from './layout.js';
 
 
@@ -46,9 +46,9 @@ export default class App extends React.Component
     componentWillMount() {
         this.loadUserData()
         .then((userData) => {
-            // console.log("UserData: ", userData);
             this.setState({user : userData});
             this.loadVoucher();
+            this.loadInChannelConfig();
         })
     }
 
@@ -69,6 +69,17 @@ export default class App extends React.Component
         });
     }
 
+    loadInChannelConfig() {
+        return ajax.get('/einvoice-send/api/config/inchannels/' + this.state.user.supplierId)
+            .set('Content-Type', 'application/json')
+            .promise()
+        .then ((config) => {
+            if (config) {
+                this.setState({inChannelConfig: config.body});
+            }
+        });
+    }
+
 
     loadVoucher = () => {
         let supplierId = this.state.user.supplierId;
@@ -76,7 +87,7 @@ export default class App extends React.Component
         .then((result) => {    // .spread((voucher, response) => {
 
             let voucher = JSON.parse(result.text);
-            console.log("Voucher found: ", voucher);
+            // console.log("Voucher found: ", voucher);
 
             // How will evaluation of allowed input types and billings be determined???
             // Convention for now: Use boolen to enable or disable the different input types:
@@ -156,6 +167,18 @@ export default class App extends React.Component
     }
 
     navigate2Start = () => {
+        this.loadInChannelConfig();
+        this.history.push("/");
+    }
+
+    updateEinvoiceAndGotoStart = (intention = null) => {
+        if (intention != null) {
+            let config = this.state.inChannelConfig;
+            config.EInvoiceChannelConfig.intention = intention;
+            this.setState({
+                inChannelConfig: config
+            });
+        }
         this.history.push("/");
     }
 
@@ -180,16 +203,17 @@ export default class App extends React.Component
                                 openFlow={this.navigate2Flow}
                                 user={this.state.user}
                                 voucher={this.state.voucher}
+                                inChannelConfig={this.state.inChannelConfig}
                                 loadVoucher={this.loadVoucher} />
                         )} } />
 
 
-                    <Route path="/pdf" component={ () => (<ServiceConfigFlowFramePdf currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/pdf" component={ () => (<ServiceConfigFlowFramePdf currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
-                    <Route path="/pdf/1" component={ () => (<ServiceConfigFlowFramePdf currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
-                    <Route path="/pdf/2" component={ () => (<ServiceConfigFlowFramePdf currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
-                    <Route path="/pdf/3" component={ () => (<ServiceConfigFlowFramePdf currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
-                    <Route path="/pdf/4" component={ () => (<ServiceConfigFlowFramePdf currentTab={4} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/pdf/1" component={ () => (<ServiceConfigFlowFramePdf currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/pdf/2" component={ () => (<ServiceConfigFlowFramePdf currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/pdf/3" component={ () => (<ServiceConfigFlowFramePdf currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/pdf/4" component={ () => (<ServiceConfigFlowFramePdf currentTab={4} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
 
                     <Route path="/paper" component={ () => (<ServiceConfigFlowFramePaper currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
@@ -198,7 +222,7 @@ export default class App extends React.Component
                     <Route path="/paper/2" component={ () => (<ServiceConfigFlowFramePaper currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
                     <Route path="/paper/3" component={ () => (<ServiceConfigFlowFramePaper currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
-                    <Route path="/einvoice" component={ () => (<ServiceConfigFlow currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/einvoice" component={ () => (<ServiceConfigFlowEInvoice currentTab={1} gotoStart={this.updateEinvoiceAndGotoStart} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher}  inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
                 </Route>
             </Router>

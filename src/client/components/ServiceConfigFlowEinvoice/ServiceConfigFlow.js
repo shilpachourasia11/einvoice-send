@@ -22,7 +22,8 @@ export default class ServiceConfigFlow extends React.Component
     static propTypes = {
         currentTab : React.PropTypes.number,
         lastValidTab : React.PropTypes.number,
-        inputType: React.PropTypes.string
+        inputType: React.PropTypes.string,
+        // inChannelConfig : React.PropTypes.object  // really needed?
     };
 
     static defaultProps = {
@@ -86,6 +87,7 @@ export default class ServiceConfigFlow extends React.Component
                                                             forward={this.props.gotoStart}
                                                             back={this.props.gotoStart}
                                                             voucher = {this.props.voucher}
+                                                            inChannelConfig={this.props.inChannelConfig}
                                                         />
                                                     </Row>
                                                 </Tab.Container>
@@ -137,7 +139,9 @@ class EInvoiceTabContent extends React.Component {
                     <Tab.Pane eventKey={1} disabled="disabled">
                         <ServiceConfigFlow1
                             gotoStart={this.props.forward}
-                            voucher = {this.props.voucher}/>
+                            voucher = {this.props.voucher}
+                            inChannelConfig={this.props.inChannelConfig}
+                        />
                     </Tab.Pane>
                 </Tab.Content>
             );

@@ -21,7 +21,8 @@ export default class ServiceConfigFlowStart extends React.Component
 {
     static propTypes = {
         invoiceSendingType : React.PropTypes.string,
-        preValidationSuccess : React.PropTypes.bool
+        preValidationSuccess : React.PropTypes.bool,
+        inChannelConfig: React.PropTypes.object
     };
 
     static defaultProps = {
@@ -47,7 +48,7 @@ export default class ServiceConfigFlowStart extends React.Component
     // Lifecycle methods
     /////////////////////////////////////////////
 
-    componentDidMount() {
+    componentWillMount() {
         this.preValidation();
     }
 
@@ -110,6 +111,7 @@ export default class ServiceConfigFlowStart extends React.Component
     }
 
 
+
     /////////////////////////////////////////////
     // Rendering
     /////////////////////////////////////////////
@@ -170,6 +172,32 @@ export default class ServiceConfigFlowStart extends React.Component
         }
     }
 
+    getEinvoicState = () => {
+        if (this.props.inChannelConfig && this.props.inChannelConfig.EInvoiceChannelConfig) {
+            return this.props.inChannelConfig.EInvoiceChannelConfig.intention ? "einvoiceRequested" : "einvoiceRejected";
+        }
+        else {
+            return "undefined";
+        }
+    }
+
+    getPdfState = () => {
+        let pdfConfig = this.props.inChannelConfig && this.props.inChannelConfig.PdfChannelConfig;
+        let status = this.props.inChannelConfig && this.props.inChannelConfig.status;
+        if (pdfConfig) {
+            if (this.props.inChannelConfig.inputType === 'pdf') {
+                return status;
+            }
+            else {
+                // TODO: How to mark it? Configuration is done, but another type is active!
+                return "notActivated";
+            }
+        }
+        else {
+            return "undefined";
+        }
+    }
+
 
     render()
     {
@@ -194,9 +222,15 @@ export default class ServiceConfigFlowStart extends React.Component
                     <div className="col-md-11">
                         <div className={"panel panel-default " + (this.props.voucher.eInvoiceEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
-                                <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoice')}
+                                <h4 className="panel-title">
+                                    {this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoice')}
                                     <BillingDetails inputType="eInvoice" voucher={this.props.voucher} />
                                 </h4>
+                                {this.getEinvoicState() == 'undefined' ||
+                                    <div style={{ paddingTop: '10px'}}>
+                                        {(this.context.i18n.getMessage('ServiceConfigFlowStart.statuses.' + this.getEinvoicState()))}
+                                    </div>
+                                }
                             </div>
                             <div className="panel-body">
                                 {this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoiceDesc')}
@@ -220,6 +254,11 @@ export default class ServiceConfigFlowStart extends React.Component
                                 <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.pdf')}
                                     <BillingDetails inputType="pdf" voucher={this.props.voucher} />
                                 </h4>
+                                {this.getPdfState() == 'undefined' ||
+                                    <div style={{ paddingTop: '10px', color:"green"}}>
+                                        {(this.context.i18n.getMessage('ServiceConfigFlowStart.statuses.' + this.getPdfState()))}
+                                    </div>
+                                }
                             </div>
                             <div className="panel-body">
                                 {this.context.i18n.getMessage('ServiceConfigFlowStart.pdfDesc')}
