@@ -3,13 +3,16 @@ import { Button,Col } from 'react-bootstrap';
 import {Form, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 //import browserHistory from 'react-router/lib/browserHistory';
 import ajax from 'superagent-bluebird-promise';
+
+
 export default class ServiceConfigFlow1 extends React.Component {
 
     static propTypes = {
         accepted : React.PropTypes.bool,
         onNext : React.PropTypes.func.isRequired,
-        ocTermsAndConditions : React.PropTypes.string
+        inChannelConfig : React.PropTypes.object,
     };
+
     static defaultProps = {
         accepted : false
     };
@@ -20,7 +23,6 @@ export default class ServiceConfigFlow1 extends React.Component {
 
         this.state = {
             accepted : this.props.accepted,
-            ocTermsAndConditions : 'loading OpusCapita Terms and Conditions...',
             rejection:false,
             email:'',
             validate:null
@@ -32,9 +34,18 @@ export default class ServiceConfigFlow1 extends React.Component {
         locale: React.PropTypes.string
     };
 
-//    componentDidMount() {
-//      console.log(">>>> ServiceConfigFlow1 - props", this.props);
-//    }
+
+    componentWillMount() {
+        if (this.props.inChannelConfig && this.props.inChannelConfig.PdfChannelConfig)
+        this.setState({
+            accepted : true,
+            email: this.props.inChannelConfig.PdfChannelConfig.rejectionEmail,
+            rejection: true,
+            validat:'success'
+        });
+    }
+
+
 
     getOcHtmlTermsAndConditions() {
         // TODO: Fetch text from Server
@@ -151,7 +162,6 @@ export default class ServiceConfigFlow1 extends React.Component {
     }
 
     callNext=()=>{
-        console.log(this.state.email)
         this.props.onNext(this.state.email)
     }
 

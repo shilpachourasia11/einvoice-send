@@ -160,6 +160,7 @@ export default class ServiceConfigFlow extends React.Component
                                                             approveCustomerTc = { (tabNo) => this.approveCustomerTC(tabNo) }
                                                             finalApprove = { () => this.finalApprove() }
                                                             voucher = {this.props.voucher}
+                                                            inChannelConfig={this.props.inChannelConfig}
                                                             customerTermsAndConditions={this.props.customerTermsAndConditions}/>
                                                     </Row>
                                                 </Tab.Container>
@@ -238,13 +239,16 @@ class PdfTabContent extends React.Component {
                     <Tab.Pane eventKey={1}>
                         <ServiceConfigFlow1
                             onNext={ (email) => { this.props.approveOcTc(2, email); }}
-                            voucher = {this.props.voucher}/>
+                            voucher = {this.props.voucher}
+                            inChannelConfig={this.props.inChannelConfig}
+                        />
                     </Tab.Pane>
                     <Tab.Pane eventKey={2}>
                         <ServiceConfigFlow2
                             onNext={ () => { this.props.approveCustomerTc(3); }}
                             onPrevious={ () => this.props.setCurrentTab(1) }
                             voucher = {this.props.voucher}
+                            inChannelConfig={this.props.inChannelConfig}
                             customerTermsAndConditions = {this.props.customerTermsAndConditions}/>
                     </Tab.Pane>
                     {/* 2017-07-97 nc: On wish of Matts, we shall deactivate the PDF upload ui for now. Reason: No usage as long as there is no recipient for it
@@ -265,7 +269,9 @@ class PdfTabContent extends React.Component {
                         <ServiceConfigFlow4
                             onNext={ () => { this.props.finalApprove() } }
                             onPrevious={ () => this.props.setCurrentTab(2) }
-                            voucher = {this.props.voucher}/>
+                            voucher = {this.props.voucher}
+                            inChannelConfig={this.props.inChannelConfig}
+                        />
                     </Tab.Pane>
 
                 </Tab.Content>
@@ -277,7 +283,9 @@ class PdfTabContent extends React.Component {
                     <Tab.Pane eventKey={1} disabled="disabled">
                         <ServiceConfigFlow1
                             onNext={ (email) => { this.props.approveOcTc(2, email); }}
-                            voucher = {this.props.voucher}/>
+                            voucher = {this.props.voucher}
+                            inChannelConfig={this.props.inChannelConfig}
+                        />
                     </Tab.Pane>
                     {/* 2017-07-97 nc: On wish of Matts, we shall deactivate the PDF upload ui for now. Reason: No usage as long as there is no recipient for it
                     <Tab.Pane eventKey={2}>
@@ -297,7 +305,9 @@ class PdfTabContent extends React.Component {
                         <ServiceConfigFlow4
                             onNext={ () => { this.props.finalApprove() } }
                             onPrevious={ () => this.props.setCurrentTab(1) }
-                            voucher = {this.props.voucher}/>
+                            voucher = {this.props.voucher}
+                            inChannelConfig={this.props.inChannelConfig}
+                        />
                     </Tab.Pane>
                 </Tab.Content>
             );

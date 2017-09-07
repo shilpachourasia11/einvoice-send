@@ -27,8 +27,7 @@ export default class ServiceConfigFlowStart extends React.Component
 
     static defaultProps = {
         invoiceSendingType : null,
-        preValidationSuccess : false,
-        inChannelConfig: null
+        preValidationSuccess : false
     };
 
     constructor(props)
@@ -36,8 +35,7 @@ export default class ServiceConfigFlowStart extends React.Component
         super(props);
         this.state = {
             invoiceSendingType : this.props.invoiceSendingType,
-            preValidationSuccess : this.props.preValidationSuccess,
-            inChannelConfig : this.props.inChannelConfig
+            preValidationSuccess : this.props.preValidationSuccess
         };
     }
 
@@ -52,19 +50,6 @@ export default class ServiceConfigFlowStart extends React.Component
 
     componentWillMount() {
         this.preValidation();
-
-        ajax.get('/einvoice-send/api/config/inchannels/' + this.props.user.supplierId)
-            .set('Content-Type', 'application/json')
-            .promise()
-        .then ((config) => {
-            if (config) {
-                this.setState({inChannelConfig: config.body});
-            }
-        });
-    }
-
-    componentDidMount() {
-        // this.preValidation();
     }
 
     preValidation = () => {
@@ -188,8 +173,8 @@ export default class ServiceConfigFlowStart extends React.Component
     }
 
     getEinvoicState = () => {
-        if (this.state.inChannelConfig && this.state.inChannelConfig.EInvoiceChannelConfig) {
-            return "stated";
+        if (this.props.inChannelConfig && this.props.inChannelConfig.EInvoiceChannelConfig) {
+            return this.props.inChannelConfig.EInvoiceChannelConfig.intention ? "einvoiceRequested" : "einvoiceRejected";
         }
         else {
             return "undefined";
@@ -197,10 +182,10 @@ export default class ServiceConfigFlowStart extends React.Component
     }
 
     getPdfState = () => {
-        let pdfConfig = this.state.inChannelConfig && this.state.inChannelConfig.PdfChannelConfig;
-        let status = this.state.inChannelConfig && this.state.inChannelConfig.status;
+        let pdfConfig = this.props.inChannelConfig && this.props.inChannelConfig.PdfChannelConfig;
+        let status = this.props.inChannelConfig && this.props.inChannelConfig.status;
         if (pdfConfig) {
-            if (this.state.inChannelConfig.inputType === 'pdf') {
+            if (this.props.inChannelConfig.inputType === 'pdf') {
                 return status;
             }
             else {

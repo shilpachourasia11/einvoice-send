@@ -38,11 +38,14 @@ export default {
         status: "Status",
         statuses: {
             undefined: "Ist nicht konfiguriert.",
-            new: "Ist nicht konfiguriert.",
-            approved: "Ist konfiguriert.",
+            new: "Wurde ausgewählt, aber die Konfiguration steht noch aus.",
+            approved: "Wurde konfiguriert, aber noch nicht aktiviert.",
             activated: "Ist aktiviert.",
             notActivated: "Ist nicht aktiviert.",
-            stated: "Ihre Aussage ist hinterlegt."
+
+            einvoiceRequested: "Sie wünschen eine eInvoice-Anbindung.",
+            einvoiceRejected: "Sie wünschen keine eInvoice-Anbindung.",
+            stated: "Ihre Wunsch ist hinterlegt."
         }
     },
 
@@ -53,9 +56,11 @@ export default {
         enterEmail: "E-Mail-Adresse",
 
         Einvoice:{
-            intro: "Hier werden wir Ihnen die Konfiguration der eInvoice-Anbindung per Webservice anbieten. Leider ist diese noch nicht verfügbar. Sobald eine Anbindung möglich ist, werden wir uns mit Ihnen in Verbindung setzen, sofern Sie dies wünschen und unten bestätigen.",
+            intro1: "Hier werden wir Ihnen die Konfiguration der eInvoice-Anbindung per Webservice anbieten. Leider ist diese noch nicht verfügbar.",
+            intro2: " Sobald eine Anbindung möglich ist, werden wir uns mit Ihnen in Verbindung setzen, sofern Sie dies wünschen und unten bestätigen.",
             einvoiceWanted: "Ja, wir wünschen eine eInvoice-Anbindung",
             einvoiceNotWanted: "Wir unterstützen kein eInvoice",
+            currentStatus: "Ihr aktueller Status: "
         },
         Pdf:{
             subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
