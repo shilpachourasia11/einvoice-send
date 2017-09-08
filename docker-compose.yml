@@ -28,6 +28,29 @@ services:
     ports:
      - '3007:3007'
 
+  sales-invoice:
+    build: .
+    volumes:
+      - .:/home/node/invoice
+    labels:
+      SERVICE_NAME: 'invoice'
+    environment:
+      NODE_ENV: 'development'
+      PORT: ${INVOICE_PORT}
+      HOST_IP: ${HOST_IP}
+      APPLICATION_NAME: 'invoice'
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      REDIS_AUTH: ${REDIS_AUTH}
+      GATEWAY_SCHEME: $GATEWAY_SCHEME
+      GATEWAY_IP: $GATEWAY_IP
+      GATEWAY_PORT: $GATEWAY_PORT
+      SERVICE_3003_CHECK_HTTP: /api/health/check
+      SERVICE_3003_CHECK_INTERVAL: 15s
+      SERVICE_3003_CHECK_TIMEOUT: 3s
+    ports:
+     - '3003:3003'
+    command: "npm run dev"
 
   mysql:
     image: 'mysql:5.6'
