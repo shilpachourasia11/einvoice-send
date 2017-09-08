@@ -43,17 +43,18 @@ module.exports.getModelFromInputType = function(inputType)
 
 module.exports.getInChannelConfig = function(supplierId)
 {
-    // Try finding an existing config...
-//    return this.db.models.InChannelConfig.findById(supplierId, include: [PdfChannelConfig]})
+    // TODO: Adjust schema for one-2-one dependencies of the sub configs
+    //    return this.db.models.InChannelConfig.findById(supplierId, include: [PdfChannelConfig, ...]})
+
     return this.db.models.InChannelConfig.findById(supplierId)
     .then(basicConfig =>
     {
         if(basicConfig)
         {
-            // first workaround without schema change: search for all objects manually
+            // Workaround without schema change: search for all objects manually
             // 1. einvoice
             // 2. pdf
-            // TODO: adjust schema and allow search with include
+            // TODO: adjust schema and allow search with include (see above)
             return Promise.all([
                 this.db.models.PdfChannelConfig.findById(supplierId),
                 this.db.models.EInvoiceChannelConfig.findById(supplierId),
