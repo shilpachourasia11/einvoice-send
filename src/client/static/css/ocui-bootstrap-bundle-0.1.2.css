@@ -6465,10 +6465,20 @@ fieldset[disabled] .form-control {
 
 @media screen and (-webkit-min-device-pixel-ratio:0){
   .oc-radio input,.oc-check input {visibility: hidden;}
-  .oc-check input {margin-bottom: -10px;} 
+  .oc-check input {margin-bottom: -10px;}
 }
 
 .oc-radio input:before {
+  visibility: visible;
+  background: transparent;
+  width: 1.2em;
+  height: 1.2em;
+  content: '';
+  display: inline-block;
+  border: 1px solid #aaa;
+  border-radius: 99em;
+}
+.oc-radio input::-ms-check {
   visibility: visible;
   background: transparent;
   width: 1.2em;
@@ -13323,7 +13333,7 @@ span.round-tab i{
 .wizard li.active span.round-tab {
     background: #fff;
     border: 2px solid #006070;
-    
+
 }
 .wizard li.active span.round-tab i{
     color: #006070;
@@ -13413,7 +13423,7 @@ span.round-tab:hover {
     display: block;
     content: "";
     width: 100%;
-    border-bottom: 1px solid rgb(255, 255, 255) !important; 
+    border-bottom: 1px solid rgb(255, 255, 255) !important;
     transition: border-bottom 0.2s;
 }
 
@@ -13459,7 +13469,7 @@ span.round-tab:hover {
 }
 
 .highlight {
-  background: #ec6608; 
+  background: #ec6608;
 }
 
 .highlight-text {
