@@ -6404,6 +6404,16 @@ fieldset[disabled] .form-control {
   border: 1px solid #aaa;
   border-radius: 2px;
 }
+.oc-check input::-ms-check {
+  visibility: visible;
+  background: transparent;
+  width: 1.2em;
+  height: 1.2em;
+  content: '';
+  display: inline-block;
+  border: 1px solid #aaa;
+  border-radius: 2px;
+}
 .oc-check input:checked:after {
   visibility: visible;
   background: transparent;
