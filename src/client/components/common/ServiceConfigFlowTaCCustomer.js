@@ -12,6 +12,7 @@ export default class ServiceConfigFlow2 extends React.Component {
         customerTermsAndConditions : React.PropTypes.string,
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired,
+        voucher: React.PropTypes.object
     };
 
     static defaultProps = {
@@ -37,7 +38,23 @@ export default class ServiceConfigFlow2 extends React.Component {
 
     componentWillMount() {
         this.setTermsAndConditions(this.context.locale);
+        this.loadInChannelContract();
     }
+
+    loadInChannelContract() {
+        return ajax.get('/einvoice-send/api/config/inchannelcontracts/c_' + this.props.voucher.customerId + '/s_' + this.props.voucher.supplierId)
+            .set('Content-Type', 'application/json')
+            .promise()
+        .then ((contract) => {
+            this.setState({
+                accepted : (contract && contract.body && contract.body.status == 'approved')
+            });
+        })
+        .catch((e) => {
+            console.log("Error determined when fetching InChannelContract for c_" + this.props.voucher.customerId + " and s_" + this.props.voucher.supplierId + ": ", e);
+        });
+    }
+
 
     setTermsAndConditions(locale) {
         this.getCustomerTermsAndConditions(locale)
