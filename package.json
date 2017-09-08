@@ -17,7 +17,7 @@
     "exclude": []
   },
   "dependencies": {
-    "@opuscapita/react-menus": "^1.0.22",
+    "@opuscapita/react-menus": "^1.0.24",
     "babel-core": "^6.25.0",
     "babel-loader": "^6.4.1",
     "babel-polyfill": "^6.26.0",
