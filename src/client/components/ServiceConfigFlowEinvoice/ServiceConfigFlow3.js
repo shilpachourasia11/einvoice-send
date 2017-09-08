@@ -15,7 +15,6 @@ export default class ServiceConfigFlow3 extends React.Component {
 		render() {
 			console.log('inside render funciton of inner react class');
 			const { InvoiceEditorForm } = this.externalComponents;
-			console.log(InvoiceEditorForm);
 			return (
 				<div>
 					<div>

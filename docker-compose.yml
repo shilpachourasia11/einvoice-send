@@ -12,6 +12,7 @@ services:
      - auth
      - user
      - api-registry
+     - acl
     labels:
       SERVICE_NAME: 'einvoice-send'
       SERVICE_TAGS: 'external'
@@ -28,29 +29,7 @@ services:
     ports:
      - '3007:3007'
 
-  sales-invoice:
-    build: .
-    volumes:
-      - .:/home/node/invoice
-    labels:
-      SERVICE_NAME: 'invoice'
-    environment:
-      NODE_ENV: 'development'
-      PORT: ${INVOICE_PORT}
-      HOST_IP: ${HOST_IP}
-      APPLICATION_NAME: 'invoice'
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      REDIS_AUTH: ${REDIS_AUTH}
-      GATEWAY_SCHEME: $GATEWAY_SCHEME
-      GATEWAY_IP: $GATEWAY_IP
-      GATEWAY_PORT: $GATEWAY_PORT
-      SERVICE_3003_CHECK_HTTP: /api/health/check
-      SERVICE_3003_CHECK_INTERVAL: 15s
-      SERVICE_3003_CHECK_TIMEOUT: 3s
-    ports:
-     - '3003:3003'
-    command: "npm run dev"
+  
 
   mysql:
     image: 'mysql:5.6'
@@ -215,7 +194,22 @@ services:
     depends_on:
       - kong
     command: 'npm run dev'
-
+  acl:
+    image: opuscapita/acl:dev
+    labels:
+      - 'SERVICE_NAME=acl'
+      - 'SERVICE_TAGS=external,kong'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      SERVICE_3013_CHECK_HTTP: /api/health/check
+      SERVICE_3013_CHECK_INTERVAL: 15s
+      SERVICE_3013_CHECK_TIMEOUT: 3s
+    ports:
+     - '3013:3013'
+    depends_on:
+      - kong
+    command: 'npm run dev'
   isodata:
     image: opuscapita/isodata:dev
     ports:
@@ -302,3 +296,28 @@ services:
     ports:
       - '3009:3009'
     command: 'npm run dev'
+
+  sales-invoice:
+    build: '../sales-invoice'
+    volumes:
+      - ../sales-invoice:/home/node/invoice
+    labels:
+      SERVICE_NAME: 'invoice'
+    environment:
+      NODE_ENV: 'development'
+      PORT: ${INVOICE_PORT}
+      HOST_IP: ${HOST_IP}
+      APPLICATION_NAME: 'invoice'
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      REDIS_AUTH: ${REDIS_AUTH}
+      GATEWAY_SCHEME: $GATEWAY_SCHEME
+      GATEWAY_IP: $GATEWAY_IP
+      GATEWAY_PORT: $GATEWAY_PORT
+      SERVICE_3003_CHECK_HTTP: /api/health/check
+      SERVICE_3003_CHECK_INTERVAL: 15s
+      SERVICE_3003_CHECK_TIMEOUT: 3s
+    ports:
+     - '3003:3003'
+    command: "npm run dev"
+  
