@@ -63,7 +63,7 @@ export default {
             currentStatus: "Ihr aktueller Status: "
         },
         Pdf:{
-            subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
+            subheader: "Sie haben sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
             intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen.",
             rejection:"Rückweisungs E-Mail",
             additionalHelp:"Für den Fall eines Problems mit der Verarbeitung Ihrer PDF-Rechnungen benötigen wir von Ihnen eine E-Mail-Adresse, unter der wir Sie kontaktieren können.",
@@ -84,7 +84,7 @@ export default {
             }
         },
         Paper:{
-            subheader: "Sie habe sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre Papierrechnung an unseren globalen Digitalisierung-Service senden.",
+            subheader: "Sie haben sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre Papierrechnung an unseren globalen Digitalisierung-Service senden.",
             Approve: {
                 header: "Die nächsten Schritte",
                 subheader: "Sie haben uns alle notwendigen Daten bereitgestellt und können uns jetzt Ihre erste Papierrechnung zusenden.",
