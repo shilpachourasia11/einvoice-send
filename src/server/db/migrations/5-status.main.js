@@ -58,14 +58,43 @@ module.exports.up = function(db, config)
     //       key : 'supplierId'
     //   }
     // });
+    //
+
+
+
+
+
+
+
     const promm = Promise.all([one, two, three, four]).then(() => {
-      const five  = queryInterface.sequelize.query('UPDATE `PdfChannelConfig` JOIN `InChannelConfig` on `PdfChannelConfig`.`supplierId` = `InChannelConfig`.`supplierId` SET `PdfChannelConfig`.`status` = `InChannelConfig`.`status`')
-      const six   = queryInterface.sequelize.query('UPDATE `einvoice`.`PaperChannelConfig` JOIN `einvoice`.`InChannelConfig` ON `einvoice`.`PaperChannelConfig`.`supplierId` = `einvoice`.`InChannelConfig`.`supplierId` SET `einvoice`.`PaperChannelConfig`.`status` = `einvoice`.`InChannelConfig`.`status`')
-      const seven = queryInterface.sequelize.query('UPDATE `einvoice`.`EInvoiceChannelConfig` JOIN `einvoice`.`InChannelConfig` ON `einvoice`.`EInvoiceChannelConfig`.`supplierId` = `einvoice`.`InChannelConfig`.`supplierId` SET `einvoice`.`EInvoiceChannelConfig`.`status` = `einvoice`.`InChannelConfig`.`status`')
-      const eight = queryInterface.sequelize.query('UPDATE `einvoice`.`SupplierPortalConfig` JOIN `einvoice`.`InChannelConfig` ON `einvoice`.`SupplierPortalConfig`.`supplierId` = `einvoice`.`InChannelConfig`.`supplierId` SET `einvoice`.`SupplierPortalConfig`.`status` = `einvoice`.`InChannelConfig`.`status`')
-      return Promise.all([five,six,seven,eight]);
+      const all = db.models.InChannelConfig.findAll().map(config => {
+        switch (config.inputType) {
+          case 'pdf':
+            return db.models.PdfChannelConfig.update({ status: config.status}, {
+              where: { supplierId: config.supplierId}
+            })
+            break;
+          case 'einvoice':
+          return db.models.EInvoiceChannelConfig.update({ status: config.status}, {
+            where: { supplierId: config.supplierId}
+          })
+          break;
+          case 'paper':
+          return db.models.PaperChannelConfig.update({ status: config.status}, {
+            where: { supplierId: config.supplierId}
+          })
+          break;
+          case 'supplierPortal':
+          return db.models.SupplierPortalConfig.update({ status: config.status}, {
+            where: { supplierId: config.supplierId}
+          })
+          break;
+        }
+      });
+  
+      return Promise.all(all);
     }
-    );
+  );
 
 
 
