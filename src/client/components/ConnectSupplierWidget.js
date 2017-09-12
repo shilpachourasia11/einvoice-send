@@ -8,7 +8,8 @@ export default class ConnectSupplierWidget extends Component
   static propTypes = {
     actionUrl: PropTypes.string.isRequired,
     customerId: PropTypes.string.isRequired,
-    locale: PropTypes.string.isRequired
+    locale: PropTypes.string.isRequired,
+    intl: PropTypes.string.isRequired
   };
 
   constructor(props)
@@ -47,6 +48,8 @@ export default class ConnectSupplierWidget extends Component
 
   render()
   {
+    const { intl } = this.props;
+
     return (
       <LineChart
         data={this.getData()}
@@ -58,7 +61,7 @@ export default class ConnectSupplierWidget extends Component
         <Legend />
         <XAxis label="Dates" dataKey="date" padding={{left: 20, right: 20}}/>
         <YAxis padding={{top: 20}}/>
-        <Line type="stepAfter" dataKey="supplier count" stroke="#5E9CD3" />
+        <Line type="stepAfter" dataKey={intl.formatMessage({ id: 'connectSupplierWidget.component.supplierCount'})} stroke="#5E9CD3" />
       </LineChart>
     )
   }
