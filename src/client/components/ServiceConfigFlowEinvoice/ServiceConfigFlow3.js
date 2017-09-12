@@ -25,18 +25,19 @@ export default class ServiceConfigFlow3 extends React.Component {
 			return (
 				<div>
 					<div>
-						{<InvoiceEditorForm />}
+						{
+							<InvoiceEditorForm
+
+							/>
+						}
 					</div>
 				</div>
 			)
 		}
 	})
 	componentDidMount() {
-		var me = this
-
 	}
 	componentWillMount() {
-		console.log('service config flow mounted');
 	}
 	render() {
 		return (
