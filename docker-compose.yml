@@ -298,9 +298,9 @@ services:
     command: 'npm run dev'
 
   sales-invoice:
-    build: .
+    build: '../sales-invoice'
     volumes:
-      - .:/home/node/invoice
+      - ../sales-invoice:/home/node/invoice
     labels:
       SERVICE_NAME: 'invoice'
     environment:
