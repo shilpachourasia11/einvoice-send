@@ -1,6 +1,6 @@
 let CSWTranslations = {};
 
-CSWTranslations.supplierCount = 'Supplier Count';
+CSWTranslations.supplierCount = 'Connected Suppliers';
 
 export default {
   CSWTranslations: CSWTranslations
