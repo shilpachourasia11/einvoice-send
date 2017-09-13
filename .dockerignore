@@ -3,3 +3,7 @@ node_modules
 ./admin_access.log
 ./error.log
 ./serf.log
+.git
+rest-doc
+usecases
+README.md

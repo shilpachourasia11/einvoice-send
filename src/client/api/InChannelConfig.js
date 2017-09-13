@@ -7,6 +7,16 @@ module.exports.status = {
     activated: "activated"
 }
 
+module.exports.getNextStatus = (oldStatus, actionStatus) => {
+    let statusPrio = ["new", "approved", "activated"];
+    if (statusPrio.indexOf(oldStatus) > statusPrio.indexOf(actionStatus)) {
+        return oldStatus;
+    }
+    else {
+        return actionStatus;
+    }
+}
+
 module.exports.types = {
     paper         : "paper",
     pdf           : "pdf",

@@ -24,7 +24,8 @@ export default class ServiceConfigFlow extends React.Component
     static propTypes = {
         currentTab : React.PropTypes.number,
         lastValidTab : React.PropTypes.number,
-        inputType: React.PropTypes.string
+        inputType: React.PropTypes.string,
+        inChannelConfig: React.PropTypes.object
     };
 
     static defaultProps = {
@@ -110,7 +111,12 @@ export default class ServiceConfigFlow extends React.Component
     }
 
     approveOcTc = (tabNo,email) => {
-        InChannelConfig.update(this.props.voucher.supplierId, {'status': InChannelConfig.status.approved,'rejectionEmail':email})
+        InChannelConfig.update(
+            this.props.voucher.supplierId,
+            {
+                'status': InChannelConfig.getNextStatus(this.props.inChannelConfig && this.props.inChannelConfig.status, InChannelConfig.status.approved),
+                'rejectionEmail':email
+            })
         .then(() => this.setCurrentTab(tabNo));
     }
 

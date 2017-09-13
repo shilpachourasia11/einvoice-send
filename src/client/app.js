@@ -77,6 +77,9 @@ export default class App extends React.Component
             if (config) {
                 this.setState({inChannelConfig: config.body});
             }
+        })
+        .catch((e) => {
+            console.log("Error determined when fetching InChannelConfig for supplier " + this.state.user.supplierId + ": ", e);
         });
     }
 
