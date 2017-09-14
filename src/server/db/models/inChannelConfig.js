@@ -101,11 +101,6 @@ module.exports.init = function(db, config)
         updatedAt : 'changedOn',
         createdAt : 'createdOn',
         freezeTableName : true,
-        // classMethods: {
-        //   associate: function(db) {
-        //     PdfChannelConfig.belongsTo(db.InChannelConfig, {targetKey: 'supplierId'});
-        //   }
-        // }
     });
 
     /**
