@@ -49,24 +49,13 @@ module.exports.up = function(db, config)
     );
 
 
-    // const nine = queryInterface.changeColumn('PdfChannelConfig', 'supplierId', {
-    //   type : DataTypes.STRING(30),
-    //   allowNull : false,
-    //   primaryKey : true,
-    //   references : {
-    //       model : 'InChannelConfig',
-    //       key : 'supplierId'
-    //   }
-    // });
-    //
 
 
 
 
 
 
-
-    const promm = Promise.all([one, two, three, four]).then(() => {
+    return promm = Promise.all([one, two, three, four]).then(() => {
       const all = db.models.InChannelConfig.findAll().map(config => {
         switch (config.inputType) {
           case 'pdf':
@@ -75,20 +64,20 @@ module.exports.up = function(db, config)
             })
             break;
           case 'einvoice':
-          return db.models.EInvoiceChannelConfig.update({ status: config.status}, {
-            where: { supplierId: config.supplierId}
-          })
-          break;
+            return db.models.EInvoiceChannelConfig.update({ status: config.status}, {
+              where: { supplierId: config.supplierId}
+            })
+            break;
           case 'paper':
-          return db.models.PaperChannelConfig.update({ status: config.status}, {
-            where: { supplierId: config.supplierId}
-          })
-          break;
+            return db.models.PaperChannelConfig.update({ status: config.status}, {
+              where: { supplierId: config.supplierId}
+            })
+            break;
           case 'supplierPortal':
-          return db.models.SupplierPortalConfig.update({ status: config.status}, {
-            where: { supplierId: config.supplierId}
-          })
-          break;
+            return db.models.SupplierPortalConfig.update({ status: config.status}, {
+              where: { supplierId: config.supplierId}
+            })
+            break;
         }
       });
   
@@ -97,10 +86,6 @@ module.exports.up = function(db, config)
   );
 
 
-
-
-    // return Promise.all([one, two, three, four]);
-    return promm;
 }
 
 module.exports.down = function(db, config)
