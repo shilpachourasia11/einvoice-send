@@ -39,7 +39,7 @@ export default class ConnectSupplierWidget extends Component
       catch(error => Promise.resolve(null));
   }
 
-  componentWillReceiveProps()
+  componentWillMount()
   {
     this.context.i18n.register('CSWTranslations', i18n);
   }
