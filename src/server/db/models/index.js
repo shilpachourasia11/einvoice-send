@@ -13,7 +13,5 @@ const Sequelize = require('sequelize');
  */
 module.exports.init = function(db, config)
 {
-    return Promise.all([
-        require('./inChannelConfig.js').init(db, config),
-    ]);
+    return require('./inChannelConfig.js').init(db, config);
 }
