@@ -351,23 +351,56 @@ module.exports.init = function(db, config)
         freezeTableName : true
     });
 
-    var relations = Promise.all([InChannelConfig,
-      PdfChannelConfig,
-      PaperChannelConfig,
-      EInvoiceChannelConfig,
-      SupplierPortalConfig,
-      InChannelContract,
-      voucher]).then(() => {
-        var one = PdfChannelConfig.belongsTo(InChannelConfig, {targetKey: "supplierId", foreignKey: "supplierId"});
-        var two = PaperChannelConfig.belongsTo(InChannelConfig, {targetKey: "supplierId", foreignKey: "supplierId"});
-        var three = EInvoiceChannelConfig.belongsTo(InChannelConfig, {targetKey: "supplierId", foreignKey: "supplierId"});
-        var four = SupplierPortalConfig.belongsTo(InChannelConfig, {targetKey: "supplierId", foreignKey: "supplierId"});
+    PdfChannelConfig.belongsTo(
+        InChannelConfig, {
+            targetKey: "supplierId", 
+            foreignKey: "supplierId"
+        }
+    );
+    PaperChannelConfig.belongsTo(
+        InChannelConfig, {
+            targetKey: "supplierId", 
+            foreignKey: "supplierId"
+        }
+    );
+    EInvoiceChannelConfig.belongsTo(
+        InChannelConfig, {
+            targetKey: "supplierId", 
+            foreignKey: "supplierId"
+        }
+    );
+    SupplierPortalConfig.belongsTo(
+        InChannelConfig, {
+            targetKey: "supplierId", 
+            foreignKey: "supplierId"
+        }
+    );
 
-        var five = InChannelConfig.hasOne(PdfChannelConfig, {targetKey: "supplierId", foreignKey: "supplierId"});
-        var six = InChannelConfig.hasOne(PaperChannelConfig, {targetKey: "supplierId", foreignKey: "supplierId"});
-        var seven = InChannelConfig.hasOne(EInvoiceChannelConfig, {targetKey: "supplierId", foreignKey: "supplierId"});
-        var eight = InChannelConfig.hasOne(SupplierPortalConfig, {targetKey: "supplierId", foreignKey: "supplierId"});
-      });
+    InChannelConfig.hasOne(
+        PdfChannelConfig, {
+            targetKey: "supplierId", 
+            foreignKey: "supplierId"
+        }
+    );
+    InChannelConfig.hasOne(
+        PaperChannelConfig, {
+            targetKey: "supplierId", 
+            foreignKey: "supplierId"
+        }
+    );
+    InChannelConfig.hasOne(
+        EInvoiceChannelConfig, {
+            targetKey: "supplierId", 
+            foreignKey: "supplierId"
+        }
+    );
+    InChannelConfig.hasOne(
+        SupplierPortalConfig, {
+            targetKey: "supplierId", 
+            foreignKey: "supplierId"
+        }
+    );
+    
 
 
 
