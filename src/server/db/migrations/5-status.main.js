@@ -55,7 +55,7 @@ module.exports.up = function(db, config)
 
 
 
-    return promm = Promise.all([one, two, three, four]).then(() => {
+    return Promise.all([one, two, three, four]).then(() => {
       const all = db.models.InChannelConfig.findAll().map(config => {
         switch (config.inputType) {
           case 'pdf':
@@ -80,7 +80,7 @@ module.exports.up = function(db, config)
             break;
         }
       });
-  
+
       return Promise.all(all);
     }
   );
