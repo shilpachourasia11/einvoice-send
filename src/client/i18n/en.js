@@ -56,13 +56,29 @@ export default {
         enterEmail: "Email address",
 
         Einvoice:{
-            intro1: "We are sorry that we cannot provide an eInvoice web integration right now, but it will be available soon.",
-            intro2: "If you want to provide invoices via web service, please confirm this intention below.",
-            einvoiceWanted:"Yes, we want to use eInvoice",
-            einvoiceNotWanted:"No, we do not support eInvoice",
-            currentStatus: "Your current state: "
+            name: "eInvoice",
+            header: "eInvoice Configuration",
+            OCTaC: {
+                text: "I want to send E-Invoices to {customerName} through a third party Operator."
+            },
+            CustomerTaC: {
+                text1: "{customerName} has selected OpusCapita Software AG as Service Provider for incoming Purchase Invoices. OpusCapita will take care of contacting suppliers, implementation of the service as well as monitoring that invoices are transmitted correctly between suppliers and different entities of {customerName}. Registration for the service will happen on the Business Network Portal.",
+                text2: "Please download and check the einvoicing guide: ",
+                text3: "This document includes all necessary information on how to send E-invoices. Please find details what E-invoicing channels are supported and contact details, as well as guide how to get started.",
+            },
+            Approve: {
+                header: "Next Steps",
+                subheader: "Please setup the einvoice as described in the einvoicing guide. This should include the three steps:",
+                step1: "Contact your E-invoicing service provider",
+                step2: "Test E-invoice / Testing phase",
+                step3: "Go live",
+                textFooter: "We kindly ask you to go back to the start page and update your company information in order to strengthen your profile to become more visible to trading partners within the Eco System.",
+                textGreetings: "Thank you!"
+            }
         },
         Pdf:{
+            name: "PDF by Email",
+            header: "PDF by Email Configuration",
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail.",
             intro: "Email Invoice Digitizing enables {customerName} to receive invoices as email attachments.",
             rejection:"Rejection Email",
@@ -84,6 +100,8 @@ export default {
             }
         },
         Paper:{
+            name: "Paper Invoice",
+            header: "Paper Invoice Configuration",
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first paper- invoice to our global digitizing (scanning) service.",
             Approve: {
                 header: "Next Steps",
@@ -93,10 +111,14 @@ export default {
                 textGreetings: "Thank you!"
             }
         },
+        SupplierPortal:{
+            name: "Supplier Portal / Key-In",
+            header: "Supplier Portal / Key-In Configuration"
+        },
         CustomerTaC: {
             subheader: "Terms and Conditions of {customerName}",
             subsubheader: "Please check the terms and conditions below and confirm your acceptance at the end of this page.",
-            readTaC: "I have read and understood {customerName} terms and conditions of the service",
+            readTaC: "I have read and understood {customerName} terms and conditions of the service.",
         }
     }
 }

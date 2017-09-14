@@ -52,6 +52,7 @@ export default class ServiceConfigFlowStart extends React.Component
         this.preValidation();
     }
 
+    // TODO: Any chanes in the prevalidation for "einvoice"???
     preValidation = () => {
         // Should be done based on customer definitions, but so far we do not have a structure for this purpose.
 
@@ -85,9 +86,11 @@ export default class ServiceConfigFlowStart extends React.Component
         let obj = {
             inputType: this.state.invoiceSendingType,
             voucherId: this.props.voucher.id,
-            status: InChannelConfig.getNextStatus(this.props.inChannelConfig && this.props.inChannelConfig.status, InChannelConfig.status.new)
+            status: InChannelConfig.getNextStatus(this.props.inChannelConfig && this.props.inChannelConfig.status, InChannelConfig.status.new),
+            billingModelId: this.state.invoiceSendingType == 'einvoice' ? 'external' : null
         };
         return new Promise((resolve, reject) => {
+            // TODO: Check that it works for pdf and einvoice!!!
             return InChannelConfig.update(supplierId, obj)
             .then(() => {
                 resolve();

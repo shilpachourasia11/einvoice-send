@@ -15,7 +15,8 @@ export default class App extends React.Component
     static propTypes = {
         user: React.PropTypes.object,
         voucher: React.PropTypes.object,
-        customerTermsAndConditions: React.PropTypes.string
+        customerTermsAndConditions: React.PropTypes.string,
+        inChannelConfig: React.PropTypes.object
     };
 
     static defaultProps = {
@@ -26,7 +27,8 @@ export default class App extends React.Component
             supplierPortalEnabled : false,
             paperEnabled : false
         },
-        customerTermsAndConditions : null
+        customerTermsAndConditions : null,
+        inChannelConfig : null
     };
 
     constructor(props)
@@ -38,7 +40,8 @@ export default class App extends React.Component
         this.state = {
             user : this.props.user,
             voucher : this.props.voucher,
-            customerTermsAndConditions : this.props.customerTermsAndConditions
+            customerTermsAndConditions : this.props.customerTermsAndConditions,
+            inChannelConfig: this.props.inChannelConfig
         }
     }
 
@@ -233,7 +236,12 @@ export default class App extends React.Component
                     <Route path="/paper/2" component={ () => (<ServiceConfigFlowFramePaper currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
                     <Route path="/paper/3" component={ () => (<ServiceConfigFlowFramePaper currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
-                    <Route path="/einvoice" component={ () => (<ServiceConfigFlowEInvoice currentTab={1} gotoStart={this.updateEinvoiceAndGotoStart} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher}  inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+
+                    <Route path="/einvoice" component={ () => (<ServiceConfigFlowEInvoice currentTab={1} gotoStart={this.updateEinvoiceAndGotoStart} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher}  inChannelConfig={this.state.inChannelConfig}  customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+
+                    <Route path="/einvoice/1" component={ () => (<ServiceConfigFlowEInvoice currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/einvoice/2" component={ () => (<ServiceConfigFlowEInvoice currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/einvoice/3" component={ () => (<ServiceConfigFlowEInvoice currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
                 </Route>
             </Router>

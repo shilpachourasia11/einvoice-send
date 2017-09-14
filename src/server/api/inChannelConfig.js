@@ -126,10 +126,12 @@ module.exports.addInChannelConfig = function(config, returnConfig)
     delete basicConfig.settings;
 
     // TODO: As long as eInvoice is only an intention, we are not allowed to store the inputType for "einvoice"
+    /*
     if (basicConfig.inputType == 'einvoice') {
         delete basicConfig.intputType;
         delete basicConfig.status;
     }
+    */
 
     // Remove fields we do not want to be set from outside.
     [ 'createdOn', 'changedOn', 'changedBy' ].forEach(key => delete basicConfig[key]);
@@ -170,10 +172,12 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
             let newInputType = basicConfig.inputType || oldInputType;
 
             // TODO: As long as eInvoice is only an intention, we are not allowed to store the inputType for "einvoice"
+            /*
             if (newInputType == 'einvoice') {
                 basicConfig.inputType = oldInputType;
                 basicConfig.status = existingbasicConfig.status;
             }
+            */
 
             // Set the createdBy field as we do not accept it to be set from outside on updates.
             extendedConfig.createdBy = existingbasicConfig.createdBy;

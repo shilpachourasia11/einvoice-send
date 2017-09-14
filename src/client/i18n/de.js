@@ -29,7 +29,7 @@ export default {
         pdf : "PDF per Email",
         pdfDesc: "Sie möchten Ihre Rechnung als Anhang einer E-Mail verschicken? Kein Problem. In der Vervollständigung der Registrierung finden Sie mehr Informationen hierzu.",
 
-        supplierPortal : "Lieferanten Portal",
+        supplierPortal : "Lieferantenportal",
         supplierPortalDesc: "Sie können Rechnungnen per manueller Eingabe der notwendigen Daten hinterlegen.",
 
         paper : "Papierrechnung",
@@ -56,13 +56,30 @@ export default {
         enterEmail: "E-Mail-Adresse",
 
         Einvoice:{
-            intro1: "Hier werden wir Ihnen die Konfiguration der eInvoice-Anbindung per Webservice anbieten. Leider ist diese noch nicht verfügbar.",
-            intro2: " Sobald eine Anbindung möglich ist, werden wir uns mit Ihnen in Verbindung setzen, sofern Sie dies wünschen und unten bestätigen.",
-            einvoiceWanted: "Ja, wir wünschen eine eInvoice-Anbindung",
-            einvoiceNotWanted: "Wir unterstützen kein eInvoice",
-            currentStatus: "Ihr aktueller Status: "
+            name: "eInvoice",
+            header: "eInvoice-Konfiguration",
+            OCTaC: {
+                text: "Ich möchte elektronische Rechnungen an DekaBank über einen anderen Anbieter schicken."
+            },
+            CustomerTaC: {
+                // TODO: Take translation from pdf as soon as it is available!
+                text1: "{customerName} has selected OpusCapita Software AG as Service Provider for incoming Purchase Invoices. OpusCapita will take care of contacting suppliers, implementation of the service as well as monitoring that invoices are transmitted correctly between suppliers and different entities of {customerName}. Registration for the service will happen on the Business Network Portal.",
+                text2: "Please download and check the einvoicing guide: ",
+                text3: "This document includes all necessary information on how to send E-invoices. Please find details what E-invoicing channels are supported and contact details, as well as guide how to get started.",
+            },
+            Approve: {
+                header: "Die nächsten Schritte",
+                subheader: "Bitte setzen Sie das EInvoicing gemäß der Anleitung auf. Dies sollte die folgenden drei Schritte beinhalten:",
+                step1: "Kontaktieren Sie Ihren E-Invoicing-Service-Provider",
+                step2: "Test der E-Invoice-Anbindung",
+                step3: "Go-live",
+                textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit bestehenden und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
+                textGreetings: "Vielen Dank!"
+            }
         },
         Pdf:{
+            name: "PDF per Email",
+            header: "PDF per Email-Konfiguration",
             subheader: "Sie haben sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
             intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen.",
             rejection:"Rückweisungs E-Mail",
@@ -84,6 +101,8 @@ export default {
             }
         },
         Paper:{
+            name: "Papierrechnung",
+            header: "Papierrechnung-Konfiguration",
             subheader: "Sie haben sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre Papierrechnung an unseren globalen Digitalisierung-Service senden.",
             Approve: {
                 header: "Die nächsten Schritte",
@@ -92,6 +111,10 @@ export default {
                 textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit bestehenden und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
                 textGreetings: "Vielen Dank!"
             }
+        },
+        SupplierPortal:{
+            name: "Lieferantenportal",
+            header: "Lieferantenportal-Konfiguration"
         },
         CustomerTaC: {
             subheader: "Allgemeine Geschäftsbedingungen der {customerName}",
