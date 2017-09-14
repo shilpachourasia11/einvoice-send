@@ -174,20 +174,18 @@ export default class ServiceConfigFlowStart extends React.Component
         }
     }
 
-    getEinvoicState = () => {
-        if (this.props.inChannelConfig && this.props.inChannelConfig.EInvoiceChannelConfig) {
-            return this.props.inChannelConfig.EInvoiceChannelConfig.intention ? "einvoiceRequested" : "einvoiceRejected";
+    getConfigurationState = (type) => {
+        let objNameMapping = {
+            einvoice: "EInvoiceChannelConfig",
+            pdf: "PdfChannelConfig",
+            supplier: "SupplierPortalConfig",
+            paper: "PaperChannelConfig"
         }
-        else {
-            return "undefined";
-        }
-    }
-
-    getPdfState = () => {
-        let pdfConfig = this.props.inChannelConfig && this.props.inChannelConfig.PdfChannelConfig;
+        let objName = objNameMapping[type];
+        let xConfig = this.props.inChannelConfig && this.props.inChannelConfig[objName];
         let status = this.props.inChannelConfig && this.props.inChannelConfig.status;
-        if (pdfConfig) {
-            if (this.props.inChannelConfig.inputType === 'pdf') {
+        if (xConfig) {
+            if (this.props.inChannelConfig.inputType === type) {
                 return status;
             }
             else {
@@ -200,6 +198,17 @@ export default class ServiceConfigFlowStart extends React.Component
         }
     }
 
+    renderState(type) {
+        let state = this.getConfigurationState(type);
+        if (state && state != "undefined") {
+            let color = (state == 'activated') ? "green" : "red";
+            return (
+                <div style={{ paddingTop: '10px', color:color}}>
+                    {this.context.i18n.getMessage('ServiceConfigFlowStart.statuses.' + state)}
+                </div>
+            )
+        }
+    }
 
     render()
     {
@@ -228,11 +237,7 @@ export default class ServiceConfigFlowStart extends React.Component
                                     {this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoice')}
                                     <BillingDetails inputType="eInvoice" voucher={this.props.voucher} />
                                 </h4>
-                                {this.getEinvoicState() == 'undefined' ||
-                                    <div style={{ paddingTop: '10px'}}>
-                                        {(this.context.i18n.getMessage('ServiceConfigFlowStart.statuses.' + this.getEinvoicState()))}
-                                    </div>
-                                }
+                                {this.renderState("einvoice")}
                             </div>
                             <div className="panel-body">
                                 {this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoiceDesc')}
@@ -256,11 +261,7 @@ export default class ServiceConfigFlowStart extends React.Component
                                 <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.pdf')}
                                     <BillingDetails inputType="pdf" voucher={this.props.voucher} />
                                 </h4>
-                                {this.getPdfState() == 'undefined' ||
-                                    <div style={{ paddingTop: '10px', color:"green"}}>
-                                        {(this.context.i18n.getMessage('ServiceConfigFlowStart.statuses.' + this.getPdfState()))}
-                                    </div>
-                                }
+                                {this.renderState("pdf")}
                             </div>
                             <div className="panel-body">
                                 {this.context.i18n.getMessage('ServiceConfigFlowStart.pdfDesc')}
@@ -284,6 +285,7 @@ export default class ServiceConfigFlowStart extends React.Component
                                 <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.supplierPortal')}
                                     <BillingDetails inputType="supplierPortal" voucher={this.props.voucher} />
                                 </h4>
+                                {this.renderState("supplier")}
                             </div>
                             <div className="panel-body">
                                 {this.context.i18n.getMessage('ServiceConfigFlowStart.supplierPortalDesc')}
@@ -307,6 +309,7 @@ export default class ServiceConfigFlowStart extends React.Component
                                 <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.paper')}
                                     <BillingDetails inputType="paper" voucher={this.props.voucher} />
                                 </h4>
+                                {this.renderState("paper")}
                             </div>
                             <div className="panel-body">
                                 {this.context.i18n.getMessage('ServiceConfigFlowStart.paperDesc')}
