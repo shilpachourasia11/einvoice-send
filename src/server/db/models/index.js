@@ -15,11 +15,5 @@ module.exports.init = function(db, config)
 {
     return Promise.all([
         require('./inChannelConfig.js').init(db, config),
-        // require('./pdfChannelConfig.js').init(db, config),
-        // require('./paperChannelConfig.js').init(db, config),
-        // require('./eInvoiceChannelConfig.js').init(db, config),
-        // require('./supplierPortalConfig.js').init(db, config),
-        // require('./voucher.js').init(db, config),
-        // require('./inChannelContract.js').init(db, config)
     ]);
 }
