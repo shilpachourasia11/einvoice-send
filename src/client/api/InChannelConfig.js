@@ -20,8 +20,8 @@ module.exports.getNextStatus = (oldStatus, actionStatus) => {
 module.exports.types = {
     paper         : "paper",
     pdf           : "pdf",
-    eInvoice      : "eInvoice",
-    supplierPortal: "supplierPortal"
+    eInvoice      : "einvoice",
+    supplierPortal: "supplier"
 }
 
 
