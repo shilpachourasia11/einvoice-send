@@ -49,12 +49,6 @@ module.exports.up = function(db, config)
     );
 
 
-
-
-
-
-
-
     return Promise.all([one, two, three, four]).then(() => {
       const all = db.models.InChannelConfig.findAll().map(config => {
         switch (config.inputType) {
@@ -84,8 +78,6 @@ module.exports.up = function(db, config)
       return Promise.all(all);
     }
   );
-
-
 }
 
 module.exports.down = function(db, config)
