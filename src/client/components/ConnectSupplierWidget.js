@@ -29,7 +29,6 @@ export default class ConnectSupplierWidget extends Component
 
   componentDidMount()
   {
-    this.context.i18n.register('CSWTranslations', i18n);
     const { actionUrl, customerId } = this.props;
     request.get(`${actionUrl}/einvoice-send/api/config/inchannelcontracts/c_${customerId}`).
       set('Content-Type', 'application/json').
@@ -38,6 +37,11 @@ export default class ConnectSupplierWidget extends Component
         return Promise.resolve(null);
       }).
       catch(error => Promise.resolve(null));
+  }
+
+  componentWillReceiveProps()
+  {
+    this.context.i18n.register('CSWTranslations', i18n);
   }
 
   getData()
@@ -68,7 +72,7 @@ export default class ConnectSupplierWidget extends Component
         <Legend />
         <XAxis label="Dates" dataKey="date" padding={{left: 20, right: 20}}/>
         <YAxis padding={{top: 20}}/>
-        <Line type="stepAfter" dataKey={i18n.getMessage('CSWTranslations.supplierCount')} stroke="#5E9CD3" />
+        <Line type="stepAfter" dataKey='supplier count' name={i18n.getMessage('CSWTranslations.supplierCount')} stroke="#5E9CD3" />
       </LineChart>
     )
   }
