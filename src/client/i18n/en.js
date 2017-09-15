@@ -39,7 +39,8 @@ export default {
         statuses: {
             undefined: "Is not configured.",
             new: "Was selected, but configuration is pending.",
-            approved: "Is configured, but no activated.",
+            approved: "Is configured, but not activated.",
+            configured: "Is configured",
             activated: "Is activated.",
             notActivated: "Is not activated.",
 
@@ -61,7 +62,10 @@ export default {
             OCTaC: {
                 text: "You want to send E-Invoices to {customerName} through a third party Operator?"
             },
-            CustomerTaC: {
+            step2: {
+                subheader: "Guidelines fro eInvoicing of {customerName}",
+                subsubheader: "Please check the guidelines below and confirm your acceptance at the end of this page.",
+                readTaC: "I have read and understood {customerName} guildlines of the einvoicing.",
                 text1: "{customerName} has selected OpusCapita Software AG as Service Provider for incoming Purchase Invoices. OpusCapita will take care of contacting suppliers, implementation of the service as well as monitoring that invoices are transmitted correctly between suppliers and different entities of {customerName}. Registration for the service will happen on the Business Network Portal.",
                 text2: "Please download and check the einvoicing guide: ",
                 text3: "This document includes all necessary information on how to send E-invoices. Please find details what E-invoicing channels are supported and contact details, as well as guide how to get started.",

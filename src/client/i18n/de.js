@@ -40,6 +40,7 @@ export default {
             undefined: "Ist nicht konfiguriert.",
             new: "Wurde ausgewählt, aber die Konfiguration steht noch aus.",
             approved: "Wurde konfiguriert, aber noch nicht aktiviert.",
+            configured: "Ist konfiguriert",
             activated: "Ist aktiviert.",
             notActivated: "Ist nicht aktiviert.",
 
@@ -61,7 +62,10 @@ export default {
             OCTaC: {
                 text: "Sie möchten elektronische Rechnungen an {customerName} über einen anderen Anbieter schicken?"
             },
-            CustomerTaC: {
+            step2: {
+                subheader: "Richtlinien zur eInvoice-Anbindung der {customerName}",
+                subsubheader: "Bitte prüfen Sie Richtlinien zur eInvoice-Anbindung und bestätigen diese unten auf der Seite.",
+                accpeted: "Ich habe die Richtlinen der {customerName} gelesen und akzeptiert.",
                 // TODO: Take translation from pdf as soon as it is available!
                 text1: "{customerName} has selected OpusCapita Software AG as Service Provider for incoming Purchase Invoices. OpusCapita will take care of contacting suppliers, implementation of the service as well as monitoring that invoices are transmitted correctly between suppliers and different entities of {customerName}. Registration for the service will happen on the Business Network Portal.",
                 text2: "Please download and check the einvoicing guide: ",

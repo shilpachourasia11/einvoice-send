@@ -61,28 +61,28 @@ export default class ServiceConfigFlow2 extends React.Component {
 
         return (
             <div>
-                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.subheader', {customerName:this.props.voucher.customerName})}</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.subheader', {customerName:this.props.voucher.customerName})}</h3>
                 <div>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.subsubheader')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.subsubheader')}
                 </div>
 
                 <hr/>
 
                 <div className="bs-callout bs-callout-info">
                     <p>
-                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.CustomerTaC.text1',
+                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.text1',
                             {customerName : customerName, customerId : customerId})}
                     </p>
                     <p>
-                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.CustomerTaC.text2',
+                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.text2',
                             {customerName : customerName, customerId : customerId})}
-                        <a href={pdfUrl} className="btn btn-info">
+                        <a href={pdfUrl} className="btn btn-info" target="_blank">
                             <span className="glyphicon glyphicon-file"></span>
                         </a>
                      </p>
 
                     <p>
-                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.CustomerTaC.text3',
+                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.text3',
                             {customerName : customerName, customerId : customerId})}
                     </p>
                 </div>
@@ -93,7 +93,7 @@ export default class ServiceConfigFlow2 extends React.Component {
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            {this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.readTaC', {customerName: customerName})}
+                            {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.accpeted', {customerName: customerName})}
                         </a>
                     </label>
                 </div>

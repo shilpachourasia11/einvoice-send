@@ -202,7 +202,7 @@ export default class ServiceConfigFlowStart extends React.Component
     renderState(type) {
         let state = this.getConfigurationState(type);
         if (state && state != "undefined") {
-            let color = (state == 'activated') ? "green" : "red";
+            let color = (state == 'activated' || state == 'configured') ? "green" : "red";
             return (
                 <div style={{ paddingTop: '10px', color:color}}>
                     {this.context.i18n.getMessage('ServiceConfigFlowStart.statuses.' + state)}

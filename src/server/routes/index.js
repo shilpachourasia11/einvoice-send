@@ -202,11 +202,12 @@ module.exports.approveInChannelConfig = function(req, res) {
         Api.inChannelConfigExists(supplierId)
         .then(exists => {
             if(exists) {
-                var obj = {
-                    supplierId : supplierId,
-                    changedBy : req.opuscapita.userData('id'),
-                    status : 'activated'   // 'preparation'
-                };
+                var obj = req.body || { }
+                obj.supplierId = supplierId;
+                obj.changedBy = req.opuscapita.userData('id');
+                if (!obj.hasOwnProperty("status")) {
+                    obj.status = 'activated';
+                }
                 return Api.updateInChannelConfig(supplierId, obj, true)
                 .then(config => {
                     return this.events.emit(config, 'inChannelConfig.updated');

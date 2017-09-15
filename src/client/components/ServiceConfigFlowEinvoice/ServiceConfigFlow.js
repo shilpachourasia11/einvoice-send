@@ -97,8 +97,9 @@ export default class ServiceConfigFlow extends React.Component
 
 
     finalApprove = () => {
-        InChannelConfig.approve(this.props.voucher.supplierId)
-        // ??? InChannelContract.approve() ???
+        InChannelConfig.activate(this.props.voucher.supplierId, {
+            status: InChannelConfig.status.configured
+        })
         .then(() => {
             this.props.finalizeFlow();
         })
@@ -116,7 +117,7 @@ export default class ServiceConfigFlow extends React.Component
         InChannelConfig.update(
             this.props.voucher.supplierId,
             {
-                'status': InChannelConfig.getNextStatus(this.props.inChannelConfig && this.props.inChannelConfig.status, InChannelConfig.status.approved)
+                status: InChannelConfig.getNextStatus(this.props.inChannelConfig && this.props.inChannelConfig.status, InChannelConfig.status.approved)
             })
         .then(() => this.setCurrentTab(tabNo));
     }

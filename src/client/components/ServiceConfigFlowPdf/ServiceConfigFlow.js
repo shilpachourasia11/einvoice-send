@@ -96,7 +96,7 @@ export default class ServiceConfigFlow extends React.Component
 
 
     finalApprove = () => {
-        InChannelConfig.approve(this.props.voucher.supplierId)
+        InChannelConfig.activate(this.props.voucher.supplierId)
         .then(() => {
             this.props.finalizeFlow();
         })
