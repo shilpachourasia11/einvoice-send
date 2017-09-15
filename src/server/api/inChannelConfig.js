@@ -58,14 +58,18 @@ module.exports.getInChannelConfig = function(supplierId)
             return Promise.all([
                 this.db.models.PdfChannelConfig.findById(supplierId),
                 this.db.models.EInvoiceChannelConfig.findById(supplierId),
+                this.db.models.SupplierPortalConfig.findById(supplierId),
                 this.getModelFromInputType(basicConfig.inputType).findById(supplierId)  // TODO: kept the attic approach to keep the interface structure - to be cleansed!
             ])
-            .spread((pdfConfig, einvoiceConfig, extendedConfig) => {
+            .spread((pdfConfig, einvoiceConfig, supplierConfig, extendedConfig) => {
                 if (pdfConfig) {
                     basicConfig.dataValues.PdfChannelConfig = pdfConfig;
                 }
                 if (einvoiceConfig) {
                     basicConfig.dataValues.EInvoiceChannelConfig = einvoiceConfig;
+                }
+                if (supplierConfig){
+                  basicConfig.dataValues.SupplierPortalConfig = supplierConfig;
                 }
 
                 // TODO: kept the attic approach to keep the interface structure - to be cleansed!
@@ -160,7 +164,7 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
     // Remove fields we do not want to be set from outside.
     [ 'type', 'createdOn', 'changedOn', 'createdBy' ].forEach(key => delete basicConfig[key]);
     // Copy required values to the extendedConfig as it is a plain object.
-    [ 'changedBy', 'rejectionEmail', 'intention', 'status' ].forEach(key => {if(key in basicConfig){extendedConfig[key] = basicConfig[key]}});
+    [ 'changedBy', 'rejectionEmail', 'intention', 'status' ].forEach(key => {if(basicConfig.hasOwnProperty(key)){extendedConfig[key] = basicConfig[key]}});
 
     // Override supplierId making sure it's the same on both.
     basicConfig.supplierId = supplierId;
