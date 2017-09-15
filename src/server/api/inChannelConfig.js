@@ -146,7 +146,7 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
     // Remove fields we do not want to be set from outside.
     [ 'type', 'createdOn', 'changedOn', 'createdBy' ].forEach(key => delete basicConfig[key]);
     // Copy required values to the extendedConfig as it is a plain object.
-    [ 'changedBy','rejectionEmail','intention' ].forEach(key => extendedConfig[key] = basicConfig[key]);
+    [ 'changedBy', 'rejectionEmail', 'intention', 'status' ].forEach(key => {if(basicConfig.hasOwnProperty(key)){extendedConfig[key] = basicConfig[key]}});
 
     // Override supplierId making sure it's the same on both.
     basicConfig.supplierId = supplierId;
