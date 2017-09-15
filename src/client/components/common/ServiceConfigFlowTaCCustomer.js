@@ -12,7 +12,9 @@ export default class ServiceConfigFlow2 extends React.Component {
         customerTermsAndConditions : React.PropTypes.string,
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired,
-        voucher: React.PropTypes.object
+        voucher: React.PropTypes.object,
+        inChannelConfig: React.PropTypes.ojbect,
+        targetType: React.PropTypes.string
     };
 
     static defaultProps = {
@@ -32,7 +34,7 @@ export default class ServiceConfigFlow2 extends React.Component {
 
     static contextTypes = {
         i18n : React.PropTypes.object.isRequired,
-        locale : React.PropTypes.string
+        locale : React.PropTypes.string,
     };
 
 
@@ -46,9 +48,12 @@ export default class ServiceConfigFlow2 extends React.Component {
             .set('Content-Type', 'application/json')
             .promise()
         .then ((contract) => {
-            this.setState({
-                accepted : (contract && contract.body && contract.body.status == 'approved')
-            });
+            let targetType = this.props.targetType ? this.props.targetType : this.props.inChannelConfig.inputType;
+            if (contract && contract.body && contract.body.inputType == targetType) {
+                this.setState({
+                    accepted : (contract.body.status == 'approved')
+                });
+            }
         })
         .catch((e) => {
             console.log("Error determined when fetching InChannelContract for c_" + this.props.voucher.customerId + " and s_" + this.props.voucher.supplierId + ": ", e);
@@ -60,6 +65,9 @@ export default class ServiceConfigFlow2 extends React.Component {
         this.getCustomerTermsAndConditions(locale)
         .then ((newTermsAndConditions) => {
             this.setState({ customerTermsAndConditions: newTermsAndConditions.text })
+        })
+        .catch((e) => {
+            console.log("Error determined when fetching customer T&C for c_" + this.props.voucher.customerId + ": ", e);
         })
     }
 

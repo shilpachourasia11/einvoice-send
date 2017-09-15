@@ -16,8 +16,6 @@ module.exports.init = function(db)
  * - einvoice -> EInvoiceChannelConfig
  * - portal -> SupplierPortalConfig
  *
- * TODO: What about "paper"? Extra type (schema) or via PDFChannelConfig?
- *
  * @param  {[type]} inputType [description]
  * @return {Object}           The fitting model or an error
  */
@@ -125,18 +123,10 @@ module.exports.addInChannelConfig = function(config, returnConfig)
     // Remove nested settings object.
     delete basicConfig.settings;
 
-    // TODO: As long as eInvoice is only an intention, we are not allowed to store the inputType for "einvoice"
-    /*
-    if (basicConfig.inputType == 'einvoice') {
-        delete basicConfig.intputType;
-        delete basicConfig.status;
-    }
-    */
-
     // Remove fields we do not want to be set from outside.
     [ 'createdOn', 'changedOn', 'changedBy' ].forEach(key => delete basicConfig[key]);
     // Copy required values to the extendedConfig as it is a plain object.
-    [ 'supplierId', 'createdBy', 'rejectionEmail', 'intention', 'status' ].forEach(key => extendedConfig[key] = basicConfig[key]);
+    [ 'supplierId', 'createdBy' ].forEach(key => extendedConfig[key] = basicConfig[key]);
 
     // Try to create a new basic config before adding the extended one.
     return this.db.models.InChannelConfig.create(basicConfig).then(() =>
@@ -156,7 +146,7 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
     // Remove fields we do not want to be set from outside.
     [ 'type', 'createdOn', 'changedOn', 'createdBy' ].forEach(key => delete basicConfig[key]);
     // Copy required values to the extendedConfig as it is a plain object.
-    [ 'changedBy', 'rejectionEmail', 'intention', 'status' ].forEach(key => extendedConfig[key] = basicConfig[key]);
+    [ 'changedBy','rejectionEmail','intention' ].forEach(key => extendedConfig[key] = basicConfig[key]);
 
     // Override supplierId making sure it's the same on both.
     basicConfig.supplierId = supplierId;
@@ -170,14 +160,6 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
         {
             let oldInputType = existingbasicConfig.inputType;
             let newInputType = basicConfig.inputType || oldInputType;
-
-            // TODO: As long as eInvoice is only an intention, we are not allowed to store the inputType for "einvoice"
-            /*
-            if (newInputType == 'einvoice') {
-                basicConfig.inputType = oldInputType;
-                basicConfig.status = existingbasicConfig.status;
-            }
-            */
 
             // Set the createdBy field as we do not accept it to be set from outside on updates.
             extendedConfig.createdBy = existingbasicConfig.createdBy;

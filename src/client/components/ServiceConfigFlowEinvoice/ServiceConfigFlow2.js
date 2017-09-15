@@ -33,12 +33,32 @@ export default class ServiceConfigFlow2 extends React.Component {
 
 
     componentWillMount() {
+        this.loadInChannelContract();
+    }
 
+    loadInChannelContract() {
+        ajax.get('/einvoice-send/api/config/inchannelcontracts/c_' + this.props.voucher.customerId + '/s_' + this.props.voucher.supplierId)
+            .set('Content-Type', 'application/json')
+        .then ((contract) => {
+            if (contract && contract.body && contract.body.inputType == 'einvoice') {
+                this.setState({
+                    accepted : (contract.body.status == 'approved')
+                });
+            }
+        })
+        .catch((e) => {
+            console.log("Error determined when fetching InChannelContract for c_" + this.props.voucher.customerId + " and s_" + this.props.voucher.supplierId + ": ", e);
+        });
     }
 
 
     render()
     {
+        const customerId = this.props.voucher.customerId;
+        const customerName = this.props.voucher.customerName;
+        const localeExt = (!this.context.locale || this.context.locale == 'en') ? "" : ("_" + this.context.locale);
+        const pdfUrl = "/blob/public/api/c_" + customerId + "/files/public/einvoice-send/SupplierEInvoicingGuide" + localeExt + ".pdf";
+
         return (
             <div>
                 <h3>{this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.subheader', {customerName:this.props.voucher.customerName})}</h3>
@@ -51,33 +71,29 @@ export default class ServiceConfigFlow2 extends React.Component {
                 <div className="bs-callout bs-callout-info">
                     <p>
                         {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.CustomerTaC.text1',
-                            {customerName : this.props.voucher.customerName, customerId : this.props.voucher.customerId})}
+                            {customerName : customerName, customerId : customerId})}
                     </p>
                     <p>
                         {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.CustomerTaC.text2',
-                            {customerName : this.props.voucher.customerName, customerId : this.props.voucher.customerId})}
-                        {/* TODO: Replace link with correct one as soon as uploaded on the blob server.*/}
-                        <a href="/blob/public/api/c_dekabank/files/public/einvoice-send/eInvoicnigGuide.pdf" className="btn btn-info">
-                            <span className="glyphicon glyphicon-file"></span>
-                        </a>
-                        <a href="/blob/public/api/opuscapita/files/public/docs/SupplierManual.pdf" className="btn btn-info">
+                            {customerName : customerName, customerId : customerId})}
+                        <a href={pdfUrl} className="btn btn-info">
                             <span className="glyphicon glyphicon-file"></span>
                         </a>
                      </p>
 
                     <p>
                         {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.CustomerTaC.text3',
-                            {customerName : this.props.voucher.customerName, customerId : this.props.voucher.customerId})}
+                            {customerName : customerName, customerId : customerId})}
                     </p>
                 </div>
 
                 <hr/>
 
-                <div className="col-md-6">
+                <div>
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            {this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.readTaC', {customerName:this.props.voucher.customerName})}
+                            {this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.readTaC', {customerName: customerName})}
                         </a>
                     </label>
                 </div>

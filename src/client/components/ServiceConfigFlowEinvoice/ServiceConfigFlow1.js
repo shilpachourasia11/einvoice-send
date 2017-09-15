@@ -32,19 +32,6 @@ export default class ServiceConfigFlow1 extends React.Component {
     };
 
 
-    componentWillMount() {
-/*
-        if (this.props.inChannelConfig && this.props.inChannelConfig.PdfChannelConfig)
-        this.setState({
-            accepted : this.props.inChannelConfig.status == 'new' ? false : true,
-            email: this.props.inChannelConfig.PdfChannelConfig.rejectionEmail,
-            rejection: this.props.inChannelConfig.PdfChannelConfig.rejectionEmail ? true : false,
-            validat:'success'
-        });
-*/
-    }
-
-
     render()
     {
         return (

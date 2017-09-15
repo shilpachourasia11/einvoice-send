@@ -41,6 +41,7 @@ export default class ServiceConfigFlowStart extends React.Component
 
     static contextTypes = {
         i18n : React.PropTypes.object.isRequired,
+        inChannelConfig : React.PropTypes.object
     };
 
 
@@ -52,7 +53,7 @@ export default class ServiceConfigFlowStart extends React.Component
         this.preValidation();
     }
 
-    // TODO: Any chanes in the prevalidation for "einvoice"???
+    // TODO: Any type dependent prevalidation needed?
     preValidation = () => {
         // Should be done based on customer definitions, but so far we do not have a structure for this purpose.
 
