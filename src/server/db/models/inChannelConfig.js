@@ -218,6 +218,10 @@ module.exports.init = function(db, config)
             type : DataTypes.DATE(),
             allowNull : true
         },
+        intention : {
+            type:DataTypes.BOOLEAN,
+            allowNull:true
+        },
         status: {
             type:DataTypes.STRING(100),
             allowNull:false,
@@ -348,54 +352,54 @@ module.exports.init = function(db, config)
 
     PdfChannelConfig.belongsTo(
         InChannelConfig, {
-            targetKey: "supplierId", 
+            targetKey: "supplierId",
             foreignKey: "supplierId"
         }
     );
     PaperChannelConfig.belongsTo(
         InChannelConfig, {
-            targetKey: "supplierId", 
+            targetKey: "supplierId",
             foreignKey: "supplierId"
         }
     );
     EInvoiceChannelConfig.belongsTo(
         InChannelConfig, {
-            targetKey: "supplierId", 
+            targetKey: "supplierId",
             foreignKey: "supplierId"
         }
     );
     SupplierPortalConfig.belongsTo(
         InChannelConfig, {
-            targetKey: "supplierId", 
+            targetKey: "supplierId",
             foreignKey: "supplierId"
         }
     );
 
     InChannelConfig.hasOne(
         PdfChannelConfig, {
-            targetKey: "supplierId", 
+            targetKey: "supplierId",
             foreignKey: "supplierId"
         }
     );
     InChannelConfig.hasOne(
         PaperChannelConfig, {
-            targetKey: "supplierId", 
+            targetKey: "supplierId",
             foreignKey: "supplierId"
         }
     );
     InChannelConfig.hasOne(
         EInvoiceChannelConfig, {
-            targetKey: "supplierId", 
+            targetKey: "supplierId",
             foreignKey: "supplierId"
         }
     );
     InChannelConfig.hasOne(
         SupplierPortalConfig, {
-            targetKey: "supplierId", 
+            targetKey: "supplierId",
             foreignKey: "supplierId"
         }
     );
-    
+
 
 
 

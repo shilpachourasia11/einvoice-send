@@ -131,6 +131,12 @@ module.exports.addInChannelConfig = function(config, returnConfig)
         delete basicConfig.status;
     }
 
+    // TODO: As long as Portal is only an intention, we are not allowed to store the inputType for "portal" #copy of einvoice#
+    if (basicConfig.inputType == 'portal') {
+        delete basicConfig.intputType;
+        delete basicConfig.status;
+    }
+
     // Remove fields we do not want to be set from outside.
     [ 'createdOn', 'changedOn', 'changedBy' ].forEach(key => delete basicConfig[key]);
     // Copy required values to the extendedConfig as it is a plain object.
@@ -171,6 +177,12 @@ module.exports.updateInChannelConfig = function(supplierId, config, returnConfig
 
             // TODO: As long as eInvoice is only an intention, we are not allowed to store the inputType for "einvoice"
             if (newInputType == 'einvoice') {
+                basicConfig.inputType = oldInputType;
+                basicConfig.status = existingbasicConfig.status;
+            }
+
+            // TODO: As long as Portal is only an intention, we are not allowed to store the inputType for "portal" #copy of einvoice#
+            if (newInputType == 'portal') {
                 basicConfig.inputType = oldInputType;
                 basicConfig.status = existingbasicConfig.status;
             }

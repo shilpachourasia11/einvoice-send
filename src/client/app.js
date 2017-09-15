@@ -7,6 +7,7 @@ import ServiceConfigFlowStart      from './components/ServiceConfigFlowStart.js'
 import ServiceConfigFlowFramePdf   from './components/ServiceConfigFlowPdf/ServiceConfigFlow.js'
 import ServiceConfigFlowFramePaper from './components/ServiceConfigFlowPaper/ServiceConfigFlow.js'
 import ServiceConfigFlowEInvoice   from './components/ServiceConfigFlowEinvoice/ServiceConfigFlow.js'
+import ServiceConfigFlowPortal   from './components/ServiceConfigFlowPortal/ServiceConfigFlow.js'
 import Layout from './layout.js';
 
 
@@ -96,7 +97,7 @@ export default class App extends React.Component
             // Convention for now: Use boolen to enable or disable the different input types:
             voucher.eInvoiceEnabled = true; // !!! only for the supplier to confirm their intention
             voucher.pdfEnabled = true;
-            voucher.supplierPortalEnabled = false; // !!! no flow ui available up to now
+            voucher.supplierPortalEnabled = true;
             voucher.paperEnabled = false;
 
             return this.getCustomer(voucher.customerId)
@@ -193,6 +194,25 @@ export default class App extends React.Component
         this.history.push("/");
     }
 
+    updatePortalAndGotoStart = (intention = null) => {
+        if (intention != null) {
+            let config = this.state.inChannelConfig;
+            if (config) {
+                if (!config.SupplierPortalConfig) {
+                    config.SupplierPortalConfig = {};
+                }
+                config.SupplierPortalConfig.intention = intention;
+                this.setState({
+                    inChannelConfig: config
+                });
+            }
+            else {
+                this.loadInChannelConfig();
+            }
+        }
+        this.history.push("/");
+    }
+
     finalizeFlow = () => {
         window.location.href = "/bnp/dashboard";
     }
@@ -235,6 +255,7 @@ export default class App extends React.Component
 
                     <Route path="/einvoice" component={ () => (<ServiceConfigFlowEInvoice currentTab={1} gotoStart={this.updateEinvoiceAndGotoStart} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher}  inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
+                    <Route path="/portal" component={ () => (<ServiceConfigFlowPortal currentTab={1} gotoStart={this.updatePortalAndGotoStart} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher}  inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
                 </Route>
             </Router>
         );

@@ -180,6 +180,15 @@ export default class ServiceConfigFlowStart extends React.Component
         }
     }
 
+    getPortalState = () => {
+        if (this.props.inChannelConfig && this.props.inChannelConfig.SupplierPortalConfig) {
+            return this.props.inChannelConfig.SupplierPortalConfig.intention ? "portalRequested" : "portalRejected";
+        }
+        else {
+            return "undefined";
+        }
+    }
+
     getPdfState = () => {
         let pdfConfig = this.props.inChannelConfig && this.props.inChannelConfig.PdfChannelConfig;
         let status = this.props.inChannelConfig && this.props.inChannelConfig.status;
@@ -271,16 +280,21 @@ export default class ServiceConfigFlowStart extends React.Component
                             <Radio
                                 disabled={!this.props.voucher.supplierPortalEnabled}
                                 onChange={ this.onInvoiceSendingTypeChanged }
-                                checked={ this.state.invoiceSendingType === 'supplier' }
-                                value="supplier"/>
+                                checked={ this.state.invoiceSendingType === 'portal' }
+                                value="portal"/>
                         </label>
                     </div>
                     <div className="col-md-11">
                         <div className={"panel panel-default " + (this.props.voucher.supplierPortalEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
                                 <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.supplierPortal')}
-                                    <BillingDetails inputType="supplierPortal" voucher={this.props.voucher} />
+                                    <BillingDetails inputType="portal" voucher={this.props.voucher} />
                                 </h4>
+                                {this.getPortalState() == 'undefined' ||
+                                    <div style={{ paddingTop: '10px'}}>
+                                        {(this.context.i18n.getMessage('ServiceConfigFlowStart.statuses.' + this.getPortalState()))}
+                                    </div>
+                                }
                             </div>
                             <div className="panel-body">
                                 {this.context.i18n.getMessage('ServiceConfigFlowStart.supplierPortalDesc')}

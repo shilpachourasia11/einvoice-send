@@ -43,6 +43,9 @@ export default {
             activated: "Ist aktiviert.",
             notActivated: "Ist nicht aktiviert.",
 
+            portalRequested: "D! Sie wünschen eine Supplier Portal-Anbindung.",
+            portalRejected: "D! Sie wünschen keine Supplier Portal-Anbindung.",
+
             einvoiceRequested: "Sie wünschen eine eInvoice-Anbindung.",
             einvoiceRejected: "Sie wünschen keine eInvoice-Anbindung.",
             stated: "Ihre Wunsch ist hinterlegt."
@@ -60,6 +63,13 @@ export default {
             intro2: " Sobald eine Anbindung möglich ist, werden wir uns mit Ihnen in Verbindung setzen, sofern Sie dies wünschen und unten bestätigen.",
             einvoiceWanted: "Ja, wir wünschen eine eInvoice-Anbindung",
             einvoiceNotWanted: "Wir unterstützen kein eInvoice",
+            currentStatus: "Ihr aktueller Status: "
+        },
+        Portal:{
+            intro1: "D! Hier werden wir Ihnen die Konfiguration der Supplier Portal-Anbindung per Webservice anbieten. Leider ist diese noch nicht verfügbar.",
+            intro2: "Sobald eine Anbindung möglich ist, werden wir uns mit Ihnen in Verbindung setzen, sofern Sie dies wünschen und unten bestätigen.",
+            einvoiceWanted: "D! Ja, wir wünschen eine Supplier Portal-Anbindung",
+            einvoiceNotWanted: "D! Wir unterstützen kein Supplier Portal",
             currentStatus: "Ihr aktueller Status: "
         },
         Pdf:{

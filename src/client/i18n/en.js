@@ -43,6 +43,9 @@ export default {
             activated: "Is activated.",
             notActivated: "Is not activated.",
 
+            portalRequested: "You want to have an Supplier Portal integration.",
+            portalRejected: "You don't want an Supplier Portal integration.",
+
             einvoiceRequested: "You want to have an eInvoice integration.",
             einvoiceRejected: "You don't want an eInvoice integration.",
             stated: "Your intention is stated."
@@ -60,6 +63,13 @@ export default {
             intro2: "If you want to provide invoices via web service, please confirm this intention below.",
             einvoiceWanted:"Yes, we want to use eInvoice",
             einvoiceNotWanted:"No, we do not support eInvoice",
+            currentStatus: "Your current state: "
+        },
+        Portal:{
+            intro1: "We are sorry that we cannot provide an Supplier Portal web integration right now, but it will be available soon.",
+            intro2: "!Change: If you want to provide invoices via web service, please confirm this intention below.",
+            portalWanted:"Yes, we want to use Supplier Portal",
+            portalNotWanted:"No, we do not support Supplier Portal",
             currentStatus: "Your current state: "
         },
         Pdf:{
