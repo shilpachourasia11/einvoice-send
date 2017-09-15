@@ -288,7 +288,7 @@ export default class ServiceConfigFlowStart extends React.Component
                         <div className={"panel panel-default " + (this.props.voucher.supplierPortalEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
                                 <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.supplierPortal')}
-                                    <BillingDetails inputType="portal" voucher={this.props.voucher} />
+                                    <BillingDetails inputType="supplierPortal" voucher={this.props.voucher} />
                                 </h4>
                                 {this.getPortalState() == 'undefined' ||
                                     <div style={{ paddingTop: '10px'}}>
