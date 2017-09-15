@@ -12,24 +12,18 @@ export default class ServiceConfigFlow3 extends React.Component {
 			const InvoiceEditorForm = serviceComponent({ 
 				serviceRegistry, 
 				serviceName: 'invoice',
-				moduleName:'invoice_form',
-				jsFileName: 'invoice_form-bundle'
+				moduleName:'invoice_editor',
+				jsFileName: 'invoice_editor-bundle',
+				componentPath:'SimpleInvoiceEditor'
 			});
 			this.externalComponents = { InvoiceEditorForm };
 		},
 		render() {
-			console.log('inside render funciton of inner react class');
-			console.log(this.externalComponents)
 			const { InvoiceEditorForm } = this.externalComponents;
-			console.log(InvoiceEditorForm)
 			return (
 				<div>
 					<div>
-						{
-							<InvoiceEditorForm
-
-							/>
-						}
+						<InvoiceEditorForm />
 					</div>
 				</div>
 			)

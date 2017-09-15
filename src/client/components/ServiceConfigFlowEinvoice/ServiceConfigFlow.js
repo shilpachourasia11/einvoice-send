@@ -138,7 +138,7 @@ class EInvoiceTabContent extends React.Component {
                     </Tab.Pane>
                     <Tab.Pane eventKey={2}>
                         <ServiceConfigFlow3
-                            gototStart = {this.props.forward} 
+                            gotoStart = {this.props.forward} 
                             onPrevious = { () => {this.props.setCurrentTab(1)} }
                         />
                     </Tab.Pane>
@@ -150,8 +150,8 @@ class EInvoiceTabContent extends React.Component {
                 <Tab.Content>
                     <Tab.Pane eventKey={1} disabled="disabled">
                         <ServiceConfigFlow1
-                            gotoStart={this.props.forward}
                             goNext={()=>{this.props.setCurrentTab(2)}}
+                            gotoStart={this.props.forward}
                             voucher = {this.props.voucher}/>
                     </Tab.Pane>
                     <Tab.Pane eventKey={2}>
