@@ -61,8 +61,6 @@ export default class ServiceConfigFlow1 extends React.Component {
                     <Button bsStyle="primary" onClick={ () => this.props.onNext() }>
                         {this.context.i18n.getMessage('accept')}
                     </Button>
-
-                    TODO: onNext should update: InChannelConfig.status = 'approved'
                 </div>
             </div>
         )

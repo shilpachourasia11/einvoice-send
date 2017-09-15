@@ -57,6 +57,9 @@ export default class ServiceConfigFlow2 extends React.Component {
                         {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.CustomerTaC.text2',
                             {customerName : this.props.voucher.customerName, customerId : this.props.voucher.customerId})}
                         {/* TODO: Replace link with correct one as soon as uploaded on the blob server.*/}
+                        <a href="/blob/public/api/c_dekabank/files/public/einvoice-send/eInvoicnigGuide.pdf" className="btn btn-info">
+                            <span className="glyphicon glyphicon-file"></span>
+                        </a>
                         <a href="/blob/public/api/opuscapita/files/public/docs/SupplierManual.pdf" className="btn btn-info">
                             <span className="glyphicon glyphicon-file"></span>
                         </a>

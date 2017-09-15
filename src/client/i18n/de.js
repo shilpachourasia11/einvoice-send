@@ -59,7 +59,7 @@ export default {
             name: "eInvoice",
             header: "eInvoice-Konfiguration",
             OCTaC: {
-                text: "Ich möchte elektronische Rechnungen an DekaBank über einen anderen Anbieter schicken."
+                text: "Sie möchten elektronische Rechnungen an {customerName} über einen anderen Anbieter schicken?"
             },
             CustomerTaC: {
                 // TODO: Take translation from pdf as soon as it is available!

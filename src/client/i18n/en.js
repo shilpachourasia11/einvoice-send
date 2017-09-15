@@ -59,7 +59,7 @@ export default {
             name: "eInvoice",
             header: "eInvoice Configuration",
             OCTaC: {
-                text: "I want to send E-Invoices to {customerName} through a third party Operator."
+                text: "You want to send E-Invoices to {customerName} through a third party Operator?"
             },
             CustomerTaC: {
                 text1: "{customerName} has selected OpusCapita Software AG as Service Provider for incoming Purchase Invoices. OpusCapita will take care of contacting suppliers, implementation of the service as well as monitoring that invoices are transmitted correctly between suppliers and different entities of {customerName}. Registration for the service will happen on the Business Network Portal.",
