@@ -1,32 +1,26 @@
 import React from 'react';
-import { Router, Route, IndexRoute, Link, hashHistory } from 'react-router'
+import { Router, Switch, Route, IndexRoute, Link, hashHistory } from 'react-router'
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
-import ServiceConfigFlowStart      from './components/ServiceConfigFlowStart.js'
+import Layout from './layout.js';
+import InChannelConfigStart from './components/InChannelConfigStart.js'
+
 import ServiceConfigFlowFramePdf   from './components/ServiceConfigFlowPdf/ServiceConfigFlow.js'
 import ServiceConfigFlowFramePaper from './components/ServiceConfigFlowPaper/ServiceConfigFlow.js'
 import ServiceConfigFlowEInvoice   from './components/ServiceConfigFlowEinvoice/ServiceConfigFlow.js'
-import Layout from './layout.js';
+
+import PdfMain from './components/InChannelConfig/Pdf/PdfMain.js'
 
 
 export default class App extends React.Component
 {
     static propTypes = {
-        user: React.PropTypes.object,
-        voucher: React.PropTypes.object,
-        customerTermsAndConditions: React.PropTypes.string
+        user: React.PropTypes.object
     };
 
     static defaultProps = {
         user : null,
-        voucher : {
-            eInvoiceEnabled : false,
-            pdfEnabled : false,
-            supplierPortalEnabled : false,
-            paperEnabled : false
-        },
-        customerTermsAndConditions : null
     };
 
     constructor(props)
@@ -36,20 +30,18 @@ export default class App extends React.Component
         this.history = null
 
         this.state = {
-            user : this.props.user,
-            voucher : this.props.voucher,
-            customerTermsAndConditions : this.props.customerTermsAndConditions
+            user : this.props.user
         }
     }
 
 
     componentWillMount() {
+/*
         this.loadUserData()
         .then((userData) => {
             this.setState({user : userData});
-            this.loadVoucher();
-            this.loadInChannelConfig();
         })
+*/
     }
 
     loadUserData() {
@@ -60,183 +52,163 @@ export default class App extends React.Component
         });
     }
 
-    // TOOD: Fetch language from context - not possible right now.
-    getLocale() {
-        return ajax.get('/auth/userdata')
-        .then(res => JSON.parse(res.text))
-        .then((userdata) => {
-            return userdata.languageid;
-        });
-    }
+/*
+                <Route exact path="/" component={InChannelConfig}/>
+*/
 
-    loadInChannelConfig() {
-        return ajax.get('/einvoice-send/api/config/inchannels/' + this.state.user.supplierId)
-            .set('Content-Type', 'application/json')
-            .promise()
-        .then ((config) => {
-            if (config) {
-                this.setState({inChannelConfig: config.body});
-            }
-        })
-        .catch((e) => {
-            console.log("Error determined when fetching InChannelConfig for supplier " + this.state.user.supplierId + ": ", e);
-        });
-    }
-
-
-    loadVoucher = () => {
-        let supplierId = this.state.user.supplierId;
-        this.getVoucher(supplierId)
-        .then((result) => {    // .spread((voucher, response) => {
-
-            let voucher = JSON.parse(result.text);
-            // console.log("Voucher found: ", voucher);
-
-            // How will evaluation of allowed input types and billings be determined???
-            // Convention for now: Use boolen to enable or disable the different input types:
-            voucher.eInvoiceEnabled = true; // !!! only for the supplier to confirm their intention
-            voucher.pdfEnabled = true;
-            voucher.supplierPortalEnabled = false; // !!! no flow ui available up to now
-            voucher.paperEnabled = false;
-
-            return this.getCustomer(voucher.customerId)
-            .then((customer) => {
-                voucher.customer = customer
-                voucher.customerName = (customer && customer.customerName) || voucher.customerId;
-            }).then(() => voucher);
-        })
-        .then((voucher) => {
-            this.setState({voucher : voucher});
-
-            return this.getLocale()
-            .then((locale) => {
-                if (!locale) {
-                    locale = "";
-                }
-                return ajax.get('/blob/public/api/c_' + voucher.customerId + '/files/public/einvoice-send/TermsAndConditions_' + locale + '.html')
-                .catch((e) => {
-                    return ajax.get('/blob/public/api/c_' + voucher.customerId +  '/files/public/einvoice-send/TermsAndConditions.html')
-                })
-            })
-            .then((response) => {
-                console.log("Terms and Conditions: Found for customer " + voucher.customerId + ": ", response);
-                this.setState({customerTermsAndConditions : response.text});
-            })
-            .catch((e) => {
-                console.log("Terms and Conditions: No customer specific terms and conditions found!")
-                return Promise.resolve();
-            })
-        })
-        .catch((e) => {
-            console.log("Error determined: ", e);
-
-            // Setting voucher defaults - all options disabled:
-            this.setState({
-                voucher : {
-                    eInvoiceEnabled : false,
-                    pdfEnabled : false,
-                    supplierPortalEnabled : false,
-                    paperEnabled : false
-                },
-                customerTermsAndConditions : null
-            });
-        })
-    }
-
-    getVoucher = (supplierId) => {
-        return ajax.get('/einvoice-send/api/config/vouchers/' + supplierId)
-            .set('Content-Type', 'application/json')
-            .promise();
-    }
-
-    getCustomer = (customerId) => {
-        return ajax.get('/einvoice-send/api/customers/' + customerId)
-        .then((result) => {
-            return JSON.parse(result.text);
-        })
-        .catch((e) =>  {
-            console.log("Error - Did not receive details about customer with Id: " + customerId + " - error: ", e);
-            return new Promise.resolve(null);
-        });
-    }
-
-
-    ///////////////////////////////////////////
-    // Events
-    ///////////////////////////////////////////
-
-    navigate2Flow = (inputType) => {
-        this.history.push("/" + inputType);
-    }
-
-    navigate2Start = () => {
-        this.loadInChannelConfig();
-        this.history.push("/");
-    }
-
-    updateEinvoiceAndGotoStart = (intention = null) => {
-        if (intention != null) {
-            let config = this.state.inChannelConfig;
-            if (config) {
-                if (!config.EInvoiceChannelConfig) {
-                    config.EInvoiceChannelConfig = {};
-                }
-                config.EInvoiceChannelConfig.intention = intention;
-                this.setState({
-                    inChannelConfig: config
-                });
-            }
-            else {
-                this.loadInChannelConfig();
-            }
-        }
-        this.history.push("/");
-    }
-
-    finalizeFlow = () => {
+    navigate2Home = () => {
         window.location.href = "/bnp/dashboard";
     }
+    navigate2IccStart = () => {
+        this.history.push("/icc");
+    }
+    navigate2Flow = (inputType) => {
+        this.history.push("/icc/" + inputType);
+    }
+
 
     render()
     {
-        if (!this.state.user) {
-            return null;
-        }
+        const Address = () => <h1>Hello from Test!</h1>
+        const NotFound = () => <h1>Nothing found for this path!</h1>
+        const ca = () => <h1>Component ca</h1>
+        const cb = () => <h1>Component cb</h1>
+        const aa = () => <h1>Component ca</h1>
 
         return (
+          <div>
+            <h1> Hi Norbert </h1>
+
             <Router history={ hashHistory } ref={el => {
                 this.history = el && el.props && el.props.history;
             }}>
+
                 <Route component={ Layout }>
                     <Route path="/" component={ () => {
                         return (
-                            <ServiceConfigFlowStart
+                            <div>
+                                <h1>Test</h1>
+                            </div>
+                        )
+                    }}/>
+
+
+                    <Route path="/icc" component={ () => {
+                        return (
+                            <InChannelConfigStart
                                 openFlow={this.navigate2Flow}
-                                user={this.state.user}
-                                voucher={this.state.voucher}
-                                inChannelConfig={this.state.inChannelConfig}
-                                loadVoucher={this.loadVoucher} />
-                        )} } />
+                            />
+                        )
+                    }} />
+                    <Route path="/icc/einvoice" component={ () => (
+                        <ServiceConfigFlowEInvoice currentTab={1} gotoStart={this.navigate2IccStart} gotoHome={this.navigate2Home} />
+                    )} />
+                    <Route path="/icc/pdf" component={ () => (
+                        <PdfMain currentTab={1} gotoStart={this.navigate2IccStart} gotoHome={this.navigate2Home} />
+                    )} />
 
 
-                    <Route path="/pdf" component={ () => (<ServiceConfigFlowFramePdf currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
-                    <Route path="/pdf/1" component={ () => (<ServiceConfigFlowFramePdf currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
-                    <Route path="/pdf/2" component={ () => (<ServiceConfigFlowFramePdf currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
-                    <Route path="/pdf/3" component={ () => (<ServiceConfigFlowFramePdf currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
-                    <Route path="/pdf/4" component={ () => (<ServiceConfigFlowFramePdf currentTab={4} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/icc2" component={InChannelConfigStart}/>
+
+                    <Route path="/test" component={ () => {
+                        return (
+                            <div>
+                                <h1>Test</h1>
+                            </div>
+                        )
+                    }}/>
+
+                    <Route path='/a' component={A}>
+                        <Route path='/a/a' component={aa}/>
+                        <Route path='/a/b' component={ab}/>
+                    </Route>
+
+                    <Route path='/c' component={C}>
+                        <Route path='/c/a' component={ca}/>
+                        <Route path='/c/b' component={cb}/>
+                    </Route>
+
+                    <Route path='/address' component={Address} />
+                    <Route path='/huhu' component={Huhu} />
+                    <Route path='*' component={NotFound} />
 
 
-                    <Route path="/paper" component={ () => (<ServiceConfigFlowFramePaper currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
-
-                    <Route path="/paper/1" component={ () => (<ServiceConfigFlowFramePaper currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
-                    <Route path="/paper/2" component={ () => (<ServiceConfigFlowFramePaper currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
-                    <Route path="/paper/3" component={ () => (<ServiceConfigFlowFramePaper currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
-
-                    <Route path="/einvoice" component={ () => (<ServiceConfigFlowEInvoice currentTab={1} gotoStart={this.updateEinvoiceAndGotoStart} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher}  inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/" component={() => {
+                        <Switch>
+                            <Route path="/test" component={() => {
+                                <h3>Called test</h3>
+                            }}/>
+                            <Route path="/test/a" component={() => {
+                                <h3>Called test/a</h3>
+                            }}/>
+                        </Switch>
+                    }}/>
 
                 </Route>
             </Router>
+          </div>
+        );
+    }
+}
+
+class A extends React.Component {
+    render() {
+        return (
+            <div>
+                <h1>Rendering of Class A</h1>
+                {this.props.children}
+            </div>
+        );
+    }
+}
+
+
+class C extends React.Component {
+    render() {
+        return (
+            <div>
+                <h1>Rendering of Class c</h1>
+                {this.props.children}
+            </div>
+        )
+    }
+}
+
+
+
+class InChannelConfigTest extends React.Component {
+    render () {
+        return (
+            <div>
+                <b>This is ConfigTest!!!!</b>
+
+                <Route path="/c/test" component={() => {
+                    <h3>Called test</h3>
+                }}/>
+                <Route path="/c/test/a" component={() => {
+                    <h3>Called test/a</h3>
+                }}/>
+            </div>
+        );
+    }
+}
+
+class ab extends React.Component {
+    render () {
+        return (
+            <h1>Component ab</h1>
+        );
+    }
+}
+
+
+
+
+class Huhu extends React.Component {
+    render () {
+        return (
+            <b>This is Huhu!!!!</b>
         );
     }
 }

@@ -51,7 +51,7 @@ module.exports.update = (supplierId, obj) => {
         .promise();
 }
 
-module.exports.approve = (supplierId) => {
+module.exports.activate = (supplierId) => {
     return ajax.put('/einvoice-send/api/config/inchannels/' + supplierId + '/finish')
         .set('Content-Type', 'application/json')
         .promise()
