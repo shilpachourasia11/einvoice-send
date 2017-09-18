@@ -13,7 +13,7 @@ export default class ServiceConfigFlow2 extends React.Component {
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired,
         voucher: React.PropTypes.object,
-        inChannelConfig: React.PropTypes.ojbect,
+        inChannelConfig : React.PropTypes.object,
         targetType: React.PropTypes.string
     };
 
@@ -64,7 +64,7 @@ export default class ServiceConfigFlow2 extends React.Component {
     setTermsAndConditions(locale) {
         this.getCustomerTermsAndConditions(locale)
         .then ((newTermsAndConditions) => {
-            this.setState({ customerTermsAndConditions: newTermsAndConditions.text })
+            this.setState({ customerTermsAndConditions: newTermsAndConditions.text });
         })
         .catch((e) => {
             console.log("Error determined when fetching customer T&C for c_" + this.props.voucher.customerId + ": ", e);

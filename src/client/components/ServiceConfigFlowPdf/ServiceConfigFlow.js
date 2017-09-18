@@ -238,6 +238,16 @@ class PdfNav extends React.Component {
 
 
 class PdfTabContent extends React.Component {
+
+    static propTypes = {
+        setCurrentTab : React.PropTypes.func,
+        approveOcTc : React.PropTypes.func,
+        approveCustomerTc : React.PropTypes.func,
+        finalApprove: React.PropTypes.func,
+        voucher: React.PropTypes.object,
+        inChannelConfig: React.PropTypes.object
+    };
+
     render() {
         if (this.props.customerTermsAndConditions) {
             return (

@@ -73,7 +73,7 @@ export default class App extends React.Component
     }
 
     loadInChannelConfig() {
-        return ajax.get('/einvoice-send/api/config/inchannels/' + this.state.user.supplierId)
+        ajax.get('/einvoice-send/api/config/inchannels/' + this.state.user.supplierId)
             .set('Content-Type', 'application/json')
             .promise()
         .then ((config) => {
@@ -169,7 +169,18 @@ export default class App extends React.Component
     ///////////////////////////////////////////
 
     navigate2Flow = (inputType) => {
-        this.history.push("/" + inputType);
+        ajax.get('/einvoice-send/api/config/inchannels/' + this.state.user.supplierId)
+            .set('Content-Type', 'application/json')
+        .then ((config) => {
+            if (config) {
+                this.setState({inChannelConfig: config.body});
+            }
+            // it happend, that the wrong ICC was used for ui. So we have to wait. (Refactoring will follow!)
+            this.history.push("/" + inputType);
+        })
+        .catch((e) => {
+            console.log("Error determined when fetching InChannelConfig for supplier " + this.state.user.supplierId + ": ", e);
+        });
     }
 
     navigate2Start = () => {

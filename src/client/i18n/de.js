@@ -64,21 +64,14 @@ export default {
             },
             Step2: {
                 subheader: "Richtlinien zur eInvoice-Anbindung",
-                subsubheader: "Sie wünschen eine eInvoice-Anbindung für Ihren Kunden {customerName}. Bitte prüfen Sie die hier aufgeführten Voraussetzungen, wie auch den Lieferantenleitfaden und akzeptieren diese unten auf der Seite.",
+                subsubheader: "Um die eInvoice-Anbindung für Ihren Kunden {customerName} zu konfigurieren, prüfen Sie bitte die hier aufgeführten Voraussetzungen sowie den Lieferantenleitfaden und akzeptieren diese unten auf der Seite.",
                 text1: "E-invoice Übertragung",
-                li1: "Kontaktieren Sie Ihren E-Fakturierungsdienstleister",
-                li2: "Simply utilize your operator from our partner list (list of available partners can be seen on below Supplier Guideline description) and send the E-invoices to {customerName}}.",
-                li2: "E-invoice sending means that invoice data with the invoice picture is taken directly from your billing system and sent to your service provider who then routes the e-invoices to OpusCapita which delivers the E-invoices to  {customerName}. The usage of operator ID and e-invoice address are required. You will see correct ID and address information on below Supplier Guideline description.",
-                li4: "In case of your operator is new to us, OpusCapita takes care of the technical details with the operator.",
-                moreInfo: "Einen detaillierte Lieferantenleitfanden finden Sie hier ",
+                li1: "Kontaktieren Sie Ihren E-Rechnungsdienstleisters oder",
+                li2: "wählen Sie einen E-Rechnungsdienstleisters aus unserer Liste der Partner (s. Lieferantenleitfaden) aus.",
+                li3: "E-Invoice-Übertragung bedeutet, dass Ihr Abrechnungssystem mit dem System Ihres E-Rechnungsdienstleisters kommuniziert und Ihre E-Rechnungen übestellt. Im nächsten Schritt überstellt Ihr Dienstleister die Rechnungsinformationen an OpusCapita. Und zu guter letzt überstellt OpusCapita die E-Rechnungen an {customerName}. Hierbei sind die Angaben der Kennung des E-Rechnungsdienstleisters (Vermittlers) und der E-Rechnungsadressinformationen erforderlich. Informationen hierzu finden Sie unten im Lieferantenleitfaden.",
+                li4: "Nutzen Sie einen nicht gegannten Service-Dienstleister, dann kontaktiert OpusCapita Ihren Dienstleister, um die technischen Details zu klären.",
+                moreInfo: "Einen detaillierte Lieferantenleitfanden finden Sie hier: ",
                 accepted: "Ich habe die Anforderungen der OpusCapita gelesen und akzeptiert.",
-
-                subsubheader: "Bitte prüfen Sie Richtlinien zur eInvoice-Anbindung und bestätigen diese unten auf der Seite.",
-                accpeted: "Ich habe die Richtlinen der {customerName} gelesen und akzeptiert.",
-                // TODO: Take translation from pdf as soon as it is available!
-                text1: "{customerName} has selected OpusCapita Software AG as Service Provider for incoming Purchase Invoices. OpusCapita will take care of contacting suppliers, implementation of the service as well as monitoring that invoices are transmitted correctly between suppliers and different entities of {customerName}. Registration for the service will happen on the Business Network Portal.",
-                text2: "Please download and check the einvoicing guide: ",
-                text3: "This document includes all necessary information on how to send E-invoices. Please find details what E-invoicing channels are supported and contact details, as well as guide how to get started.",
             },
             Approve: {
                 header: "Die nächsten Schritte",

@@ -84,12 +84,18 @@ export default class ServiceConfigFlowStart extends React.Component
     // Selection of pdf, einvoice, portal or paper
     setInputType = function() {
         let supplierId = this.props.voucher.supplierId;
+
+        let icc = this.props.inChannelConfig;
+        // Don't take status from other types (that were configured before)
+        // TODO: Potentially loses previously added info for this type. Has to be fixed with Status on ExtendedConfig entry!
+        let oldStatus = (icc && icc.inputType == this.state.invoiceSendingType) ? icc.status : InChannelConfig.status.new;
         let obj = {
             inputType: this.state.invoiceSendingType,
             voucherId: this.props.voucher.id,
-            status: InChannelConfig.getNextStatus(this.props.inChannelConfig && this.props.inChannelConfig.status, InChannelConfig.status.new),
+            status: InChannelConfig.getNextStatus(oldStatus, InChannelConfig.status.new),
             billingModelId: this.state.invoiceSendingType == 'einvoice' ? 'external' : null
         };
+
         return new Promise((resolve, reject) => {
             // TODO: Check that it works for pdf and einvoice!!!
             return InChannelConfig.update(supplierId, obj)
