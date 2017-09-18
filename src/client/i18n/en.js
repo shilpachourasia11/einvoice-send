@@ -62,13 +62,16 @@ export default {
             OCTaC: {
                 text: "You want to send E-Invoices to {customerName} through a third party Operator?"
             },
-            step2: {
-                subheader: "Guidelines fro eInvoicing of {customerName}",
-                subsubheader: "Please check the guidelines below and confirm your acceptance at the end of this page.",
-                readTaC: "I have read and understood {customerName} guildlines of the einvoicing.",
-                text1: "{customerName} has selected OpusCapita Software AG as Service Provider for incoming Purchase Invoices. OpusCapita will take care of contacting suppliers, implementation of the service as well as monitoring that invoices are transmitted correctly between suppliers and different entities of {customerName}. Registration for the service will happen on the Business Network Portal.",
-                text2: "Please download and check the einvoicing guide: ",
-                text3: "This document includes all necessary information on how to send E-invoices. Please find details what E-invoicing channels are supported and contact details, as well as guide how to get started.",
+            Step2: {
+                subheader: "Guidelines for eInvoicing",
+                subsubheader: "You have successfully registered on behalf of {customerName}. Please read carefully through the following prerequisites as well as Supplier Guideline description and accept the terms before sending your first E-invoice by using Interconnect Operator Network.",
+                text1: "E-invoice Sending",
+                li1: "Connect with your existing service provider for e-invoicing",
+                li2: "Simply utilize your operator from our partner list (list of available partners can be seen on below Supplier Guideline description) and send the E-invoices to [Customer].",
+                li2: "E-invoice sending means that invoice data with the invoice picture is taken directly from your billing system and sent to your service provider who then routes the e-invoices to OpusCapita which delivers the E-invoices to  {customerName}. The usage of operator ID and e-invoice address are required. You will see correct ID and address information on below Supplier Guideline description.",
+                li4: "In case of your operator is new to us, OpusCapita takes care of the technical details with the operator.",
+                moreInfo: "Read more in Supplier Guideline Description for {customerName}",
+                accepted: "I have read and understood OpusCapitas terms and conditions of the service.",
             },
             Approve: {
                 header: "Next Steps",

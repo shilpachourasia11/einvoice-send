@@ -10,7 +10,8 @@ export default class ServiceConfigFlow2 extends React.Component {
         accepted : React.PropTypes.bool,
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired,
-        voucher: React.PropTypes.object
+        voucher: React.PropTypes.object,
+        inChannelConfig : React.PropTypes.object,
     };
 
     static defaultProps = {
@@ -33,6 +34,10 @@ export default class ServiceConfigFlow2 extends React.Component {
 
 
     componentWillMount() {
+        this.loadInChannelContract();
+    }
+
+    componentWillReceiveProps() {
         this.loadInChannelContract();
     }
 
@@ -61,30 +66,44 @@ export default class ServiceConfigFlow2 extends React.Component {
 
         return (
             <div>
-                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.subheader', {customerName:this.props.voucher.customerName})}</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.subheader', {customerName:this.props.voucher.customerName})}</h3>
                 <div>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.subsubheader')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.subsubheader', {customerName:this.props.voucher.customerName})}
                 </div>
 
                 <hr/>
 
                 <div className="bs-callout bs-callout-info">
                     <p>
-                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.text1',
+                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.text1',
                             {customerName : customerName, customerId : customerId})}
+                        <ul>
+                            <li>
+                                {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.li1',
+                                    {customerName : customerName, customerId : customerId})}
+                            </li>
+                            <li>
+                                {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.li2',
+                                    {customerName : customerName, customerId : customerId})}
+                            </li>
+                            <li>
+                                {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.li3',
+                                    {customerName : customerName, customerId : customerId})}
+                            </li>
+                            <li>
+                                {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.li4',
+                                    {customerName : customerName, customerId : customerId})}
+                            </li>
+                        </ul>
                     </p>
                     <p>
-                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.text2',
+                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.moreInfo',
                             {customerName : customerName, customerId : customerId})}
+                        &nbsp;&nbsp;
                         <a href={pdfUrl} className="btn btn-info" target="_blank">
                             <span className="glyphicon glyphicon-file"></span>
                         </a>
                      </p>
-
-                    <p>
-                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.text3',
-                            {customerName : customerName, customerId : customerId})}
-                    </p>
                 </div>
 
                 <hr/>
@@ -93,7 +112,7 @@ export default class ServiceConfigFlow2 extends React.Component {
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.step2.accpeted', {customerName: customerName})}
+                            {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.accepted', {customerName: customerName})}
                         </a>
                     </label>
                 </div>

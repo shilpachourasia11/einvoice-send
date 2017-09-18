@@ -124,7 +124,10 @@ export default class ServiceConfigFlow extends React.Component
 
     approveCustomerTC = (tabNo) => {
         this.setApprovedCustomerTc()
-        .then(() => this.setCurrentTab(tabNo));
+        .then(() => {
+            this.finalApprove()
+        })
+        // .then(() => this.setCurrentTab(tabNo));
     }
 
 
@@ -194,11 +197,13 @@ class EInvoiceNav extends React.Component {
                     <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
                 </NavItem>
                 <NavItem eventKey={2} disabled={ this.props.currentTab < 2 }>
-                    <span className="round-tab"><i className="glyphicon glyphicon-pencil"/></span>
+                    <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
                 </NavItem>
+{/*
                 <NavItem eventKey={4} disabled={ this.props.currentTab < 3 }>
                     <span className="round-tab"><i className="glyphicon glyphicon-ok"/></span>
                 </NavItem>
+*/}
             </Nav>
         );
     }
@@ -218,11 +223,12 @@ class EInvoiceTabContent extends React.Component {
                 </Tab.Pane>
                 <Tab.Pane eventKey={2}>
                     <ServiceConfigFlow2
-                        onNext={ () => { this.props.approveCustomerTc(3); }}
+                        onNext={ () => { this.props.approveCustomerTc(3) }}
                         onPrevious={ () => this.props.setCurrentTab(1) }
                         voucher = {this.props.voucher}
                         inChannelConfig={this.props.inChannelConfig}/>
                 </Tab.Pane>
+{/*
                 <Tab.Pane eventKey={3}>
                     <ServiceConfigFlow3
                         onNext={ () => { this.props.finalApprove() } }
@@ -231,6 +237,7 @@ class EInvoiceTabContent extends React.Component {
                         inChannelConfig={this.props.inChannelConfig}
                     />
                 </Tab.Pane>
+*/}
 
             </Tab.Content>
         );

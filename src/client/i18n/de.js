@@ -62,8 +62,17 @@ export default {
             OCTaC: {
                 text: "Sie möchten elektronische Rechnungen an {customerName} über einen anderen Anbieter schicken?"
             },
-            step2: {
-                subheader: "Richtlinien zur eInvoice-Anbindung der {customerName}",
+            Step2: {
+                subheader: "Richtlinien zur eInvoice-Anbindung",
+                subsubheader: "Sie wünschen eine eInvoice-Anbindung für Ihren Kunden {customerName}. Bitte prüfen Sie die hier aufgeführten Voraussetzungen, wie auch den Lieferantenleitfaden und akzeptieren diese unten auf der Seite.",
+                text1: "E-invoice Übertragung",
+                li1: "Kontaktieren Sie Ihren E-Fakturierungsdienstleister",
+                li2: "Simply utilize your operator from our partner list (list of available partners can be seen on below Supplier Guideline description) and send the E-invoices to {customerName}}.",
+                li2: "E-invoice sending means that invoice data with the invoice picture is taken directly from your billing system and sent to your service provider who then routes the e-invoices to OpusCapita which delivers the E-invoices to  {customerName}. The usage of operator ID and e-invoice address are required. You will see correct ID and address information on below Supplier Guideline description.",
+                li4: "In case of your operator is new to us, OpusCapita takes care of the technical details with the operator.",
+                moreInfo: "Einen detaillierte Lieferantenleitfanden finden Sie hier ",
+                accepted: "Ich habe die Anforderungen der OpusCapita gelesen und akzeptiert.",
+
                 subsubheader: "Bitte prüfen Sie Richtlinien zur eInvoice-Anbindung und bestätigen diese unten auf der Seite.",
                 accpeted: "Ich habe die Richtlinen der {customerName} gelesen und akzeptiert.",
                 // TODO: Take translation from pdf as soon as it is available!
