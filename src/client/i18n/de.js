@@ -29,7 +29,7 @@ export default {
         pdf : "PDF per Email",
         pdfDesc: "Sie möchten Ihre Rechnung als Anhang einer E-Mail verschicken? Kein Problem. In der Vervollständigung der Registrierung finden Sie mehr Informationen hierzu.",
 
-        supplierPortal : "Lieferanten Portal",
+        supplierPortal : "Lieferantenportal",
         supplierPortalDesc: "Sie können Rechnungnen per manueller Eingabe der notwendigen Daten hinterlegen.",
 
         paper : "Papierrechnung",
@@ -40,6 +40,7 @@ export default {
             undefined: "Ist nicht konfiguriert.",
             new: "Wurde ausgewählt, aber die Konfiguration steht noch aus.",
             approved: "Wurde konfiguriert, aber noch nicht aktiviert.",
+            configured: "Ist konfiguriert",
             activated: "Ist aktiviert.",
             notActivated: "Ist nicht aktiviert.",
 
@@ -56,13 +57,35 @@ export default {
         enterEmail: "E-Mail-Adresse",
 
         Einvoice:{
-            intro1: "Hier werden wir Ihnen die Konfiguration der eInvoice-Anbindung per Webservice anbieten. Leider ist diese noch nicht verfügbar.",
-            intro2: " Sobald eine Anbindung möglich ist, werden wir uns mit Ihnen in Verbindung setzen, sofern Sie dies wünschen und unten bestätigen.",
-            einvoiceWanted: "Ja, wir wünschen eine eInvoice-Anbindung",
-            einvoiceNotWanted: "Wir unterstützen kein eInvoice",
-            currentStatus: "Ihr aktueller Status: "
+            name: "eInvoice",
+            header: "eInvoice-Konfiguration",
+            OCTaC: {
+                text: "Sie möchten elektronische Rechnungen an {customerName} über einen anderen Anbieter schicken?"
+            },
+            Step2: {
+                subheader: "Richtlinien zur eInvoice-Anbindung",
+                subsubheader: "Um die eInvoice-Anbindung für Ihren Kunden {customerName} zu konfigurieren, prüfen Sie bitte die hier aufgeführten Voraussetzungen sowie den Lieferantenleitfaden und akzeptieren diese unten auf der Seite.",
+                text1: "E-invoice Übertragung",
+                li1: "Kontaktieren Sie Ihren E-Rechnungsdienstleisters oder",
+                li2: "wählen Sie einen E-Rechnungsdienstleisters aus unserer Liste der Partner (s. Lieferantenleitfaden) aus.",
+                li3: "E-Invoice-Übertragung bedeutet, dass Ihr Abrechnungssystem mit dem System Ihres E-Rechnungsdienstleisters kommuniziert und Ihre E-Rechnungen übestellt. Im nächsten Schritt überstellt Ihr Dienstleister die Rechnungsinformationen an OpusCapita. Und zu guter letzt überstellt OpusCapita die E-Rechnungen an {customerName}. Hierbei sind die Angaben der Kennung des E-Rechnungsdienstleisters (Vermittlers) und der E-Rechnungsadressinformationen erforderlich. Informationen hierzu finden Sie unten im Lieferantenleitfaden.",
+                li4: "Nutzen Sie einen nicht gegannten Service-Dienstleister, dann kontaktiert OpusCapita Ihren Dienstleister, um die technischen Details zu klären.",
+                moreInfo: "Einen detaillierte Lieferantenleitfanden finden Sie hier: ",
+                accepted: "Ich habe die Anforderungen der OpusCapita gelesen und akzeptiert.",
+            },
+            Approve: {
+                header: "Die nächsten Schritte",
+                subheader: "Bitte setzen Sie das EInvoicing gemäß der Anleitung auf. Dies sollte die folgenden drei Schritte beinhalten:",
+                step1: "Kontaktieren Sie Ihren E-Invoicing-Service-Provider",
+                step2: "Test der E-Invoice-Anbindung",
+                step3: "Go-live",
+                textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit bestehenden und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
+                textGreetings: "Vielen Dank!"
+            }
         },
         Pdf:{
+            name: "PDF per Email",
+            header: "PDF per Email-Konfiguration",
             subheader: "Sie haben sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
             intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen.",
             rejection:"Rückweisungs E-Mail",
@@ -84,6 +107,8 @@ export default {
             }
         },
         Paper:{
+            name: "Papierrechnung",
+            header: "Papierrechnung-Konfiguration",
             subheader: "Sie haben sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre Papierrechnung an unseren globalen Digitalisierung-Service senden.",
             Approve: {
                 header: "Die nächsten Schritte",
@@ -92,6 +117,10 @@ export default {
                 textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit bestehenden und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
                 textGreetings: "Vielen Dank!"
             }
+        },
+        SupplierPortal:{
+            name: "Lieferantenportal",
+            header: "Lieferantenportal-Konfiguration"
         },
         CustomerTaC: {
             subheader: "Allgemeine Geschäftsbedingungen der {customerName}",

@@ -18,9 +18,7 @@ export default class BillingDetails extends React.Component {
         // TODO: Display details on how billing is done.
         //
         if(this.props.inputType === "eInvoice" && this.props.voucher[this.props.inputType + "Enabled"]) {
-            return (
-                <span style={styleFree}>{this.context.i18n.getMessage('ServiceConfigFlowStart.intention')}</span>
-                )
+            return null; // We don't know anything about the billing for external eInvoicing.
         }
         else if (this.props.inputType && this.props.voucher[this.props.inputType + "Enabled"]) {
             return (
