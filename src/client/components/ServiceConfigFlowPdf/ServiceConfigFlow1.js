@@ -35,14 +35,15 @@ export default class ServiceConfigFlow1 extends React.Component {
     };
 
 
-    componentWillMount() {
-        if (this.props.inChannelConfig && this.props.inChannelConfig.PdfChannelConfig)
-        this.setState({
-            accepted : this.props.inChannelConfig.status == 'new' ? false : true,
-            email: this.props.inChannelConfig.PdfChannelConfig.rejectionEmail,
-            rejection: this.props.inChannelConfig.PdfChannelConfig.rejectionEmail ? true : false,
-            validat:'success'
-        });
+    componentDidMount() {
+        let icc = this.props.inChannelConfig;
+        if (icc && icc.PdfChannelConfig)
+            this.setState({
+                accepted : this.props.inChannelConfig.status == 'new' ? false : true,
+                email: this.props.inChannelConfig.PdfChannelConfig.rejectionEmail,
+                rejection: this.props.inChannelConfig.PdfChannelConfig.rejectionEmail ? true : false,
+                validat:'success'
+            });
     }
 
 
@@ -187,7 +188,7 @@ export default class ServiceConfigFlow1 extends React.Component {
 
                 <div className="col-md-12">
                     <label className="oc-check">
-                        <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
+                        <input type="checkbox" checked={ this.state.accepted || false } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
                             {this.context.i18n.getMessage('ServiceConfigFlow.readOCTaC')}
                         </a>
@@ -213,7 +214,7 @@ export default class ServiceConfigFlow1 extends React.Component {
                                         type="text"
                                         placeholder={this.context.i18n.getMessage('ServiceConfigFlow.enterEmail')}
                                         onChange = {this.handleChange}
-                                        value={this.state.email}/>
+                                        value={this.state.email || ""}/>
                                     <FormControl.Feedback />
                                 </Col>
                             </div>
