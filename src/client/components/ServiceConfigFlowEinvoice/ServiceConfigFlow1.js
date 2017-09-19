@@ -1,103 +1,55 @@
 import React from 'react';
-import {Button} from 'react-bootstrap';
-import InChannelConfig from '../../api/InChannelConfig.js';
+import { Button,Col } from 'react-bootstrap';
+import {Form, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 
 
 export default class ServiceConfigFlow1 extends React.Component {
 
-	constructor(props) {
-		super(props);
-
-        this.state = {
-            intention : this.props.intention
-        };
-	}
-
     static propTypes = {
+        accepted : React.PropTypes.bool,
+        onNext : React.PropTypes.func.isRequired,
         inChannelConfig : React.PropTypes.object,
-        intention: React.PropTypes.bool
     };
 
     static defaultProps = {
-        intention: null
+        accepted : false
     };
 
-	static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-    };
+    constructor(props)
+    {
+        super(props)
 
-
-    componentWillMount() {
-        this.setState({
-            "intention": this.props.inChannelConfig && this.props.inChannelConfig.EInvoiceChannelConfig && this.props.inChannelConfig.EInvoiceChannelConfig.intention
-        });
-    }
-
-
-    approveIntention = ()=>{
-    	InChannelConfig.update(
-            this.props.voucher.supplierId,
-            {
-                inputType:'einvoice',
-                intention:true
-            })
-
-        // this.setState({"intention": true});
-    	this.props.gotoStart(true);
-    }
-
-    rejectIntention = ()=> {
-        InChannelConfig.update(
-            this.props.voucher.supplierId,
-            {
-                inputType:'einvoice',
-                intention:false
-            })
-        // this.setState({"intention": false});
-    	this.props.gotoStart(false);
-    }
-
-
-    renderCurrentIntentionState = () => {
-        if (this.props.inChannelConfig && this.props.inChannelConfig.EInvoiceChannelConfig) {
-            // let status = this.props.inChannelConfig.EInvoiceChannelConfig.intention ? "einvoiceRequested" : "einvoiceRejected";
-            let status = this.state.intention ? "einvoiceRequested" : "einvoiceRejected";
-            return (
-                <div>
-                    <h5>
-                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.currentStatus')}
-                        {this.context.i18n.getMessage('ServiceConfigFlowStart.statuses.' + status)}
-                    </h5>
-                </div>
-            );
+        this.state = {
+            accepted : this.props.accepted,
+            rejection:false,
+            validate:null
         }
     }
 
-	render() {
-		return (
-			<div>
-				<h3>{this.context.i18n.getMessage('welcome')}</h3>
+    static contextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+        locale: React.PropTypes.string
+    };
 
-				<div className="bs-callout bs-callout-info">
-                    <div>
-						{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.intro1')}
-                    </div>
-                    <div>
-						{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.intro2')}
-                    </div>
+
+    render()
+    {
+        return (
+            <div>
+                <h3>{this.context.i18n.getMessage('welcome')}</h3>
+                <div>
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.OCTaC.text',
+                        {customerName : this.props.voucher.customerName, customerId : this.props.voucher.customerId})}
                 </div>
 
-                {this.renderCurrentIntentionState()}
+                <hr/>
 
-				<div className="form-submit text-right">
-					<Button bsStyle = "link" onClick={()=>this.rejectIntention()}>
-						{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.einvoiceNotWanted')}
-					</Button>
-					<Button bsStyle = "primary" onClick={()=>this.approveIntention()}>
-						{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.einvoiceWanted')}
-					</Button>
-				</div>
-			</div>
-		)
-	}
+                <div className="form-submit text-right">
+                    <Button bsStyle="primary" onClick={ () => this.props.onNext() }>
+                        {this.context.i18n.getMessage('accept')}
+                    </Button>
+                </div>
+            </div>
+        )
+    }
 }
