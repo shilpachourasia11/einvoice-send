@@ -94,7 +94,7 @@ export default class ServiceConfigFlow extends React.Component
 
 
     finalApprove = () => {
-        InChannelConfig.approve(this.props.voucher.supplierId)
+        InChannelConfig.activate(this.props.voucher.supplierId)
         .then(() => {
             this.props.finalizeFlow();
         })
@@ -227,7 +227,9 @@ class PaperTabContent extends React.Component {
                             onNext={ () => { this.props.approveCustomerTc(3); }}
                             onPrevious={ () => this.props.setCurrentTab(1) }
                             voucher = {this.props.voucher}
-                            customerTermsAndConditions = {this.props.customerTermsAndConditions}/>
+                            customerTermsAndConditions = {this.props.customerTermsAndConditions}
+                            inChannelConfig = {this.props.inChannelConfig}
+                            targetType = "pdf"/>
                     </Tab.Pane>
                     <Tab.Pane eventKey={3}>
                         <ServiceConfigFlow3
