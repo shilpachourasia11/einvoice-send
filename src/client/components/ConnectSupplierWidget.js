@@ -37,11 +37,20 @@ export default class ConnectSupplierWidget extends Component
     if (_.isEmpty(this.state.inChannelContracts)) return [];
 
     const groupedContracts = _.groupBy(this.state.inChannelContracts, contract => {
-      return new Date(contract.changedOn || contract.createdOn).toLocaleDateString(this.props.locale || 'en');
+      return new Date(contract.changedOn || contract.createdOn);
     });
 
-    return _.map(groupedContracts, (contracts, date) => {
+    const mapped = _.map(groupedContracts, (contracts, date) => {
       return { date: date, "supplier count": contracts.length };
+    });
+
+    const sorted = _.sortBy(mapped, function(key_date) {
+      return new Date(key_date.date);
+    });
+
+    return _.map(sorted, obj1 => {
+      obj1.date = new Date(obj1.date).toLocaleDateString(this.props.locale || 'en');
+      return obj1;
     });
   }
 
