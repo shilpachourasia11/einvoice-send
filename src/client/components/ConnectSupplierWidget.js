@@ -2,6 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import _ from 'underscore';
 import request from 'superagent-bluebird-promise';
 import { Line, LineChart, XAxis, YAxis, Legend, CartesianGrid } from 'recharts';
+import i18n from './i18n'
 
 export default class ConnectSupplierWidget extends Component
 {
@@ -11,6 +12,10 @@ export default class ConnectSupplierWidget extends Component
     locale: PropTypes.string.isRequired
   };
 
+  static contextTypes = {
+    i18n: React.PropTypes.object.isRequired
+  }
+
   constructor(props)
   {
     super(props);
@@ -18,6 +23,8 @@ export default class ConnectSupplierWidget extends Component
     this.state = {
       inChannelContracts: []
     }
+
+
   };
 
   componentDidMount()
@@ -30,6 +37,11 @@ export default class ConnectSupplierWidget extends Component
         return Promise.resolve(null);
       }).
       catch(error => Promise.resolve(null));
+  }
+
+  componentWillMount()
+  {
+    this.context.i18n.register('CSWTranslations', i18n);
   }
 
   getData()
@@ -56,6 +68,8 @@ export default class ConnectSupplierWidget extends Component
 
   render()
   {
+    const i18n = this.context.i18n;
+
     return (
       <LineChart
         data={this.getData()}
@@ -67,7 +81,7 @@ export default class ConnectSupplierWidget extends Component
         <Legend />
         <XAxis label="Dates" dataKey="date" padding={{left: 20, right: 20}}/>
         <YAxis padding={{top: 20}}/>
-        <Line type="stepAfter" dataKey="supplier count" stroke="#5E9CD3" />
+        <Line type="stepAfter" dataKey='supplier count' name={i18n.getMessage('CSWTranslations.supplierCount')} stroke="#5E9CD3" />
       </LineChart>
     )
   }
