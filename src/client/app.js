@@ -170,7 +170,7 @@ export default class App extends React.Component
     ///////////////////////////////////////////
 
     navigate2Flow = (inputType) => {
-        ajax.get('/einvoice-send/api/config/inchannels/' + this.state.user.supplierId)
+        return ajax.get('/einvoice-send/api/config/inchannels/' + this.state.user.supplierId)
             .set('Content-Type', 'application/json')
         .then ((config) => {
             if (config) {

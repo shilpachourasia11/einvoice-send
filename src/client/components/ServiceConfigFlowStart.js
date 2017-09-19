@@ -111,7 +111,7 @@ export default class ServiceConfigFlowStart extends React.Component
             })
         })
         .then(() => {
-            this.props.openFlow(this.state.invoiceSendingType);
+            return this.props.openFlow(this.state.invoiceSendingType);
         })
         .catch((e) => {
             console.log("Error: ", e);
