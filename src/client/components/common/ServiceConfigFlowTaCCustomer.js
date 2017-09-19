@@ -36,7 +36,7 @@ export default class ServiceConfigFlow2 extends React.Component {
     };
 
 
-    componentWillMount() {
+    componentDidMount() {
         this.setTermsAndConditions(this.context.locale);
         this.loadInChannelContract();
     }
