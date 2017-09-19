@@ -101,20 +101,21 @@ export default class ServiceConfigFlow1 extends React.Component {
                 </li>
                 <li>Wenn eine E-Mail ebenfalls andere, ungültige Anhänge beinhaltet (z. B. .docx), werden nur die PDF- und TIFF-Dateien aus dem Anhang verarbeitet. Die übrigen Anhänge werden ignoriert, ohne den Lieferanten oder Kunden darüber zu informieren.</li>
                 <li>Wenn die E-Mail nur ungültige Anhänge enthält, erhält der Absender eine Benachrichtigung über fehlende gültige Anhänge.</li>
-                <li>Ein Anhang entspricht einer Rechnung. Wenn in einem Anhang mehrere Rechnungen enthalten sind, werden diese als eine Rechnung behandelt (die erste wird ausgewertet und geprüft).
-                <li>Wenn Rechnungen und deren Anlagen mehrere Dateien umfassen, werden diese nicht als eine Rechnung behandelt. Die einzelnen Anlagen werden verworfen.
-                <li>Eine E-Mail kann bis zu 10 Anhänge umfassen.
-                <li>Die maximale Größe eines Anhangs beträgt 10 MB.
-                <li>Das maximale Papierformat für einen Anhang beträgt A3 (minimale Größe ohne Einschränkung).
-                <li>Die maximale Seitenanzahl für einen Anhang (eine Rechnung) beträgt 500 Seiten.
-                <li>PDF-Dateien dürfen nicht verschlüsselt oder durch ein Passwort geschützt sein.
-                <li>Wenn die PDF-Datei Textlayouts enthält, müssen die Schriftarten in die PDF-Datei aufgenommen werden.
+                <li>Ein Anhang entspricht einer Rechnung. Wenn in einem Anhang mehrere Rechnungen enthalten sind, werden diese als eine Rechnung behandelt (die erste wird ausgewertet und geprüft).</li>
+                <li>Wenn Rechnungen und deren Anlagen mehrere Dateien umfassen, werden diese nicht als eine Rechnung behandelt. Die einzelnen Anlagen werden verworfen.</li>
+                <li>Eine E-Mail kann bis zu 10 Anhänge umfassen.</li>
+                <li>Die maximale Größe eines Anhangs beträgt 10 MB.</li>
+                <li>Das maximale Papierformat für einen Anhang beträgt A3 (minimale Größe ohne Einschränkung).</li>
+                <li>Die maximale Seitenanzahl für einen Anhang (eine Rechnung) beträgt 500 Seiten.</li>
+                <li>PDF-Dateien dürfen nicht verschlüsselt oder durch ein Passwort geschützt sein.</li>
+                <li>Wenn die PDF-Datei Textlayouts enthält, müssen die Schriftarten in die PDF-Datei aufgenommen werden.</li>
                 <li>Wenn die Rechnung, bevor sie der E-Mail angehängt und an OpusCapita gesendet wurde, zuerst ausgedruckt und anschließend gescannt wurde:
                     <ul>
-                        <li>Muss die Druckqualität mindestens 600 dpi betragen
-                        <li>Der Ausdruck muss in Schwarzweiß erfolgen
-                        <li>Die gewählte Schriftart muss leicht lesbar sein, z. B. Arial
-                        <li>Die Auflösung des Scans muss mindestens 300 dpi betragen
+                        <li>Muss die Druckqualität mindestens 600 dpi betragen</li>
+                        <li>Der Ausdruck muss in Schwarzweiß erfolgen</li>
+                        <li>Die gewählte Schriftart muss leicht lesbar sein, z. B. Arial</li>
+                        <li>Die Auflösung des Scans muss mindestens 300 dpi betragen</li>
+                        <li>Die E-Mail sollte Standard-Protokollen wie MIME 1.0/1.1 mit RFC 5322, 2231 und 2045 entsprechen.</li>
                     </ul>
                 </li>
             </ul>
