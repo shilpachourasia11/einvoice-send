@@ -1,13 +1,13 @@
-import React from 'react'
+import React, { PropTypes } from 'react';
 import serviceComponent from '@opuscapita/react-loaders/lib/serviceComponent';
-
+import loadCurrentUserData from '../../api/loadCurrentUserData.js';
 export default class ServiceConfigFlow3 extends React.Component {
 	constructor(props) {
 		super(props);
-		
 	}
 	InvoiceEditor = React.createClass({
 		componentWillMount() {
+			this.currentUserData = loadCurrentUserData.get()
 			let serviceRegistry = (service)=> ({ url:'/invoice' });
 			const InvoiceEditorForm = serviceComponent({ 
 				serviceRegistry, 
@@ -23,16 +23,13 @@ export default class ServiceConfigFlow3 extends React.Component {
 			return (
 				<div>
 					<div>
-						<InvoiceEditorForm />
+						<InvoiceEditorForm currentUserData = {this.currentUserData} />
 					</div>
 				</div>
 			)
 		}
 	})
-	componentDidMount() {
-	}
-	componentWillMount() {
-	}
+
 	render() {
 		return (
 			<div>
@@ -41,3 +38,4 @@ export default class ServiceConfigFlow3 extends React.Component {
 		)
 	}
 }
+<ServiceConfigFlow3 />
