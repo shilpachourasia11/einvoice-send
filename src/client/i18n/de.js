@@ -69,8 +69,8 @@ export default {
                 li1: "Kontaktieren Sie Ihren E-Rechnungsdienstleisters oder",
                 li2: "wählen Sie einen E-Rechnungsdienstleisters aus unserer Liste der Partner (s. Lieferantenleitfaden) aus.",
                 li3: "E-Invoice-Übertragung bedeutet, dass Ihr Abrechnungssystem mit dem System Ihres E-Rechnungsdienstleisters kommuniziert und Ihre E-Rechnungen übestellt. Im nächsten Schritt überstellt Ihr Dienstleister die Rechnungsinformationen an OpusCapita. Und zu guter letzt überstellt OpusCapita die E-Rechnungen an {customerName}. Hierbei sind die Angaben der Kennung des E-Rechnungsdienstleisters (Vermittlers) und der E-Rechnungsadressinformationen erforderlich. Informationen hierzu finden Sie unten im Lieferantenleitfaden.",
-                li4: "Nutzen Sie einen nicht gegannten Service-Dienstleister, dann kontaktiert OpusCapita Ihren Dienstleister, um die technischen Details zu klären.",
-                moreInfo: "Einen detaillierte Lieferantenleitfanden finden Sie hier: ",
+                li4: "Nutzen Sie einen nicht genannten Service-Dienstleister, dann kontaktiert OpusCapita Ihren Dienstleister, um die technischen Details zu klären.",
+                moreInfo: "Einen detaillierte Lieferantenleitfaden finden Sie hier: ",
                 accepted: "Ich habe die Anforderungen der OpusCapita gelesen und akzeptiert.",
             },
             Approve: {
