@@ -16,7 +16,7 @@ class Layout extends Component
         i18n: PropTypes.object.isRequired,
         locale: React.PropTypes.string,
         setLocale: React.PropTypes.func,
-        currentUserData: React.PropTypes.obj,
+        currentUserData: React.PropTypes.object,
         showNotification: React.PropTypes.func,
         hideNotification: React.PropTypes.func,
         clearNotifications: React.PropTypes.func
@@ -116,6 +116,7 @@ class Layout extends Component
     //////////////////////////////////////////////////////////
 
     showNotification = (message, level, autoDismiss = 5, dismissible = true, position = 'tc') => {
+console.log("Called ShowNotofication with ", message, level);
         if(!level){
             level = 'info'
         }

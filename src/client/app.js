@@ -3,11 +3,16 @@ import { Router, Route, IndexRoute, Link, hashHistory } from 'react-router'
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
+import Layout from './layout.js';
 import ServiceConfigFlowStart      from './components/ServiceConfigFlowStart.js'
 import ServiceConfigFlowFramePdf   from './components/ServiceConfigFlowPdf/ServiceConfigFlow.js'
 import ServiceConfigFlowFramePaper from './components/ServiceConfigFlowPaper/ServiceConfigFlow.js'
 import ServiceConfigFlowEInvoice   from './components/ServiceConfigFlowEinvoice/ServiceConfigFlow.js'
-import Layout from './layout.js';
+
+import KeyIn from './components/SalesInvoice/KeyIn.js'
+import Test from './components/SalesInvoice/Test.js'
+import TestInclude from './components/SalesInvoice/TestInclude.js'
+import TestInclude2 from './components/SalesInvoice/TestInclude2.js'
 
 
 export default class App extends React.Component
@@ -208,7 +213,7 @@ export default class App extends React.Component
                 this.history = el && el.props && el.props.history;
             }}>
                 <Route component={ Layout }>
-                    <Route path="/" component={ () => {
+                    <Route exact path="/" component={ () => {
                         return (
                             <ServiceConfigFlowStart
                                 openFlow={this.navigate2Flow}
@@ -234,6 +239,21 @@ export default class App extends React.Component
                     <Route path="/paper/3" component={ () => (<ServiceConfigFlowFramePaper currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
                     <Route path="/einvoice" component={ () => (<ServiceConfigFlowEInvoice currentTab={1} gotoStart={this.updateEinvoiceAndGotoStart} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher}  inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+
+
+                    <Route path="/x" component={ () => {
+                        console.log("Opening /x");
+                        return (
+                            <div>
+                                <h1>Test Test Test</h1>
+                            </div>
+                        )
+                    }}/>
+                    <Route exact path="/i" component={TestInclude}/>
+                    <Route path="/ii" component={TestInclude2}/>
+                    <Route path="/test" component={Test}/>
+                    <Route path="/key-in" component="KeyIn"/>
+                    <Route path="/test2" component={ () => {return (<h1>Hello User</h1>)}}/>
 
                 </Route>
             </Router>
