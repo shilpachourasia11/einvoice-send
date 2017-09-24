@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 //import browserHistory from 'react-router/lib/browserHistory';
 
-export default class ServiceConfigFlow5 extends React.Component {
+export default class ServiceConfigFlow3 extends React.Component {
 
     static propTypes = {
         onNext : React.PropTypes.func.isRequired,
@@ -29,21 +29,24 @@ export default class ServiceConfigFlow5 extends React.Component {
     {
         return (
             <div>
-                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Approve.header')}</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.header')}</h3>
 
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Approve.subheader')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.subheader')}
                 </p>
                 <ul>
-                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Approve.step1')}</li>
-                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Approve.step2')}</li>
-                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Approve.step3')}</li>
+                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.step1')}</li>
+                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.step2')}</li>
+                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.step3')}</li>
                 </ul>
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Approve.textFooter')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.supportHint')}
                 </p>
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Approve.textGreetings')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.textFooter')}
+                </p>
+                <p>
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.textGreetings')}
                 </p>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>
