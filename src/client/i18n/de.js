@@ -62,23 +62,29 @@ export default {
             OCTaC: {
                 text: "Sie möchten elektronische Rechnungen an {customerName} über einen anderen Anbieter schicken?"
             },
-            Step2: {
+            Step1: {
                 subheader: "Richtlinien zur eInvoice-Anbindung",
                 subsubheader: "Um die eInvoice-Anbindung für Ihren Kunden {customerName} zu konfigurieren, prüfen Sie bitte die hier aufgeführten Voraussetzungen sowie den Lieferantenleitfaden und akzeptieren diese unten auf der Seite.",
                 text1: "E-invoice Übertragung",
                 li1: "Kontaktieren Sie Ihren E-Rechnungsdienstleisters oder",
                 li2: "wählen Sie einen E-Rechnungsdienstleisters aus unserer Liste der Partner (s. Lieferantenleitfaden) aus.",
                 li3: "E-Invoice-Übertragung bedeutet, dass Ihr Abrechnungssystem mit dem System Ihres E-Rechnungsdienstleisters kommuniziert und Ihre E-Rechnungen übestellt. Im nächsten Schritt überstellt Ihr Dienstleister die Rechnungsinformationen an OpusCapita. Und zu guter letzt überstellt OpusCapita die E-Rechnungen an {customerName}. Hierbei sind die Angaben der Kennung des E-Rechnungsdienstleisters (Vermittlers) und der E-Rechnungsadressinformationen erforderlich. Informationen hierzu finden Sie unten im Lieferantenleitfaden.",
-                li4: "Nutzen Sie einen nicht gegannten Service-Dienstleister, dann kontaktiert OpusCapita Ihren Dienstleister, um die technischen Details zu klären.",
-                moreInfo: "Einen detaillierte Lieferantenleitfanden finden Sie hier: ",
+                li4: "Nutzen Sie einen nicht genannten Service-Dienstleister, dann kontaktiert OpusCapita Ihren Dienstleister, um die technischen Details zu klären.",
+                moreInfo: "Einen detaillierte Lieferantenleitfaden finden Sie hier: ",
                 accepted: "Ich habe die Anforderungen der OpusCapita gelesen und akzeptiert.",
             },
-            Approve: {
+            Step2: {
+                subheader: "Richtlinien der {customerName} zur eInvoice-Anbindung",
+                subsubheader: "Bitte prüfen Sie die Richtlinien der {customerName} und bestätigen diese unten auf der Seite.",
+                approve: "Ich habe die Richtlinien der {customerName} gelesen und akzeptiert."
+            },
+            Step3: {
                 header: "Die nächsten Schritte",
-                subheader: "Bitte setzen Sie das EInvoicing gemäß der Anleitung auf. Dies sollte die folgenden drei Schritte beinhalten:",
-                step1: "Kontaktieren Sie Ihren E-Invoicing-Service-Provider",
-                step2: "Test der E-Invoice-Anbindung",
+                subheader: "Bitte setzen Sie das EInvoicing gemäß der Anleitung auf. Folgen Sie dabei bitte den im Lieferantenleitfaden beschriebenen Schritten:",
+                step1: "Kontaktieren Sie Ihren E-Fakturierungsdienstleister ",
+                step2: "Test-E-Rechnung/Testphase",
                 step3: "Go-live",
+                supportHint: "Bei Fragen kontaktieren Sie bitte unseren Support per Telefon unter +49 231 3967 350 oder per E-Mail via customerservice.de@opuscapita.com.",
                 textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit bestehenden und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
                 textGreetings: "Vielen Dank!"
             }
@@ -90,7 +96,6 @@ export default {
             intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen.",
             rejection:"Rückweisungs E-Mail",
             additionalHelp:"Für den Fall eines Problems mit der Verarbeitung Ihrer PDF-Rechnungen benötigen wir von Ihnen eine E-Mail-Adresse, unter der wir Sie kontaktieren können.",
-
             Upload: {
                 header: "PDF Beispiel einer Rechnung",
                 subheader: "Legen Sie Ihre PDF-Beispieldatei unten ab.",

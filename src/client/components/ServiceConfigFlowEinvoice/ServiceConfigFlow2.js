@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-import ajax from 'superagent-bluebird-promise';  // ??? move to app.js ???
+import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
 
@@ -8,14 +8,17 @@ export default class ServiceConfigFlow2 extends React.Component {
 
     static propTypes = {
         accepted : React.PropTypes.bool,
+        customerTermsAndConditions : React.PropTypes.string,
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired,
         voucher: React.PropTypes.object,
         inChannelConfig : React.PropTypes.object,
+        targetType: React.PropTypes.string
     };
 
     static defaultProps = {
-        accepted : false
+        accepted : false,
+        customerTermsAndConditions : ""
     };
 
     constructor(props)
@@ -23,29 +26,29 @@ export default class ServiceConfigFlow2 extends React.Component {
         super(props)
 
         this.state = {
-            accepted : this.props.accepted
+            accepted : this.props.accepted,
+            customerTermsAndConditions : this.props.customerTermsAndConditions
         }
     }
 
     static contextTypes = {
         i18n : React.PropTypes.object.isRequired,
-        locale : React.PropTypes.string
+        locale : React.PropTypes.string,
     };
 
 
-    componentWillMount() {
-        this.loadInChannelContract();
-    }
-
-    componentWillReceiveProps() {
+    componentDidMount() {
+        this.setTermsAndConditions(this.context.locale);
         this.loadInChannelContract();
     }
 
     loadInChannelContract() {
-        ajax.get('/einvoice-send/api/config/inchannelcontracts/c_' + this.props.voucher.customerId + '/s_' + this.props.voucher.supplierId)
+        return ajax.get('/einvoice-send/api/config/inchannelcontracts/c_' + this.props.voucher.customerId + '/s_' + this.props.voucher.supplierId)
             .set('Content-Type', 'application/json')
+            .promise()
         .then ((contract) => {
-            if (contract && contract.body && contract.body.inputType == 'einvoice') {
+            let targetType = this.props.targetType ? this.props.targetType : this.props.inChannelConfig.inputType;
+            if (contract && contract.body && contract.body.inputType == targetType) {
                 this.setState({
                     accepted : (contract.body.status == 'approved')
                 });
@@ -57,13 +60,26 @@ export default class ServiceConfigFlow2 extends React.Component {
     }
 
 
+    setTermsAndConditions(locale) {
+        this.getCustomerTermsAndConditions(locale)
+        .then ((newTermsAndConditions) => {
+            this.setState({ customerTermsAndConditions: newTermsAndConditions.text });
+        })
+        .catch((e) => {
+            console.log("Error determined when fetching customer T&C for c_" + this.props.voucher.customerId + ": ", e);
+        })
+    }
+
+    getCustomerTermsAndConditions(locale) {
+        return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId + '/files/public/einvoice-send/EInvoiceTermsAndConditions_' + locale + '.html')
+        .catch((e) => {
+            return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId +  '/files/public/einvoice-send/EInvoiceTermsAndConditions.html')
+        })
+    }
+
+
     render()
     {
-        const customerId = this.props.voucher.customerId;
-        const customerName = this.props.voucher.customerName;
-        const localeExt = (!this.context.locale || this.context.locale == 'en') ? "" : ("_" + this.context.locale);
-        const pdfUrl = "/blob/public/api/c_" + customerId + "/files/public/einvoice-send/SupplierEInvoicingGuide" + localeExt + ".pdf";
-
         return (
             <div>
                 <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.subheader', {customerName:this.props.voucher.customerName})}</h3>
@@ -74,45 +90,16 @@ export default class ServiceConfigFlow2 extends React.Component {
                 <hr/>
 
                 <div className="bs-callout bs-callout-info">
-                    <p>
-                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.text1',
-                            {customerName : customerName, customerId : customerId})}
-                        <ul>
-                            <li>
-                                {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.li1',
-                                    {customerName : customerName, customerId : customerId})}
-                            </li>
-                            <li>
-                                {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.li2',
-                                    {customerName : customerName, customerId : customerId})}
-                            </li>
-                            <li>
-                                {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.li3',
-                                    {customerName : customerName, customerId : customerId})}
-                            </li>
-                            <li>
-                                {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.li4',
-                                    {customerName : customerName, customerId : customerId})}
-                            </li>
-                        </ul>
-                    </p>
-                    <p>
-                        {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.moreInfo',
-                            {customerName : customerName, customerId : customerId})}
-                        &nbsp;&nbsp;
-                        <a href={pdfUrl} className="btn btn-info" target="_blank">
-                            <span className="glyphicon glyphicon-file"></span>
-                        </a>
-                     </p>
+                    <div dangerouslySetInnerHTML={{__html: this.state.customerTermsAndConditions}}></div>
                 </div>
 
                 <hr/>
 
-                <div>
+                <div className="col-md-6">
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.accepted', {customerName: customerName})}
+                            {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.approve', {customerName:this.props.voucher.customerName})}
                         </a>
                     </label>
                 </div>
