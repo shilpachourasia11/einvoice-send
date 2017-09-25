@@ -65,7 +65,7 @@ export default {
             OCTaC: {
                 text: "You want to send E-Invoices to {customerName} through a third party Operator?"
             },
-            Step2: {
+            Step1: {
                 subheader: "Guidelines for eInvoicing",
                 subsubheader: "You have successfully registered on behalf of {customerName}. Please read carefully through the following prerequisites as well as Supplier Guideline description and accept the terms before sending your first E-invoice by using Interconnect Operator Network.",
                 text1: "E-invoice Sending",
@@ -76,12 +76,18 @@ export default {
                 moreInfo: "Read more in Supplier Guideline Description for {customerName}",
                 accepted: "I have read and understood OpusCapitas terms and conditions of the service.",
             },
-            Approve: {
+            Step2: {
+                subheader: "Guidelines for eInvoice by {customerName}",
+                subsubheader: "Please check the guidelines below and confirm your acceptance at the end of this page.",
+                approve: "I have read and understood {customerName} guidelines."
+            },
+            Step3: {
                 header: "Next Steps",
                 subheader: "Please setup the einvoice as described in the einvoicing guide. This should include the three steps:",
-                step1: "Contact your E-invoicing service provider",
+                step1: "Contact your E-invoicing service provider ",
                 step2: "Test E-invoice / Testing phase",
                 step3: "Go live",
+                supportHint: "In case of questions, please contact our support by phone +49 231 3967 350 or via email  customerservice.de@opuscapita.com.",
                 textFooter: "We kindly ask you to go back to the start page and update your company information in order to strengthen your profile to become more visible to trading partners within the Eco System.",
                 textGreetings: "Thank you!"
             }
@@ -100,7 +106,6 @@ export default {
             intro: "Email Invoice Digitizing enables {customerName} to receive invoices as email attachments.",
             rejection:"Rejection Email",
             additionalHelp:"In the case that problems appear when processing your PDF invoices, we need an email address that we can use to contact you.",
-
             Upload: {
                 header: "Invoice PDF Example",
                 subheader: "Drop your invoice example PDF below",
