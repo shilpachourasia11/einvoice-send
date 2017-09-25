@@ -31,7 +31,7 @@ export default class KeyIn extends React.Component {
         // console.log("*** this.context.currentUserData: ", this.context.currentUserData);
 
         // TODO: Check which additional params we have/can use.
-        // TODO: onChannel ??? Is it needed?
+        // TODO: onCancel ??? Is it needed?
         //    <this.InvoiceEditorForm createMode={true} readOnly={false} onCancel={ (param) =>  alert(param) }/>
 
         return (

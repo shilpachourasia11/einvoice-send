@@ -100,6 +100,7 @@ class Layout extends Component
                             </div>
                         </div>
                     </section>
+                    <NotificationSystem ref="notificationSystem"/>
                 </span>
             );
         }

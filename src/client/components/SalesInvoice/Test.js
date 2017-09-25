@@ -21,7 +21,7 @@ console.log("showNotification: ", this.context.showNotification);
 
                 <h2>Hello {user.lastname || user.id}</h2>
                 <br/>
-                {this.context.showNotification("Hello, this is a notification Test!", "Info")}
+                {this.context.showNotification("Hello, this is a notification Test!", "info")}
                 <br/>
                 <b>Your CurrentUserData (this.context.currentUserData):</b>
                 <br/>
