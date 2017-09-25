@@ -19,21 +19,23 @@ export default class KeyIn extends React.Component {
             serviceRegistry : (service) => ({ url:'/invoice' }),
             serviceName: 'invoice',
             moduleName: 'sales_invoice_test',
-            jsFileName: 'sales_invoice_test-bundle',
-            componentPath: 'Test'
+            jsFileName: 'sales_invoice_test-bundle'
+            // componentPath: 'Test'
         });
-console.log(">>>>>>>>>>>>>>", this.InvoiceTest);
 
-        this.ConnectSupplierWidget = serviceComponent({
+        let ConnectSupplierWidget = serviceComponent({
             serviceRegistry: (service) => ({ url: '/einvoice-send' }),
             serviceName: 'einvoice-send',
             moduleName: 'connect-supplier-widget'
         });
-        console.log(">>>>>>>>>>>>>>", this.ConnectSupplierWidget);
+
+        this.component = { ConnectSupplierWidget }
     }
 
     render() {
+        let {ConnectSupplierWidget} = this.component;
         console.log("this.context.locale: ", this.context.locale);
+
         return (
             <div>
                 <h1>Sales-Invoice Test Cross-Service-Include</h1>
@@ -43,11 +45,11 @@ console.log(">>>>>>>>>>>>>>", this.InvoiceTest);
                 <br/>
 
                 <div className="panel-heading">InvoiceTest...</div>
-                <this.InvoiceTest userName="Max Müller"/>
+                <this.InvoiceTest userName="<extra Name>"/>
 
                 <div className="panel-heading">ConnectSupplierWidget...</div>
                 <div className="panel-body">
-                    {<this.ConnectSupplierWidget locale={"de"} actionUrl='' customerId='ncc'/>}
+                    {<ConnectSupplierWidget locale={"de"} actionUrl='' customerId='ncc'/>}
                 </div>
 
             </div>

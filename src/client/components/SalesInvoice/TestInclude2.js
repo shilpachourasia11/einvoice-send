@@ -12,35 +12,16 @@ export default class KeyIn extends React.Component {
 		super(props);
 	}
 
-    Test = React.createClass({
-      componentWillMount() {
-        let serviceRegistry = (service) => ({ url: '/einvoice-send' });
-        const testComponent = serviceComponent({
-            serviceRegistry,
-            serviceName: 'invoice' ,
+    componentWillMount()
+    {
+        this.InvoiceTest = serviceComponent({
+            serviceRegistry : (service) => ({ url:'/invoice' }),
+            serviceName: 'invoice',
             moduleName: 'sales_invoice_test',
-            jsFileName: 'sales_invoice_test-bundle',
-            componentPath: 'Test'
+            jsFileName: 'sales_invoice_test-bundle'
+            // componentPath: 'Test'
         });
-console.log(testComponent);
-
-        this.externalComponents = { testComponent };
-      },
-
-      render () {
-        const { testComponent } = this.externalComponents;
-
-        return (
-          <div className="panel panel-success">
-            <div className="panel-heading">Test...</div>
-            <div className="panel-body">
-                {<testComponent/>}
-            </div>
-          </div>
-        );
-      }
-    });
-
+    }
 
     render() {
         return (
@@ -51,7 +32,7 @@ console.log(testComponent);
                 <br/>
                 <br/>
 
-                <this.Test/>
+                <this.InvoiceTest userName="<Name passed from TestInclude2>"/>
             </div>
         )
     }

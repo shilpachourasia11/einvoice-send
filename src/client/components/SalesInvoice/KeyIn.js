@@ -14,23 +14,27 @@ export default class KeyIn extends React.Component {
 
     componentWillMount()
     {
-        this.InvoiceEditorForm = serviceComponent({
+        let InvoiceEditorForm = serviceComponent({
             serviceRegistry : (service) => ({ url:'/invoice' }),
             serviceName: 'invoice',
             moduleName: 'invoice_editor',
-            jsFileName: 'invoice_editor-bundle',
-            componentPath: 'SimpleInvoiceEditor'
+            jsFileName: 'invoice_editor-bundle'
+            // componentPath: 'SimpleInvoiceEditor'
         });
 console.log(">>>>>>>>>>>>>>", this.InvoiceEditorForm);
+
+        this.component = { InvoiceEditorForm };
     }
 
     render() {
+        let {InvoiceEditorForm} = this.component;
+
 console.log("*** this.context.currentUserData: ", this.context.currentUserData);
 
         return (
             <div>
                 <h1>Test Test Test</h1>
-                <this.InvoiceEditorForm/>
+                <InvoiceEditorForm/>
             </div>
         )
     }
