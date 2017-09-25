@@ -252,7 +252,7 @@ export default class App extends React.Component
                     <Route exact path="/i" component={TestInclude}/>
                     <Route path="/ii" component={TestInclude2}/>
                     <Route path="/test" component={Test}/>
-                    <Route path="/key-in" component="KeyIn"/>
+                    <Route path="/key-in" component={KeyIn}/>
                     <Route path="/test2" component={ () => {return (<h1>Hello User</h1>)}}/>
 
                 </Route>

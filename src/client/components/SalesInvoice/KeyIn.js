@@ -14,27 +14,29 @@ export default class KeyIn extends React.Component {
 
     componentWillMount()
     {
-        let InvoiceEditorForm = serviceComponent({
+        this.InvoiceEditorForm = serviceComponent({
             serviceRegistry : (service) => ({ url:'/invoice' }),
             serviceName: 'invoice',
             moduleName: 'invoice_editor',
-            jsFileName: 'invoice_editor-bundle'
-            // componentPath: 'SimpleInvoiceEditor'
+            jsFileName: 'invoice_editor-bundle',
+            componentPath: 'SimpleInvoiceEditor'
         });
-console.log(">>>>>>>>>>>>>>", this.InvoiceEditorForm);
-
-        this.component = { InvoiceEditorForm };
     }
 
     render() {
-        let {InvoiceEditorForm} = this.component;
 
-console.log("*** this.context.currentUserData: ", this.context.currentUserData);
+        // context: currentUserData and showNotification are both required as contextTypes
+        // props: invoiceId, createMode, readOnly(boolean) and a functon. There are listed in the propTypes.
+
+        // console.log("*** this.context.currentUserData: ", this.context.currentUserData);
+
+        // TODO: Check which additional params we have/can use.
+        // TODO: onChannel ??? Is it needed?
+        //    <this.InvoiceEditorForm createMode={true} readOnly={false} onCancel={ (param) =>  alert(param) }/>
 
         return (
             <div>
-                <h1>Test Test Test</h1>
-                <InvoiceEditorForm/>
+                <this.InvoiceEditorForm createMode={true} readOnly={false}/>
             </div>
         )
     }

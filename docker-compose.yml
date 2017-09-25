@@ -13,6 +13,7 @@ services:
      - user
      - api-registry
      - acl
+     - sales-invoice
     labels:
       SERVICE_NAME: 'einvoice-send'
       SERVICE_TAGS: 'external'
@@ -297,7 +298,7 @@ services:
       - '3009:3009'
     command: 'npm run dev'
 
-  invoice:
+  sales-invoice:
 ##    build: opuscapita/sales-invoice:dev
     image: opuscapita/sales-invoice:nc
     depends_on:
