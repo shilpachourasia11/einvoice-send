@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-//import browserHistory from 'react-router/lib/browserHistory';
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
@@ -72,21 +71,20 @@ export default class ServiceConfigFlow2 extends React.Component {
     }
 
     getCustomerTermsAndConditions(locale) {
-        return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId + '/files/public/einvoice-send/TermsAndConditions_' + locale + '.html')
+        return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId + '/files/public/einvoice-send/EInvoiceTermsAndConditions_' + locale + '.html')
         .catch((e) => {
-            return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId +  '/files/public/einvoice-send/TermsAndConditions.html')
+            return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId +  '/files/public/einvoice-send/EInvoiceTermsAndConditions.html')
         })
     }
-
 
 
     render()
     {
         return (
             <div>
-                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.subheader', {customerName:this.props.voucher.customerName})}</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.subheader', {customerName:this.props.voucher.customerName})}</h3>
                 <div>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.subsubheader')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.subsubheader', {customerName:this.props.voucher.customerName})}
                 </div>
 
                 <hr/>
@@ -101,7 +99,7 @@ export default class ServiceConfigFlow2 extends React.Component {
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            {this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.readTaC', {customerName:this.props.voucher.customerName})}
+                            {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.approve', {customerName:this.props.voucher.customerName})}
                         </a>
                     </label>
                 </div>

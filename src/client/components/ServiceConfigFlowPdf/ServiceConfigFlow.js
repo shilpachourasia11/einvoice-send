@@ -47,7 +47,7 @@ export default class ServiceConfigFlow extends React.Component
 
 
     static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
+        i18n : React.PropTypes.object.isRequired
     };
 
 
@@ -96,7 +96,7 @@ export default class ServiceConfigFlow extends React.Component
 
 
     finalApprove = () => {
-        InChannelConfig.approve(this.props.voucher.supplierId)
+        InChannelConfig.activate(this.props.voucher.supplierId)
         .then(() => {
             this.props.finalizeFlow();
         })
@@ -238,6 +238,16 @@ class PdfNav extends React.Component {
 
 
 class PdfTabContent extends React.Component {
+
+    static propTypes = {
+        setCurrentTab : React.PropTypes.func,
+        approveOcTc : React.PropTypes.func,
+        approveCustomerTc : React.PropTypes.func,
+        finalApprove: React.PropTypes.func,
+        voucher: React.PropTypes.object,
+        inChannelConfig: React.PropTypes.object
+    };
+
     render() {
         if (this.props.customerTermsAndConditions) {
             return (
@@ -246,7 +256,7 @@ class PdfTabContent extends React.Component {
                         <ServiceConfigFlow1
                             onNext={ (email) => { this.props.approveOcTc(2, email); }}
                             voucher = {this.props.voucher}
-                            inChannelConfig={this.props.inChannelConfig}
+                            inChannelConfig = {this.props.inChannelConfig}
                         />
                     </Tab.Pane>
                     <Tab.Pane eventKey={2}>
@@ -254,7 +264,8 @@ class PdfTabContent extends React.Component {
                             onNext={ () => { this.props.approveCustomerTc(3); }}
                             onPrevious={ () => this.props.setCurrentTab(1) }
                             voucher = {this.props.voucher}
-                            inChannelConfig={this.props.inChannelConfig}
+                            inChannelConfig = {this.props.inChannelConfig}
+                            targetType = "pdf"
                             customerTermsAndConditions = {this.props.customerTermsAndConditions}/>
                     </Tab.Pane>
                     {/* 2017-07-97 nc: On wish of Matts, we shall deactivate the PDF upload ui for now. Reason: No usage as long as there is no recipient for it

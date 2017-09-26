@@ -6394,6 +6394,16 @@ fieldset[disabled] .form-control {
   width: 1.6em;
   margin-top: -10px;
 }
+.oc-check input::-ms-check {
+  visibility: visible;
+  background: transparent;
+  width: 1.2em;
+  height: 1.2em;
+  content: '';
+  display: inline-block;
+  border: 1px solid #aaa;
+  border-radius: 2px;
+}
 .oc-check input:before {
   visibility: visible;
   background: transparent;
@@ -6462,12 +6472,19 @@ fieldset[disabled] .form-control {
   margin-top: -10px;
   margin-bottom: -10px;
 }
-
 @media screen and (-webkit-min-device-pixel-ratio:0){
-  .oc-radio input,.oc-check input {visibility: hidden;}
-  .oc-check input {margin-bottom: -10px;} 
+    .oc-radio input, .oc-check input:not(*:root) {visibility: hidden;}
 }
-
+.oc-radio input::-ms-check {
+  visibility: visible;
+  background: transparent;
+  width: 1.2em;
+  height: 1.2em;
+  content: '';
+  display: inline-block;
+  border: 1px solid #aaa;
+  border-radius: 99em;
+}
 .oc-radio input:before {
   visibility: visible;
   background: transparent;
@@ -7300,7 +7317,6 @@ ul.nav.nav-tabs li h6 {
 .nav li > a:hover {
   text-decoration: none;
   background: transparent;
-  border: 1px solid transparent;
 }
 .nav li.active > a:after,
 .nav li.active > a:hover:after {
@@ -7904,7 +7920,7 @@ h1 .label-square {
 .datepicker > div {
   display: none;
 }
-.datepicker.days div.datepicker-days {
+.datepicker > div.datepicker-days {
   display: block;
 }
 .datepicker.months div.datepicker-months {
@@ -10394,7 +10410,7 @@ section.sidebar {
 }
 section.content {
   height: 100%;
-  overflow: auto;
+  /*overflow: auto;*/
   position: relative;
   padding: 0;
   margin: 0;

@@ -1,38 +1,62 @@
-import React, { PropTypes } from 'react';
-import serviceComponent from '@opuscapita/react-loaders/lib/serviceComponent';
-import ajax from 'superagent-bluebird-promise';
+import React from 'react';
+import { Button } from 'react-bootstrap';
 
 export default class ServiceConfigFlow3 extends React.Component {
 
-    static contextTypes = {
-        currentUserData : React.PropTypes.object.isRequired
+    static propTypes = {
+        onNext : React.PropTypes.func.isRequired,
+        onPrevious : React.PropTypes.func.isRequired
     };
 
-	constructor(props) {
-		super(props);
-	}
+    static defaultProps = {
+    };
 
-    componentWillMount()
+    constructor(props)
     {
-        this.InvoiceEditorForm = serviceComponent({
-            serviceRegistry : (service) => ({ url:'/invoice' }),
-            serviceName: 'invoice',
-            moduleName: 'invoice_editor',
-            jsFileName: 'invoice_editor-bundle',
-            componentPath: 'SimpleInvoiceEditor'
-        });
-console.log(">>>>>>>>>>>>>>", this.InvoiceEditorForm);
+        super(props)
+
+        this.state = {
+        }
     }
 
-    render() {
-console.log("*** this.context.currentUserData: ", this.context.currentUserData);
+    static contextTypes = {
+        i18n : React.PropTypes.object.isRequired,
+    };
 
+
+    render()
+    {
         return (
             <div>
-                <h1>Test Test Test</h1>
-                <this.InvoiceEditorForm/>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.header')}</h3>
+
+                <p>
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.subheader')}
+                </p>
+                <ul>
+                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.step1')}</li>
+                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.step2')}</li>
+                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.step3')}</li>
+                </ul>
+                <p>
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.supportHint')}
+                </p>
+                <p>
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.textFooter')}
+                </p>
+                <p>
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.textGreetings')}
+                </p>
+
+                <div className="form-submit text-right" style={{ marginTop: '80px' }}>
+                    <Button bsStyle="link" onClick={ () => this.props.onPrevious() }>
+                        {this.context.i18n.getMessage('previous')}
+                    </Button>
+                    <Button bsStyle="primary" onClick={ () => this.props.onNext() }>
+                        {this.context.i18n.getMessage('accept')}
+                    </Button>
+                </div>
             </div>
         )
     }
-
 }
