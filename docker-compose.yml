@@ -299,8 +299,7 @@ services:
     command: 'npm run dev'
 
   sales-invoice:
-##    build: opuscapita/sales-invoice:dev
-    image: opuscapita/sales-invoice:nc
+    image: opuscapita/sales-invoice:dev
     depends_on:
      - mysql
      - consul
