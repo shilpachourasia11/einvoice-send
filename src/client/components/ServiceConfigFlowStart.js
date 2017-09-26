@@ -244,7 +244,7 @@ export default class ServiceConfigFlowStart extends React.Component
                                     {this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoice')}
                                     <BillingDetails inputType="eInvoice" voucher={this.props.voucher} />
                                 </h4>
-                                {this.renderState("einvoice")}
+                                {this.renderState("einvoice") || <br/>}
                             </div>
                             <div className="panel-body">
                                 {this.context.i18n.getMessage('ServiceConfigFlowStart.eInvoiceDesc')}
