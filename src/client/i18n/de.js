@@ -21,6 +21,7 @@ export default {
         supplierProfile: "Lieferantenprofil",
 
         freeFor: "Kostenfrei für Sie als Lieferant der {customerName}",
+        add2EInvoice: "unter Verwendung eines gelisteten Dienstleisters",
         intention: "Absichtserklärung",
 
         eInvoice: "eInvoice",
