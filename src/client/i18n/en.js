@@ -21,6 +21,7 @@ export default {
         supplierProfile: "Supplier Profile",
 
         freeFor: "At no charge for you as supplier of {customerName}",
+        add2EInvoice: "when using existing Service Provider",
         intention: "Confirm your intention",
 
         eInvoice: "eInvoice",
