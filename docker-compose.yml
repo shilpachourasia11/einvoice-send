@@ -300,6 +300,9 @@ services:
 
   sales-invoice:
     image: opuscapita/sales-invoice:dev
+    #build: ../sales-invoice
+    #volumes:
+    #  - ../sales-invoice:/home/node/invoice
     depends_on:
      - mysql
      - consul
