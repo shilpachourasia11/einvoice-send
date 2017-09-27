@@ -85,6 +85,7 @@ export default {
                 step1: "Kontaktieren Sie Ihren E-Fakturierungsdienstleister ",
                 step2: "Test-E-Rechnung/Testphase",
                 step3: "Go-live",
+                text: "Bitte nutzen Sie „PDF per Mail“ für Ihre zwischenzeitliche Rechnungsstellung, bis die Konfiguration der eInvoice-Anbindung komplett abgeschlossen ist.",
                 supportHint: "Bei Fragen kontaktieren Sie bitte unseren Support per Telefon unter +49 231 3967 350 oder per E-Mail via customerservice.de@opuscapita.com.",
                 textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit bestehenden und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
                 textGreetings: "Vielen Dank!"
