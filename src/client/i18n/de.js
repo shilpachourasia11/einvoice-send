@@ -21,6 +21,7 @@ export default {
         supplierProfile: "Lieferantenprofil",
 
         freeFor: "Kostenfrei für Sie als Lieferant der {customerName}",
+        add2EInvoice: "unter Verwendung eines gelisteten Dienstleisters",
         intention: "Absichtserklärung",
 
         eInvoice: "eInvoice",
@@ -70,7 +71,7 @@ export default {
                 li2: "wählen Sie einen E-Rechnungsdienstleisters aus unserer Liste der Partner (s. Lieferantenleitfaden) aus.",
                 li3: "E-Invoice-Übertragung bedeutet, dass Ihr Abrechnungssystem mit dem System Ihres E-Rechnungsdienstleisters kommuniziert und Ihre E-Rechnungen übestellt. Im nächsten Schritt überstellt Ihr Dienstleister die Rechnungsinformationen an OpusCapita. Und zu guter letzt überstellt OpusCapita die E-Rechnungen an {customerName}. Hierbei sind die Angaben der Kennung des E-Rechnungsdienstleisters (Vermittlers) und der E-Rechnungsadressinformationen erforderlich. Informationen hierzu finden Sie unten im Lieferantenleitfaden.",
                 li4: "Nutzen Sie einen nicht genannten Service-Dienstleister, dann kontaktiert OpusCapita Ihren Dienstleister, um die technischen Details zu klären.",
-                moreInfo: "Einen detaillierte Lieferantenleitfaden finden Sie hier: ",
+                moreInfo: "Einen detaillierten Lieferantenleitfaden finden Sie hier: ",
                 accepted: "Ich habe die Anforderungen der OpusCapita gelesen und akzeptiert.",
             },
             Step2: {
@@ -84,6 +85,7 @@ export default {
                 step1: "Kontaktieren Sie Ihren E-Fakturierungsdienstleister ",
                 step2: "Test-E-Rechnung/Testphase",
                 step3: "Go-live",
+                text: "Bitte nutzen Sie „PDF per Mail“ für Ihre zwischenzeitliche Rechnungsstellung, bis die Konfiguration der eInvoice-Anbindung komplett abgeschlossen ist.",
                 supportHint: "Bei Fragen kontaktieren Sie bitte unseren Support per Telefon unter +49 231 3967 350 oder per E-Mail via customerservice.de@opuscapita.com.",
                 textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit bestehenden und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
                 textGreetings: "Vielen Dank!"
