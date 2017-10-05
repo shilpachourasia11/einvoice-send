@@ -85,6 +85,7 @@ export default {
                 step1: "Contact your E-invoicing service provider ",
                 step2: "Test E-invoice / Testing phase",
                 step3: "Go live",
+                text: "",
                 supportHint: "In case of questions, please contact our support by phone +49 231 3967 350 or via email  customerservice.de@opuscapita.com.",
                 textFooter: "We kindly ask you to go back to the start page and update your company information in order to strengthen your profile to become more visible to trading partners within the Eco System.",
                 textGreetings: "Thank you!"

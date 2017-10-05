@@ -39,6 +39,8 @@ export default class ServiceConfigFlow3 extends React.Component {
                     <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.step3')}</li>
                 </ul>
                 <p>
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.text')}
+                    <br/>
                     {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.supportHint')}
                 </p>
                 <p>
