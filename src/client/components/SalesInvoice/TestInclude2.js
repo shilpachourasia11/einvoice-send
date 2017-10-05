@@ -15,8 +15,8 @@ export default class KeyIn extends React.Component {
     componentWillMount()
     {
         this.InvoiceTest = serviceComponent({
-            serviceRegistry : (service) => ({ url:'/invoice' }),
-            serviceName: 'invoice',
+            serviceRegistry : (service) => ({ url:'/sales-invoice' }),
+            serviceName: 'sales-invoice',
             moduleName: 'sales_invoice_test',
             jsFileName: 'sales_invoice_test-bundle'
             // componentPath: 'Test'

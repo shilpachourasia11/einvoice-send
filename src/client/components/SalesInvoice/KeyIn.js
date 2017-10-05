@@ -15,8 +15,8 @@ export default class KeyIn extends React.Component {
     componentWillMount()
     {
         this.InvoiceEditorForm = serviceComponent({
-            serviceRegistry : (service) => ({ url:'/invoice' }),
-            serviceName: 'invoice',
+            serviceRegistry : (service) => ({ url:'/sales-invoice' }),
+            serviceName: 'sales-invoice',
             moduleName: 'invoice_editor',
             jsFileName: 'invoice_editor-bundle',
             componentPath: 'SimpleInvoiceEditor'

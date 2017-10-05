@@ -7,7 +7,7 @@ services:
      - registrator
      - redis
      - kong
-     - blob
+     #- blob
      - customer
      - auth
      - user
@@ -299,7 +299,7 @@ services:
     command: 'npm run dev'
 
   sales-invoice:
-    image: opuscapita/sales-invoice:dev
+    image: opuscapita/sales-invoice:nc
     #build: ../sales-invoice
     #volumes:
     #  - ../sales-invoice:/home/node/invoice
@@ -314,14 +314,14 @@ services:
      - customer
      - supplier
     labels:
-      SERVICE_NAME: 'invoice'
+      SERVICE_NAME: 'sales-invoice'
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       REDIS_AUTH: ${REDIS_AUTH}
-      SERVICE_3003_CHECK_HTTP: /api/health/check
-      SERVICE_3003_CHECK_INTERVAL: 15s
-      SERVICE_3003_CHECK_TIMEOUT: 3s
+      SERVICE_3018_CHECK_HTTP: /api/health/check
+      SERVICE_3018_CHECK_INTERVAL: 15s
+      SERVICE_3018_CHECK_TIMEOUT: 3s
     ports:
-     - '3003:3003'
+     - '3018:3018'
     command: "npm run dev"
