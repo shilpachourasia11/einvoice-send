@@ -7,7 +7,7 @@ services:
      - registrator
      - redis
      - kong
-     #- blob
+     - blob
      - customer
      - auth
      - user
