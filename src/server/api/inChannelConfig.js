@@ -31,12 +31,12 @@ module.exports.getModelFromInputType = function(inputType)
                 return this.db.models.PaperChannelConfig;
             case 'einvoice':
                 return this.db.models.EInvoiceChannelConfig;
-            case 'portal':
+            case 'supplier':
                 return this.db.models.SupplierPortalConfig;
         }
     }
 
-    throw new Error('Invalid input type ' + inputType + '. Must be pdf, einvoice, portal or paper.');
+    throw new Error('Invalid input type ' + inputType + '. Must be pdf, einvoice, supplier or paper.');
 }
 
 module.exports.getInChannelConfig = function(supplierId)
@@ -56,14 +56,18 @@ module.exports.getInChannelConfig = function(supplierId)
             return Promise.all([
                 this.db.models.PdfChannelConfig.findById(supplierId),
                 this.db.models.EInvoiceChannelConfig.findById(supplierId),
+                this.db.models.SupplierPortalConfig.findById(supplierId),
                 this.getModelFromInputType(basicConfig.inputType).findById(supplierId)  // TODO: kept the attic approach to keep the interface structure - to be cleansed!
             ])
-            .spread((pdfConfig, einvoiceConfig, extendedConfig) => {
+            .spread((pdfConfig, einvoiceConfig, supplierConfig, extendedConfig) => {
                 if (pdfConfig) {
                     basicConfig.dataValues.PdfChannelConfig = pdfConfig;
                 }
                 if (einvoiceConfig) {
                     basicConfig.dataValues.EInvoiceChannelConfig = einvoiceConfig;
+                }
+                if (supplierConfig) {
+                    basicConfig.dataValues.SupplierPortalConfig = supplierConfig;
                 }
 
                 // TODO: kept the attic approach to keep the interface structure - to be cleansed!

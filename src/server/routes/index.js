@@ -131,16 +131,19 @@ module.exports.sendInChannelConfig = function(req, res)
 
 module.exports.addInChannelConfig = function(req, res)
 {
+    console.log('Api got the call');
     var supplierId = req.body.supplierId;
     Api.inChannelConfigExists(supplierId).then(exists =>
     {
         if (exists)
         {
+            console.log('supplierId exists');
             res.status('409').json({ message : 'This supplier already owns an in-channel configuration.' });
         }
         else
         {
             var obj = req.body || { }
+            console.log('supplierId not existiong, creating new');
 
             obj.supplierId = supplierId;
             obj.createdBy = req.opuscapita.userData('id');

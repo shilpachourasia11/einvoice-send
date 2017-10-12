@@ -100,18 +100,25 @@ export default class ServiceConfigFlowStart extends React.Component
             // TODO: Check that it works for pdf and einvoice!!!
             return InChannelConfig.update(supplierId, obj)
             .then(() => {
+                console.log('3 InChannelConfig Updated with this object:', obj);
                 resolve();
             })
             .catch((e) => {
+                console.log('4 Trying to add Config');
                 return InChannelConfig.add(supplierId, obj)
                 .then(() => {
                     console.log("InChannelConfig did not exist and was successfully created.");
                     resolve();
                 })
+                .catch((e) => {
+                    console.log('failed to add InChannelConfig', supplierId);
+                    console.log('continue', obj);
+                    console.log('the error:', e);
+                })
             })
         })
         .then(() => {
-            this.props.openFlow(this.state.invoiceSendingType);
+            return this.props.openFlow(this.state.invoiceSendingType);
         })
         .catch((e) => {
             console.log("Error: ", e);
@@ -219,6 +226,7 @@ export default class ServiceConfigFlowStart extends React.Component
 
     render()
     {
+        console.log('1 invoiceSendingType:', this.state.invoiceSendingType);
         return (
             <div>
                 <h3>{this.context.i18n.getMessage('ServiceConfigFlowStart.header')}</h3>
