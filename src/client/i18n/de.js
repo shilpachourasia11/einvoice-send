@@ -30,8 +30,8 @@ export default {
         pdf : "PDF per Email",
         pdfDesc: "Sie möchten Ihre Rechnung als Anhang einer E-Mail verschicken? Kein Problem. In der Vervollständigung der Registrierung finden Sie mehr Informationen hierzu.",
 
-        supplierPortal : "Lieferantenportal",
-        supplierPortalDesc: "Sie können Rechnungnen per manueller Eingabe der notwendigen Daten hinterlegen.",
+        keyIn : "D! Invoice Key In",
+        keyInDesc: "Sie können Rechnungnen per manueller Eingabe der notwendigen Daten hinterlegen.",
 
         paper : "Papierrechnung",
         paperDesc: "So gewünscht, können Sie auch Papierrechnungen verschicken. Lesen Sie mehr dazu in der Registrierung.",
@@ -125,9 +125,35 @@ export default {
                 textGreetings: "Vielen Dank!"
             }
         },
-        SupplierPortal:{
-            name: "Lieferantenportal",
-            header: "Lieferantenportal-Konfiguration"
+        KeyIn:{
+            name: "KeyIn",
+            header: "D! KeyIn Configuration",
+            OCTaC: {
+                text: "!!! Sie möchten elektronische Rechnungen an {customerName} über einen anderen Anbieter schicken?"
+            },
+            Step1: {
+                subheader: "Richtlinien zur ",
+                subsubheader: "Um die eInvoice-Anbindung für Ihren Kunden {customerName} zu konfigurieren, prüfen Sie bitte die hier aufgeführten Voraussetzungen sowie den Lieferantenleitfaden und akzeptieren diese unten auf der Seite.",
+                text1: "Invoice Key In",
+                li1: "D! Finalize your configuration for Invoice Key In",
+                li2: "D! Click ”Invoice Key In” from left side menu bar",
+                li3: "D! Select your customer",
+                li4: "D! Type in Invoice data",
+                li5: "D! Send Invoice to your customer",
+                moreInfo: "Einen detaillierten Lieferantenleitfaden finden Sie hier: ",
+                accepted: "Ich habe die Anforderungen der OpusCapita gelesen und akzeptiert.",
+            },
+            Step2: {
+                subheader: "! Richtlinien der {customerName} zur Invoice Key In",
+                subsubheader: "Bitte prüfen Sie die Richtlinien der {customerName} und bestätigen diese unten auf der Seite.",
+                approve: "Ich habe die Richtlinien der {customerName} gelesen und akzeptiert."
+            },
+            Step3: {
+                header: "Die nächsten Schritte",
+                subheader: "All required steps from your side are done and you are now able to send your first invoice through Invoice Key In.",
+                textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit bestehenden und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
+                textGreetings: "Vielen Dank!"
+            }
         },
         CustomerTaC: {
             subheader: "Allgemeine Geschäftsbedingungen der {customerName}",

@@ -100,20 +100,14 @@ export default class ServiceConfigFlowStart extends React.Component
             // TODO: Check that it works for pdf and einvoice!!!
             return InChannelConfig.update(supplierId, obj)
             .then(() => {
-                console.log('3 InChannelConfig Updated with this object:', obj);
                 resolve();
             })
             .catch((e) => {
-                console.log('4 Trying to add Config');
                 return InChannelConfig.add(supplierId, obj)
                 .then(() => {
-                    console.log("InChannelConfig did not exist and was successfully created.");
                     resolve();
                 })
                 .catch((e) => {
-                    console.log('failed to add InChannelConfig', supplierId);
-                    console.log('continue', obj);
-                    console.log('the error:', e);
                 })
             })
         })
@@ -121,7 +115,6 @@ export default class ServiceConfigFlowStart extends React.Component
             return this.props.openFlow(this.state.invoiceSendingType);
         })
         .catch((e) => {
-            console.log("Error: ", e);
             alert("Saving the service type did not succeed. Please retry.");
         });
     }
@@ -192,7 +185,7 @@ export default class ServiceConfigFlowStart extends React.Component
         let objNameMapping = {
             einvoice: "EInvoiceChannelConfig",
             pdf: "PdfChannelConfig",
-            supplier: "SupplierPortalConfig",
+            keyin: "KeyInConfig",
             paper: "PaperChannelConfig"
         }
         let objName = objNameMapping[type];
@@ -226,7 +219,6 @@ export default class ServiceConfigFlowStart extends React.Component
 
     render()
     {
-        console.log('1 invoiceSendingType:', this.state.invoiceSendingType);
         return (
             <div>
                 <h3>{this.context.i18n.getMessage('ServiceConfigFlowStart.header')}</h3>
@@ -288,22 +280,22 @@ export default class ServiceConfigFlowStart extends React.Component
                     <div className="col-md-1">
                         <label className="oc-radio">
                             <Radio
-                                disabled={!this.props.voucher.supplierPortalEnabled}
+                                disabled={!this.props.voucher.keyInEnabled}
                                 onChange={ this.onInvoiceSendingTypeChanged }
-                                checked={ this.state.invoiceSendingType === 'supplier' }
-                                value="supplier"/>
+                                checked={ this.state.invoiceSendingType === 'keyin' }
+                                value="keyin"/>
                         </label>
                     </div>
                     <div className="col-md-11">
-                        <div className={"panel panel-default " + (this.props.voucher.supplierPortalEnabled ? "" : "disabled")}>
+                        <div className={"panel panel-default " + (this.props.voucher.keyInEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
-                                <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.supplierPortal')}
-                                    <BillingDetails inputType="supplierPortal" voucher={this.props.voucher} />
+                                <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.keyIn')}
+                                    <BillingDetails inputType="KeyIn" voucher={this.props.voucher} />
                                 </h4>
-                                {this.renderState("supplier")}
+                                {this.renderState("keyin")}
                             </div>
                             <div className="panel-body">
-                                {this.context.i18n.getMessage('ServiceConfigFlowStart.supplierPortalDesc')}
+                                {this.context.i18n.getMessage('ServiceConfigFlowStart.keyInDesc')}
                             </div>
                         </div>
                     </div>
