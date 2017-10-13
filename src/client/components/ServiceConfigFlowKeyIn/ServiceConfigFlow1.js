@@ -43,9 +43,6 @@ export default class ServiceConfigFlow1 extends React.Component {
         return ajax.get('/einvoice-send/api/config/inchannelcontracts/c_' + this.props.voucher.customerId + '/s_' + this.props.voucher.supplierId)
             .set('Content-Type', 'application/json')
         .then ((contract) => {
-
-console.log("loadInChannelContract: ", contract);
-
             if (contract && contract.body && contract.body.inputType == InChannelConfig.types.keyIn) {
                 this.setState({
                     accepted : (contract.body.status == 'approved')
