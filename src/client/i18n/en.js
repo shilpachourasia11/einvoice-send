@@ -59,7 +59,7 @@ export default {
 
         Einvoice:{
             name: "eInvoice",
-            header: "eInvoice Configuration",
+            header: "Configuration eInvoice ",
             OCTaC: {
                 text: "You want to send E-Invoices to {customerName} through a third party Operator?"
             },
@@ -93,7 +93,7 @@ export default {
         },
         Pdf:{
             name: "PDF by Email",
-            header: "PDF by Email Configuration",
+            header: "Configuration PDF by Email ",
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail.",
             intro: "Email Invoice Digitizing enables {customerName} to receive invoices as email attachments.",
             rejection:"Rejection Email",
@@ -115,7 +115,7 @@ export default {
         },
         Paper:{
             name: "Paper Invoice",
-            header: "Paper Invoice Configuration",
+            header: "Configuration Paper Invoice ",
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first paper- invoice to our global digitizing (scanning) service.",
             Approve: {
                 header: "Next Steps",
@@ -127,19 +127,16 @@ export default {
         },
         KeyIn:{
             name: "Invoice Key In",
-            header: "Invoice Key In Configuration",
-            OCTaC: {
-                text: "!!!You want to send E-Invoices to {customerName} through a third party Operator?"
-            },
+            header: "Configuration Invoice Key In",
             Step1: {
                 subheader: "Guidelines for Invoice Key In",
                 subsubheader: "You have successfully registered on behalf of {customerName}. Please read carefully through the following prerequisites as well as Supplier Guideline description and accept the terms before sending your first E-invoice by using Interconnect Operator Network.",
                 text1: "Invoice Key In",
                 li1: "Finalize your configuration for Invoice Key In",
-                li2: "Click ”Invoice Key In” from left side menu bar",
+                li2: "Click ”Invoice Key In” from menu",
                 li3: "Select your customer",
                 li4: "Type in Invoice data",
-                li5: "Send Invoice to your customer",
+                li5: "Send Invoices to your customer",
                 moreInfo: "Read more in Supplier Guideline Description for Invoice Key In",
                 accepted: "I have read and understood OpusCapitas terms and conditions of the service.",
             },

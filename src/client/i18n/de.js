@@ -30,8 +30,8 @@ export default {
         pdf : "PDF per Email",
         pdfDesc: "Sie möchten Ihre Rechnung als Anhang einer E-Mail verschicken? Kein Problem. In der Vervollständigung der Registrierung finden Sie mehr Informationen hierzu.",
 
-        keyIn : "D! Invoice Key In",
-        keyInDesc: "Sie können Rechnungnen per manueller Eingabe der notwendigen Daten hinterlegen.",
+        keyIn : "Key-In-Rechnungserfassung",
+        keyInDesc: "Wählen Sie diese Option, um Rechnungen über ein Formular selbständig zu hinterlegen.",
 
         paper : "Papierrechnung",
         paperDesc: "So gewünscht, können Sie auch Papierrechnungen verschicken. Lesen Sie mehr dazu in der Registrierung.",
@@ -39,7 +39,7 @@ export default {
         status: "Status",
         statuses: {
             undefined: "Ist nicht konfiguriert.",
-            new: "Wurde ausgewählt, aber die Konfiguration steht noch aus.",
+            new: "Wurde ausgewählt, aber die Konfiguration wurde noch nicht abgeschlossen.",
             approved: "Wurde konfiguriert, aber noch nicht aktiviert.",
             configured: "Ist konfiguriert",
             activated: "Ist aktiviert.",
@@ -59,7 +59,7 @@ export default {
 
         Einvoice:{
             name: "eInvoice",
-            header: "eInvoice-Konfiguration",
+            header: "Konfiguration eInvoice",
             OCTaC: {
                 text: "Sie möchten elektronische Rechnungen an {customerName} über einen anderen Anbieter schicken?"
             },
@@ -93,7 +93,7 @@ export default {
         },
         Pdf:{
             name: "PDF per Email",
-            header: "PDF per Email-Konfiguration",
+            header: "Konfiguration PDF per Email",
             subheader: "Sie haben sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
             intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen.",
             rejection:"Rückweisungs E-Mail",
@@ -126,31 +126,28 @@ export default {
             }
         },
         KeyIn:{
-            name: "KeyIn",
-            header: "D! KeyIn Configuration",
-            OCTaC: {
-                text: "!!! Sie möchten elektronische Rechnungen an {customerName} über einen anderen Anbieter schicken?"
-            },
+            name: "Key-In",
+            header: "Konfiguration Key-In-Rechnungserfassung ",
             Step1: {
-                subheader: "Richtlinien zur ",
+                subheader: "Richtlinien für die Key-In-Rechnungserfassung",
                 subsubheader: "Um die eInvoice-Anbindung für Ihren Kunden {customerName} zu konfigurieren, prüfen Sie bitte die hier aufgeführten Voraussetzungen sowie den Lieferantenleitfaden und akzeptieren diese unten auf der Seite.",
-                text1: "Invoice Key In",
-                li1: "D! Finalize your configuration for Invoice Key In",
-                li2: "D! Click ”Invoice Key In” from left side menu bar",
-                li3: "D! Select your customer",
-                li4: "D! Type in Invoice data",
-                li5: "D! Send Invoice to your customer",
+                text1: "Key-In - Rechnungserfassung",
+                li1: "Vervollständigen Sie Ihre Konfiguration für den Rechnungsstellung per Formular",
+                li2: "Selektieren Sie ”Key-In - Rechnungsstellung” im Menü",
+                li3: "Wählen Sie Ihren Kunden aus",
+                li4: "Fügen Sie Ihre Rechnungsdaten hinzu",
+                li5: "Versenden Sie die Ihre Rechnung per Klick and Ihre Kunden",
                 moreInfo: "Einen detaillierten Lieferantenleitfaden finden Sie hier: ",
                 accepted: "Ich habe die Anforderungen der OpusCapita gelesen und akzeptiert.",
             },
             Step2: {
-                subheader: "! Richtlinien der {customerName} zur Invoice Key In",
+                subheader: "Richtlinien der {customerName} zur Key-In-Rechnungserfassung",
                 subsubheader: "Bitte prüfen Sie die Richtlinien der {customerName} und bestätigen diese unten auf der Seite.",
                 approve: "Ich habe die Richtlinien der {customerName} gelesen und akzeptiert."
             },
             Step3: {
                 header: "Die nächsten Schritte",
-                subheader: "All required steps from your side are done and you are now able to send your first invoice through Invoice Key In.",
+                subheader: "Sie haben uns alle notwendigen Daten bereitgestellt und können uns jetzt Ihre erste Rechnung per Key-In-Rechnungserfassung absenden.",
                 textFooter: "Ist Ihr Unternehemensprofil vollständig? Ein vollständiges Profil erleichtert die Interaktion mit bestehenden und neuen Handelspartnern über diese Plattform. Im Menü finden Sie den Menüpunkt zur Pflege Ihres Unternehmensprofils.",
                 textGreetings: "Vielen Dank!"
             }

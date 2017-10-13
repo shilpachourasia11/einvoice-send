@@ -198,7 +198,7 @@ export default class ServiceConfigFlowStart extends React.Component
             }
             else {
                 // TODO: How to mark it? Configuration is done, but another type is active!
-                return "notActivated";
+                // return "notActivated";
             }
         }
         else {
