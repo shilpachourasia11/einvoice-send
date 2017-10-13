@@ -182,10 +182,11 @@ export default class ServiceConfigFlowStart extends React.Component
     }
 
     getConfigurationState = (type) => {
+
         let objNameMapping = {
             einvoice: "EInvoiceChannelConfig",
             pdf: "PdfChannelConfig",
-            keyin: "KeyInConfig",
+            keyIn: "SupplierPortalConfig", // TODO: move schema to "KeyInConfig",
             paper: "PaperChannelConfig"
         }
         let objName = objNameMapping[type];
@@ -282,17 +283,17 @@ export default class ServiceConfigFlowStart extends React.Component
                             <Radio
                                 disabled={!this.props.voucher.keyInEnabled}
                                 onChange={ this.onInvoiceSendingTypeChanged }
-                                checked={ this.state.invoiceSendingType === 'keyin' }
-                                value="keyin"/>
+                                checked={ this.state.invoiceSendingType === InChannelConfig.types.keyIn }
+                                value={InChannelConfig.types.keyIn}/>
                         </label>
                     </div>
                     <div className="col-md-11">
                         <div className={"panel panel-default " + (this.props.voucher.keyInEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
                                 <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.keyIn')}
-                                    <BillingDetails inputType="KeyIn" voucher={this.props.voucher} />
+                                    <BillingDetails inputType={InChannelConfig.types.keyIn} voucher={this.props.voucher} />
                                 </h4>
-                                {this.renderState("keyin")}
+                                {this.renderState(InChannelConfig.types.keyIn)}
                             </div>
                             <div className="panel-body">
                                 {this.context.i18n.getMessage('ServiceConfigFlowStart.keyInDesc')}

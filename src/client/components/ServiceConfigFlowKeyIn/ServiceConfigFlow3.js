@@ -29,16 +29,16 @@ export default class ServiceConfigFlow3 extends React.Component {
     {
         return (
             <div>
-                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.header')}</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step3.header')}</h3>
 
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.subheader')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step3.subheader')}
                 </p>
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.textFooter')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step3.textFooter')}
                 </p>
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.textGreetings')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step3.textGreetings')}
                 </p>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>

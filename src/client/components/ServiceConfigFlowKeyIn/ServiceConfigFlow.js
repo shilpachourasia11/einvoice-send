@@ -64,7 +64,7 @@ export default class ServiceConfigFlow extends React.Component
             .then((data) => resolve(data))
             .catch((e) => {
                 let values =  {
-                    inputType: InChannelConfig.types.supplierPortal,
+                    inputType: InChannelConfig.types.keyIn,
                     billingModelId: 'external',
                     voucherId: voucherId
                 }
@@ -75,7 +75,7 @@ export default class ServiceConfigFlow extends React.Component
         .then((data) => {
             let inChannelContractData = {
                 customerId: customerId,
-                inputType: InChannelConfig.types.supplierPortal,
+                inputType: InChannelConfig.types.keyIn,
                 voucherId: voucherId,
                 billingModelId: 'external',
                 status: InChannelContract.status.approved
@@ -125,9 +125,6 @@ export default class ServiceConfigFlow extends React.Component
     approveCustomerTC = (tabNo) => {
         this.setApprovedCustomerTc()
         .then(() => this.setCurrentTab(tabNo));
-        // .then(() => {
-        //     this.finalApprove()
-        // })
     }
 
 
@@ -145,7 +142,7 @@ export default class ServiceConfigFlow extends React.Component
                         <div className="container">
                             <section className="header">
                                 <h1>
-                                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.header')}
+                                    {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.header')}
                                     <div className="control-bar text-right pull-right">
                                         <Button onClick={ () => this.props.gotoStart()}>
                                             <i className="fa fa-angle-left"/>

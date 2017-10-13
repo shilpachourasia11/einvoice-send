@@ -4,6 +4,8 @@ import {Form, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-boots
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
+import InChannelConfig from '../../api/InChannelConfig.js';
+
 
 export default class ServiceConfigFlow1 extends React.Component {
 
@@ -33,10 +35,6 @@ export default class ServiceConfigFlow1 extends React.Component {
     };
 
 
-    componentWillMount() {
-        this.loadInChannelContract();
-    }
-
     componentWillReceiveProps() {
         this.loadInChannelContract();
     }
@@ -45,7 +43,10 @@ export default class ServiceConfigFlow1 extends React.Component {
         return ajax.get('/einvoice-send/api/config/inchannelcontracts/c_' + this.props.voucher.customerId + '/s_' + this.props.voucher.supplierId)
             .set('Content-Type', 'application/json')
         .then ((contract) => {
-            if (contract && contract.body && contract.body.inputType == 'keyIn') {
+
+console.log("loadInChannelContract: ", contract);
+
+            if (contract && contract.body && contract.body.inputType == InChannelConfig.types.keyIn) {
                 this.setState({
                     accepted : (contract.body.status == 'approved')
                 });
@@ -114,7 +115,9 @@ export default class ServiceConfigFlow1 extends React.Component {
 
                 <div>
                     <label className="oc-check">
-                        <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
+                        <input type="checkbox"
+                            checked={ this.state.accepted }
+                            onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
                             {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step1.accepted', {customerName: customerName})}
                         </a>

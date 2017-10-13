@@ -82,9 +82,9 @@ export default class ServiceConfigFlow2 extends React.Component {
     {
         return (
             <div>
-                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.subheader', {customerName:this.props.voucher.customerName})}</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step2.subheader', {customerName:this.props.voucher.customerName})}</h3>
                 <div>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.subsubheader', {customerName:this.props.voucher.customerName})}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step2.subsubheader', {customerName:this.props.voucher.customerName})}
                 </div>
 
                 <hr/>
@@ -99,7 +99,7 @@ export default class ServiceConfigFlow2 extends React.Component {
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step2.approve', {customerName:this.props.voucher.customerName})}
+                            {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step2.approve', {customerName:this.props.voucher.customerName})}
                         </a>
                     </label>
                 </div>
