@@ -105,16 +105,16 @@ export default class ServiceConfigFlowStart extends React.Component
             .catch((e) => {
                 return InChannelConfig.add(supplierId, obj)
                 .then(() => {
-                    console.log("InChannelConfig did not exist and was successfully created.");
                     resolve();
+                })
+                .catch((e) => {
                 })
             })
         })
         .then(() => {
-            this.props.openFlow(this.state.invoiceSendingType);
+            return this.props.openFlow(this.state.invoiceSendingType);
         })
         .catch((e) => {
-            console.log("Error: ", e);
             alert("Saving the service type did not succeed. Please retry.");
         });
     }
@@ -182,10 +182,11 @@ export default class ServiceConfigFlowStart extends React.Component
     }
 
     getConfigurationState = (type) => {
+
         let objNameMapping = {
             einvoice: "EInvoiceChannelConfig",
             pdf: "PdfChannelConfig",
-            supplier: "SupplierPortalConfig",
+            keyIn: "SupplierPortalConfig", // TODO: move schema to "KeyInConfig",
             paper: "PaperChannelConfig"
         }
         let objName = objNameMapping[type];
@@ -197,7 +198,7 @@ export default class ServiceConfigFlowStart extends React.Component
             }
             else {
                 // TODO: How to mark it? Configuration is done, but another type is active!
-                return "notActivated";
+                // return "notActivated";
             }
         }
         else {
@@ -280,22 +281,22 @@ export default class ServiceConfigFlowStart extends React.Component
                     <div className="col-md-1">
                         <label className="oc-radio">
                             <Radio
-                                disabled={!this.props.voucher.supplierPortalEnabled}
+                                disabled={!this.props.voucher.keyInEnabled}
                                 onChange={ this.onInvoiceSendingTypeChanged }
-                                checked={ this.state.invoiceSendingType === 'supplier' }
-                                value="supplier"/>
+                                checked={ this.state.invoiceSendingType === InChannelConfig.types.keyIn }
+                                value={InChannelConfig.types.keyIn}/>
                         </label>
                     </div>
                     <div className="col-md-11">
-                        <div className={"panel panel-default " + (this.props.voucher.supplierPortalEnabled ? "" : "disabled")}>
+                        <div className={"panel panel-default " + (this.props.voucher.keyInEnabled ? "" : "disabled")}>
                             <div className="panel-heading">
-                                <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.supplierPortal')}
-                                    <BillingDetails inputType="supplierPortal" voucher={this.props.voucher} />
+                                <h4 className="panel-title">{this.context.i18n.getMessage('ServiceConfigFlowStart.keyIn')}
+                                    <BillingDetails inputType={InChannelConfig.types.keyIn} voucher={this.props.voucher} />
                                 </h4>
-                                {this.renderState("supplier")}
+                                {this.renderState(InChannelConfig.types.keyIn)}
                             </div>
                             <div className="panel-body">
-                                {this.context.i18n.getMessage('ServiceConfigFlowStart.supplierPortalDesc')}
+                                {this.context.i18n.getMessage('ServiceConfigFlowStart.keyInDesc')}
                             </div>
                         </div>
                     </div>
