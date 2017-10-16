@@ -12,6 +12,8 @@ services:
      - auth
      - user
      - api-registry
+     - acl
+     - sales-invoice
     labels:
       SERVICE_NAME: 'einvoice-send'
       SERVICE_TAGS: 'external'
@@ -27,6 +29,7 @@ services:
       SERVICE_3007_CHECK_TIMEOUT: '3s'
     ports:
      - '3007:3007'
+
 
 
   mysql:
@@ -192,7 +195,22 @@ services:
     depends_on:
       - kong
     command: 'npm run dev'
-
+  acl:
+    image: opuscapita/acl:dev
+    labels:
+      - 'SERVICE_NAME=acl'
+      - 'SERVICE_TAGS=external,kong'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      SERVICE_3013_CHECK_HTTP: /api/health/check
+      SERVICE_3013_CHECK_INTERVAL: 15s
+      SERVICE_3013_CHECK_TIMEOUT: 3s
+    ports:
+     - '3013:3013'
+    depends_on:
+      - kong
+    command: 'npm run dev'
   isodata:
     image: opuscapita/isodata:dev
     ports:
@@ -279,3 +297,31 @@ services:
     ports:
       - '3009:3009'
     command: 'npm run dev'
+
+  sales-invoice:
+    image: opuscapita/sales-invoice:dev
+    #build: ../sales-invoice
+    #volumes:
+    #  - ../sales-invoice:/home/node/invoice
+    depends_on:
+     - mysql
+     - consul
+     - registrator
+     - redis
+     - acl
+     - auth
+     - user
+     - customer
+     - supplier
+    labels:
+      SERVICE_NAME: 'sales-invoice'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      REDIS_AUTH: ${REDIS_AUTH}
+      SERVICE_3018_CHECK_HTTP: /api/health/check
+      SERVICE_3018_CHECK_INTERVAL: 15s
+      SERVICE_3018_CHECK_TIMEOUT: 3s
+    ports:
+     - '3018:3018'
+    command: "npm run dev"

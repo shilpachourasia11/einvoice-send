@@ -3,6 +3,7 @@ import { SidebarMenu, HeaderMenu } from '@opuscapita/react-menus';
 import ajax from 'superagent-bluebird-promise';
 import I18nManager from 'opuscapita-i18n/lib/utils/I18nManager';
 import translations from './i18n';
+import NotificationSystem from 'react-notification-system';
 
 class Layout extends Component
 {
@@ -14,7 +15,11 @@ class Layout extends Component
     static childContextTypes = {
         i18n: PropTypes.object.isRequired,
         locale: React.PropTypes.string,
-        setLocale: React.PropTypes.func
+        setLocale: React.PropTypes.func,
+        currentUserData: React.PropTypes.object,
+        showNotification: React.PropTypes.func,
+        hideNotification: React.PropTypes.func,
+        clearNotifications: React.PropTypes.func
     };
 
     constructor(props)
@@ -45,7 +50,11 @@ class Layout extends Component
         return {
             i18n: this.state.i18n,
             locale: this.state.locale,
-            setLocale: this.setLocale
+            setLocale: this.setLocale,
+            currentUserData: this.state.currentUserData,
+            showNotification: this.showNotification,
+            hideNotification: this.hideNotification,
+            clearNotifications: this.clearNotifications
         };
     }
 
@@ -91,6 +100,7 @@ class Layout extends Component
                             </div>
                         </div>
                     </section>
+                    <NotificationSystem ref="notificationSystem"/>
                 </span>
             );
         }
@@ -98,6 +108,49 @@ class Layout extends Component
         {
             return(<span></span>);
         }
+    }
+
+
+
+    //////////////////////////////////////////////////////////
+    // Notification methods
+    //////////////////////////////////////////////////////////
+
+    showNotification = (message, level, autoDismiss = 5, dismissible = true, position = 'tc') => {
+console.log("Called ShowNotofication with ", message, level);
+        if(!level){
+            level = 'info'
+        }
+        return this.renderNotification({
+            message,
+            level,
+            position,
+            autoDismiss,
+            dismissible
+        });
+    }
+
+    hideNotification = (notification) => {
+        return this.removeNotification(notification);
+    }
+
+    clearNotifications = () => {
+        return this.refs.notificationSystem.clearNotifications();
+    }
+
+    renderNotification = (notification) => {
+        if(this.refs.notificationSystem && notification && notification.message && notification.message.length > 0)
+        {
+            const translatedMessage = notification.message;
+            return this.refs.notificationSystem.addNotification({ ...notification, message: translatedMessage });
+        }
+        return false;
+    }
+
+    removeNotification = (notification) => {
+        if(this.refs.notificationSystem && notification)
+            return this.refs.notificationSystem.removeNotification(notification);
+        return false;
     }
 }
 

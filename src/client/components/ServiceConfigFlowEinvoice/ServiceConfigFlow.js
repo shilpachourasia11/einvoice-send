@@ -44,7 +44,6 @@ export default class ServiceConfigFlow extends React.Component
         };
     }
 
-
     static contextTypes = {
         i18n : React.PropTypes.object.isRequired,
     };

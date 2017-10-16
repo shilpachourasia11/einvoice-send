@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-//import browserHistory from 'react-router/lib/browserHistory';
 
 export default class ServiceConfigFlow3 extends React.Component {
 

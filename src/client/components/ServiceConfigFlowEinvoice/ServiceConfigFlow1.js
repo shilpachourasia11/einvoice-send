@@ -32,7 +32,6 @@ export default class ServiceConfigFlow1 extends React.Component {
         locale : React.PropTypes.string
     };
 
-
     componentWillMount() {
         this.loadInChannelContract();
     }
@@ -118,9 +117,9 @@ export default class ServiceConfigFlow1 extends React.Component {
                 </div>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>
-                <Button bsStyle="primary" disabled={ !this.state.accepted } onClick={ () => this.props.onNext() }>
-                    {this.context.i18n.getMessage('accept')}
-                </Button>
+                    <Button bsStyle="primary" disabled={ !this.state.accepted } onClick={ () => this.props.onNext() }>
+                        {this.context.i18n.getMessage('accept')}
+                    </Button>
                 </div>
             </div>
         )

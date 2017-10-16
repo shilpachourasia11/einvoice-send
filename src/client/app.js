@@ -3,12 +3,16 @@ import { Router, Route, IndexRoute, Link, hashHistory } from 'react-router'
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
+import Layout from './layout.js';
 import ServiceConfigFlowStart      from './components/ServiceConfigFlowStart.js'
 import ServiceConfigFlowFramePdf   from './components/ServiceConfigFlowPdf/ServiceConfigFlow.js'
 import ServiceConfigFlowFramePaper from './components/ServiceConfigFlowPaper/ServiceConfigFlow.js'
 import ServiceConfigFlowEInvoice   from './components/ServiceConfigFlowEinvoice/ServiceConfigFlow.js'
 import ServiceConfigFlowKeyIn   from './components/ServiceConfigFlowKeyIn/ServiceConfigFlow.js'
-import Layout from './layout.js';
+
+import KeyIn from './components/SalesInvoice/KeyIn.js'
+import Test from './components/SalesInvoice/Test.js'
+import TestInclude from './components/SalesInvoice/TestInclude.js'
 
 
 export default class App extends React.Component
@@ -242,7 +246,7 @@ export default class App extends React.Component
                 this.history = el && el.props && el.props.history;
             }}>
                 <Route component={ Layout }>
-                    <Route path="/" component={ () => {
+                    <Route exact path="/" component={ () => {
                         return (
                             <ServiceConfigFlowStart
                                 openFlow={this.navigate2Flow}
@@ -279,6 +283,12 @@ export default class App extends React.Component
                     <Route path="/keyin/1" component={ () => (<ServiceConfigFlowKeyIn currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
                     <Route path="/keyin/2" component={ () => (<ServiceConfigFlowKeyIn currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
                     <Route path="/keyin/3" component={ () => (<ServiceConfigFlowKeyIn currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+
+                    
+                    <Route path="/key-in" component={KeyIn}/>
+
+                    <Route exact path="/test" component={Test}/>
+                    <Route exact path="/test2" component={TestInclude}/>
 
                 </Route>
             </Router>
