@@ -44,10 +44,6 @@ export default class ServiceConfigFlow extends React.Component
         };
     }
 
-    setCurrentTab = (tabNo) => {
-        this.setState({ currentTab : tabNo });
-    }
-
     static contextTypes = {
         i18n : React.PropTypes.object.isRequired,
     };
