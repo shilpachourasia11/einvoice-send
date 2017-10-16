@@ -45,9 +45,7 @@ export default class ServiceConfigFlow1 extends React.Component {
                 rejection: this.props.inChannelConfig.PdfChannelConfig.rejectionEmail ? true : false,
                 validat:'success'
             });
-    }
 
-    componentDidMount() {
         this.setTermsAndConditions(this.context.locale);
     }
 
@@ -150,7 +148,6 @@ export default class ServiceConfigFlow1 extends React.Component {
                                     <FormControl
                                         name="email"
                                         type="text"
-                                        placeholder={this.context.i18n.getMessage('ServiceConfigFlow.enterEmail')}
                                         onChange = {this.handleChange}
                                         value={this.state.email || ""}/>
                                     <FormControl.Feedback />

@@ -140,7 +140,7 @@ export default class ServiceConfigFlow extends React.Component
                         <div className="container">
                             <section className="header">
                                 <h1>
-                                    {this.context.i18n.getMessage('ServiceConfigFlow.header')}
+                                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.header')}
                                     <div className="control-bar text-right pull-right">
                                         <Button onClick={ () => this.props.gotoStart()}>
                                             <i className="fa fa-angle-left"/>

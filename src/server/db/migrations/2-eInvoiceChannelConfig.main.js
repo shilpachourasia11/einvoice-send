@@ -10,5 +10,5 @@
  	);
  }
  module.exports.down = (db,config)=> {
- 	return db.queryInterface.dropColumn('intention');
+ 	return db.queryInterface.dropColumn('EInvoiceChannelConfig', 'intention');
  }
