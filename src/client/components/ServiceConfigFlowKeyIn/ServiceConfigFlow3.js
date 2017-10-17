@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
+//import browserHistory from 'react-router/lib/browserHistory';
 
 export default class ServiceConfigFlow3 extends React.Component {
 
@@ -28,26 +29,16 @@ export default class ServiceConfigFlow3 extends React.Component {
     {
         return (
             <div>
-                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.header')}</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step3.header')}</h3>
 
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.subheader')}
-                </p>
-                <ul>
-                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.step1')}</li>
-                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.step2')}</li>
-                    <li>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.step3')}</li>
-                </ul>
-                <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.text')}
-                    <br/>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.supportHint')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step3.subheader')}
                 </p>
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.textFooter')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step3.textFooter')}
                 </p>
                 <p>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step3.textGreetings')}
+                    {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.Step3.textGreetings')}
                 </p>
 
                 <div className="form-submit text-right" style={{ marginTop: '80px' }}>

@@ -13339,7 +13339,7 @@ span.round-tab i{
 .wizard li.active span.round-tab {
     background: #fff;
     border: 2px solid #006070;
-    
+
 }
 .wizard li.active span.round-tab i{
     color: #006070;
@@ -13429,7 +13429,7 @@ span.round-tab:hover {
     display: block;
     content: "";
     width: 100%;
-    border-bottom: 1px solid rgb(255, 255, 255) !important; 
+    border-bottom: 1px solid rgb(255, 255, 255) !important;
     transition: border-bottom 0.2s;
 }
 
@@ -13475,7 +13475,7 @@ span.round-tab:hover {
 }
 
 .highlight {
-  background: #ec6608; 
+  background: #ec6608;
 }
 
 .highlight-text {

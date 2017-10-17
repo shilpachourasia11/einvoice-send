@@ -30,8 +30,8 @@ export default {
         pdf : "PDF by Email",
         pdfDesc: "By sending your invoice as PDF attached to an email you can easily submit your invoice. Continue registration and Read more under option PDF by email in order to proceed.",
 
-        supplierPortal : "Supplier Portal",
-        supplierPortalDesc: "By manual key in your invoice data you can easily submit your invoice in the correct format. Continue registration and Read more under option Supplier Portal in order to proceed.",
+        keyIn : "Invoice Key In",
+        keyInDesc: "By manual key in your invoice data you can easily submit your invoice in the correct format. Continue registration and Read more under option Supplier Portal in order to proceed.",
 
         paper : "Paper Invoice",
         paperDesc: "It is still possible to send paper invoices. Continue registration and read more under option Paper Invoice in order to proceed.",
@@ -59,7 +59,7 @@ export default {
 
         Einvoice:{
             name: "eInvoice",
-            header: "eInvoice Configuration",
+            header: "Configuration eInvoice ",
             OCTaC: {
                 text: "You want to send E-Invoices to {customerName} through a third party Operator?"
             },
@@ -93,7 +93,7 @@ export default {
         },
         Pdf:{
             name: "PDF by Email",
-            header: "PDF by Email Configuration",
+            header: "Configuration PDF by Email ",
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail.",
             intro: "Email Invoice Digitizing enables {customerName} to receive invoices as email attachments.",
             rejection:"Rejection Email",
@@ -115,7 +115,7 @@ export default {
         },
         Paper:{
             name: "Paper Invoice",
-            header: "Paper Invoice Configuration",
+            header: "Configuration Paper Invoice ",
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first paper- invoice to our global digitizing (scanning) service.",
             Approve: {
                 header: "Next Steps",
@@ -125,9 +125,32 @@ export default {
                 textGreetings: "Thank you!"
             }
         },
-        SupplierPortal:{
-            name: "Supplier Portal / Key-In",
-            header: "Supplier Portal / Key-In Configuration"
+        KeyIn:{
+            name: "Invoice Key In",
+            header: "Configuration Invoice Key In",
+            Step1: {
+                subheader: "Guidelines for Invoice Key In",
+                subsubheader: "You have successfully registered on behalf of {customerName}. Please read carefully through the following prerequisites as well as Supplier Guideline description and accept the terms before sending your first E-invoice by using Interconnect Operator Network.",
+                text1: "Invoice Key In",
+                li1: "Finalize your configuration for Invoice Key In",
+                li2: "Click ”Invoice Key In” from menu",
+                li3: "Select your customer",
+                li4: "Type in Invoice data",
+                li5: "Send Invoices to your customer",
+                moreInfo: "Read more in Supplier Guideline Description for Invoice Key In",
+                accepted: "I have read and understood OpusCapitas terms and conditions of the service.",
+            },
+            Step2: {
+                subheader: "Guidelines for Invoice Key In by {customerName}",
+                subsubheader: "Please check the requirements below and confirm your acceptance at the end of this page.",
+                approve: "I have read and understood {customerName} guidelines."
+            },
+            Step3: {
+                header: "Next Steps",
+                subheader: "All required steps from your side are done and you are now able to send your first invoice through Invoice Key In.",
+                textFooter: "We kindly ask you to go back to the start page and update your company information in order to strengthen your profile to become more visible to trading partners within the Eco System.",
+                textGreetings: "Thank you!"
+            }
         },
         CustomerTaC: {
             subheader: "Terms and Conditions of {customerName}",

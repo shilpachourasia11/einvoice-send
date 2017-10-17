@@ -44,6 +44,7 @@ export default class ServiceConfigFlow extends React.Component
         };
     }
 
+
     static contextTypes = {
         i18n : React.PropTypes.object.isRequired,
     };
@@ -63,7 +64,7 @@ export default class ServiceConfigFlow extends React.Component
             .then((data) => resolve(data))
             .catch((e) => {
                 let values =  {
-                    inputType: InChannelConfig.types.eInvoice,
+                    inputType: InChannelConfig.types.keyIn,
                     billingModelId: 'external',
                     voucherId: voucherId
                 }
@@ -74,7 +75,7 @@ export default class ServiceConfigFlow extends React.Component
         .then((data) => {
             let inChannelContractData = {
                 customerId: customerId,
-                inputType: InChannelConfig.types.eInvoice,
+                inputType: InChannelConfig.types.keyIn,
                 voucherId: voucherId,
                 billingModelId: 'external',
                 status: InChannelContract.status.approved
@@ -104,7 +105,7 @@ export default class ServiceConfigFlow extends React.Component
         })
         .catch((e) => {
             console.log("Error appeared: ", e);
-            alert ("The forwarding to the Invoice mapping team did not succeed. Please retry.")
+            alert ("The forwarding to the Supplier Portal mapping team did not succeed. Please retry.")
         })
     }
 
@@ -124,9 +125,6 @@ export default class ServiceConfigFlow extends React.Component
     approveCustomerTC = (tabNo) => {
         this.setApprovedCustomerTc()
         .then(() => this.setCurrentTab(tabNo));
-        // .then(() => {
-        //     this.finalApprove()
-        // })
     }
 
 
@@ -144,7 +142,7 @@ export default class ServiceConfigFlow extends React.Component
                         <div className="container">
                             <section className="header">
                                 <h1>
-                                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.header')}
+                                    {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.header')}
                                     <div className="control-bar text-right pull-right">
                                         <Button onClick={ () => this.props.gotoStart()}>
                                             <i className="fa fa-angle-left"/>
@@ -161,9 +159,9 @@ export default class ServiceConfigFlow extends React.Component
                                             <div className="wizard-inner">
                                                 <Tab.Container activeKey={ this.state.currentTab } onSelect={ currentTab => this.setState({ currentTab }) } id="stepsContainer">
                                                     <Row className="clearfix">
-                                                        <EInvoiceNav
+                                                        <PortalNav
                                                             currentTab={this.state.currentTab} />
-                                                        <EInvoiceTabContent
+                                                        <PortalTabContent
                                                             setCurrentTab = { (tabNo) => this.setCurrentTab(tabNo) }
                                                             approveOcTc = { (tabNo) => this.approveOcTc(tabNo) }
                                                             approveCustomerTc = { (tabNo) => this.approveCustomerTC(tabNo) }
@@ -186,7 +184,7 @@ export default class ServiceConfigFlow extends React.Component
 }
 
 
-class EInvoiceNav extends React.Component {
+class PortalNav extends React.Component {
     render() {
         return (
             <Nav bsStyle="tabs">
@@ -207,7 +205,7 @@ class EInvoiceNav extends React.Component {
 }
 
 
-class EInvoiceTabContent extends React.Component {
+class PortalTabContent extends React.Component {
     render() {
         return (
             <Tab.Content>

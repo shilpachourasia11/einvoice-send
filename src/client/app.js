@@ -3,11 +3,16 @@ import { Router, Route, IndexRoute, Link, hashHistory } from 'react-router'
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
+import Layout from './layout.js';
 import ServiceConfigFlowStart      from './components/ServiceConfigFlowStart.js'
 import ServiceConfigFlowFramePdf   from './components/ServiceConfigFlowPdf/ServiceConfigFlow.js'
 import ServiceConfigFlowFramePaper from './components/ServiceConfigFlowPaper/ServiceConfigFlow.js'
 import ServiceConfigFlowEInvoice   from './components/ServiceConfigFlowEinvoice/ServiceConfigFlow.js'
-import Layout from './layout.js';
+import ServiceConfigFlowKeyIn   from './components/ServiceConfigFlowKeyIn/ServiceConfigFlow.js'
+
+import KeyIn from './components/SalesInvoice/KeyIn.js'
+import Test from './components/SalesInvoice/Test.js'
+import TestInclude from './components/SalesInvoice/TestInclude.js'
 
 
 export default class App extends React.Component
@@ -24,7 +29,7 @@ export default class App extends React.Component
         voucher : {
             eInvoiceEnabled : false,
             pdfEnabled : false,
-            supplierPortalEnabled : false,
+            keyInEnabled : false,
             paperEnabled : false
         },
         customerTermsAndConditions : null,
@@ -99,7 +104,7 @@ export default class App extends React.Component
             // Convention for now: Use boolen to enable or disable the different input types:
             voucher.eInvoiceEnabled = true; // !!! only for the supplier to confirm their intention
             voucher.pdfEnabled = true;
-            voucher.supplierPortalEnabled = false; // !!! no flow ui available up to now
+            voucher.keyInEnabled = true;
             voucher.paperEnabled = false;
 
             return this.getCustomer(voucher.customerId)
@@ -138,7 +143,7 @@ export default class App extends React.Component
                 voucher : {
                     eInvoiceEnabled : false,
                     pdfEnabled : false,
-                    supplierPortalEnabled : false,
+                    keyInEnabled : false,
                     paperEnabled : false
                 },
                 customerTermsAndConditions : null
@@ -169,7 +174,7 @@ export default class App extends React.Component
     ///////////////////////////////////////////
 
     navigate2Flow = (inputType) => {
-        ajax.get('/einvoice-send/api/config/inchannels/' + this.state.user.supplierId)
+        return ajax.get('/einvoice-send/api/config/inchannels/' + this.state.user.supplierId)
             .set('Content-Type', 'application/json')
         .then ((config) => {
             if (config) {
@@ -207,6 +212,25 @@ export default class App extends React.Component
         this.history.push("/");
     }
 
+    updateKeyInAndGotoStart = (intention = null) => {
+        if (intention != null) {
+            let config = this.state.inChannelConfig;
+            if (config) {
+                if (!config.KeyInChannelConfig) {
+                    config.KeyInChannelConfig = {};
+                }
+                config.KeyInChannelConfig.intention = intention;
+                this.setState({
+                    inChannelConfig: config
+                });
+            }
+            else {
+                this.loadInChannelConfig();
+            }
+        }
+        this.history.push("/");
+    }
+
     finalizeFlow = () => {
         window.location.href = "/bnp/dashboard";
     }
@@ -222,7 +246,7 @@ export default class App extends React.Component
                 this.history = el && el.props && el.props.history;
             }}>
                 <Route component={ Layout }>
-                    <Route path="/" component={ () => {
+                    <Route exact path="/" component={ () => {
                         return (
                             <ServiceConfigFlowStart
                                 openFlow={this.navigate2Flow}
@@ -253,6 +277,18 @@ export default class App extends React.Component
                     <Route path="/einvoice/1" component={ () => (<ServiceConfigFlowEInvoice currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
                     <Route path="/einvoice/2" component={ () => (<ServiceConfigFlowEInvoice currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
                     <Route path="/einvoice/3" component={ () => (<ServiceConfigFlowEInvoice currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+
+                    <Route path="/keyin" component={ () => (<ServiceConfigFlowKeyIn currentTab={1} gotoStart={this.updateKeyInAndGotoStart} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher}  inChannelConfig={this.state.inChannelConfig}  customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+
+                    <Route path="/keyin/1" component={ () => (<ServiceConfigFlowKeyIn currentTab={1} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/keyin/2" component={ () => (<ServiceConfigFlowKeyIn currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+                    <Route path="/keyin/3" component={ () => (<ServiceConfigFlowKeyIn currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
+
+                    
+                    <Route path="/key-in" component={KeyIn}/>
+
+                    <Route exact path="/test" component={Test}/>
+                    <Route exact path="/test2" component={TestInclude}/>
 
                 </Route>
             </Router>
