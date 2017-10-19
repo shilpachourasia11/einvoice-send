@@ -5,6 +5,7 @@ const Multer = require('multer');
 
 const RedisEvents = require('ocbesbn-redis-events');
 const BlobClient = require('ocbesbn-blob-client');
+const ServiceClient = require('ocbesbn-service-client');
 
 const Api = require('../api/inChannelConfig.js');
 const InChannelContract = require('../api/inChannelContract.js');
@@ -13,6 +14,9 @@ const Voucher = require('../api/voucher.js');
 const fs = require('fs');
 const writeFile = Promise.promisify(fs.writeFile);
 
+let xml2js = require('xml2js');
+// const PDFParser = require("pdf2json");
+const base64 = require('base-64');
 
 /* Conventions:
 InChannelConfig.status = new | approved | activated   // inPreparation
@@ -85,6 +89,10 @@ module.exports.init = function(app, db, config)
 
         // forwarding of REST calls
         app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
+
+        // Key In related
+        app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.changeIt(req, res));
+        app.get('/api/putpdf/:messageId/:tenantId/:message', (req, res) => this.changeIt2(req, res));
     });
 }
 
@@ -497,4 +505,148 @@ module.exports.sendCustomer = function(req, res)
         console.log("getCustomer - Error: ", e);
         res.status("400").json({message: e.message});
     })
+}
+
+module.exports.changeIt = function(req, res)
+{
+    // const supplierId = req.params.tenantId;
+    // const messageId = req.params.messageId;
+    //
+    // const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
+    // const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
+    // //* const path = `/private/purchaseInvoices/${req.params.invoiceId}/${req.params.attachmentName}`;
+    // const path = `/private/email/received/${messageId}`;
+    //
+    //
+    //
+    // const file = blobClient.readFile(supplierId, path).then(document => {
+    //     // const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
+    //
+    //
+    //     return new Promise((resolve, reject) => {
+    //         let pdfParser = new PDFParser();
+    //
+    //         pdfParser.on("pdfParser_dataError", errData => reject(errData.parserError) );
+    //
+    //         pdfParser.on("pdfParser_dataReady", pdfData => {
+    //             const payload = JSON.stringify(base64.encode(pdfData));//*writeFile("lol.json", base64.encode(JSON.stringify(pdfData)));
+    //             resolve(payload);
+    //         }
+    //
+    //         pdfParser.parseBuffer(document); // MB Wrong method to load from memory
+    //     });
+    //
+    //
+    //     }).then(payload => {
+    //     //     client.get('pdf2invoice','/api/parsepdf', payload, true);
+    //     // })
+    //
+    //     // const payload = JSON.stringify(base64.encode(pdfData)); // base64.encode(document); // let payload = JSON.parse(base64.decode(xxx));
+    //     const result = client.get('pdf2invoice','/api/parsepdf', payload, true); // XML
+    // }).then(result  => {
+    //     const storedFile = blobClient.storeFile(supplierId, path, result); // What about file after path and some adjustments to store it?
+    //     //const infoStoredInDB = storeXMLinDb(result); // ???????????
+    //     return Promise.all([result, storedFile]);
+    // }).spread((result, storedFile) => {
+    //     // Send notifications
+    //     var link = 'http://habrahabr.ru';
+    //     var payload = `This is an EMAIL with link: ${link}!!! `;
+    //
+    //     let subject = "Supplier's user's notification";
+    //
+    //     return serviceClient.post('email', '/api/send', {
+    //         to : 'lol@lol.com',
+    //         subject,
+    //         payload
+    //     })
+    // }).then(() =>
+    // {
+    //     res.status("200").json({congrats: 'cool'});
+    // })
+    // .catch(e =>
+    // {
+    //     res.status("400").json({message: e.message});
+    // });
+    // =========================================================================================================
+    // const supplierId = req.params.tenantId;
+    // const messageId = req.params.messageId;
+    // const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
+    // var html = 'This is an EMAIL!!! ' + supplierId + ' ' + messageId;
+    //
+    // let subject = 'lol'
+    //
+    // serviceClient.post('email', '/api/send', {
+    //     to : supplierId,
+    //     subject,
+    //     html
+    // }).then(() =>
+    // {
+    //     console.log(`----------------------------------------------------- Email Sent! to ${supplierId}`);
+    //     res.status("200").json({congrats: 'cool'});
+    // })
+    // .catch(e =>
+    // {
+    //     console.log(`----------------------------------------------------- Email Sending Error!`)
+    //     res.status("400").json({message: e.message});
+    // });
+    // // ======================================================================================================
+    const supplierId = 's_' + req.params.tenantId;
+    const messageId = req.params.messageId;
+
+    const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
+    const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
+    const path = `/private/email/received/${messageId}/lol.txt`;
+
+
+
+    const file = blobClient.readFile(supplierId, path).then(result  => {
+        //const storedFile = blobClient.storeFile(supplierId, path, result); // What about file after path and some adjustments to store it?
+        //const infoStoredInDB = storeXMLinDb(result); // ???????????
+        return Promise.all([result]);
+    }).spread((result) => {
+        // Send notifications
+        // var link = 'http://habrahabr.ru';
+        // var payload = `This is an EMAIL with link: ${link}!!! `;
+
+        let subject = "Supplier's user's notification";
+        console.log('-------------------------------------------------------------------------------------');
+        console.log(result);
+        console.log('-------------------------------------------------------------------------------------');
+
+        
+
+        return serviceClient.post('email', '/api/send', {
+            to : 'daniil.naumetc@gmail.com',
+            subject,
+            html: result
+        })
+    }).then(() =>
+    {
+        res.status("200").json({congrats: 'cool'});
+    })
+    .catch(e =>
+    {
+        res.status("400").json({message: e.message});
+    });
+
+}
+
+module.exports.changeIt2 = function(req, res)
+{
+    const msg = req.params.message;
+
+    const messageId = req.params.messageId;
+    const supplierId = 's_'+req.params.tenantId;
+    const path = `/private/email/received/${messageId}/lol.txt`;
+    console.log('------------------------------------------------------------------------------------------------');
+    console.log(supplierId);
+    console.log(path);
+    console.log(msg);
+    console.log('------------------------------------------------------------------------------------------------');
+
+    const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
+    //res.status("200").json({lol: 'blah'});
+    blobClient.storeFile(supplierId, path, new Buffer(msg), true)
+    .then(() => res.status("200").json({congrats: 'message Saved'}))
+    .catch(e => res.status("400").json({message: e.message}));
 }
