@@ -65,7 +65,7 @@ export default class ServiceConfigFlow1 extends React.Component {
         });
     }
     getTermsAndConditions(locale) {
-        // blob/publicc/api/opuscapita/files/public/docs/einvoice-send/pdf/TermsAndConditions[_<locale>].html
+        // blob/public/api/opuscapita/files/public/docs/einvoice-send/pdf/OpusCapitaTermsAndConditions[_<locale>].html
         let path = "/blob/public/api/opuscapita/files/public/docs/einvoice-send/pdf/";
         let filename = "OpusCapitaTermsAndConditions";
         return ajax.get(path + filename + '_' + locale + '.html')
