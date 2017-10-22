@@ -5,6 +5,7 @@ const Multer = require('multer');
 
 const RedisEvents = require('ocbesbn-redis-events');
 const BlobClient = require('ocbesbn-blob-client');
+const ServiceClient = require('ocbesbn-service-client');
 
 const Api = require('../api/inChannelConfig.js');
 const InChannelContract = require('../api/inChannelContract.js');
@@ -38,6 +39,8 @@ module.exports.init = function(app, db, config)
     ])
     .then(() => {
         this.events = new RedisEvents({ consul : { host : 'consul' } });
+        this.serviceClient = new ServiceClient({ consul : { host : 'consul' } });
+
 
         //  Test event subscriptions:
         this.events.subscribe('inChannelConfig.created', (data) => {
@@ -55,6 +58,12 @@ module.exports.init = function(app, db, config)
         this.events.subscribe('voucher.created', (data) => {
             console.log("Event received for \"voucher.created\"", data);
         });
+
+
+        this.events.subscribe('sales-inoivce.created', (data) => {
+            this.transferSalesInvoice(data);
+        });
+
 
         this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
 
@@ -87,6 +96,55 @@ module.exports.init = function(app, db, config)
         app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
     });
 }
+
+
+/**
+ * Steps to transfer a Sales-Invoice:
+ * 1. set Status to sending
+ * 2. trigger transfer of a2a-integration
+ * 3. set STatus to sent/sendingfailed
+ */
+ module.exports.transferSalesInvoice = function(invoice) {
+
+    console.log("transferSalesInvoice started with: ", invoice);
+
+    let supplierId = invoice.supplierId;
+    let invoiceNumber = invoice.invoiceNumber;
+
+    Api.getInChannelConfig(supplierId)
+    .then((icc) => {
+console.log(">>>>>>>>>>>> 1: ", icc);
+        if (icc.inputType === 'keyIn') {
+
+            return this.serviceClient.put("sales-invoice",
+                `/api/salesinvoices/${invoiceNumber}`,
+                {status: "sending"},
+                true)
+            .spread((salesInvoice, response) => {
+console.log(">>>>>>>>>>>> 2: ", salesInvoice);
+                return this.serviceClient.put("a2a-integration",
+                    "/api/sales-invoices",
+                    invoice,
+                    true)
+            })
+            .then((result) => {
+console.log(">>>>>>>>>>>> 3: ", result);
+                return this.serviceClient.put("sales-invoice",
+                    `/api/salesinvoices/${invoiceNumber}`,
+                    {status: "sent"},
+                    true)
+            })
+            .catch((e) => {
+                console.log("Error, transfer to a2a-integration does not work for "  + invoiceNumber + ": ", e);
+            });
+        }
+        else {
+            console.log("Transfer of Sales-Invoice " + invoiceNumber + "stopped, because not 'keyIn'-InChannel configuration found for supplier " + supplierId + ".");
+        }
+    })
+}
+
+
 
 
 function checkContentType(req, res, next)
