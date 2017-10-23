@@ -117,12 +117,12 @@ module.exports.init = function(app, db, config)
 //         if (icc.inputType === 'keyIn') {
 
             return this.serviceClient.put("sales-invoice",
-                `/api/salesinvoices/${invoiceNumber}`,
+                `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
                 {status: "sending"},
                 true)
             .spread((salesInvoice, response) => {
 console.log(">>>>>>>>>>>> 2: ", salesInvoice);
-                return this.serviceClient.put("a2a-integration",
+                return this.serviceClient.post("a2a-integration",
                     "/api/sales-invoices",
                     invoice,
                     true)
@@ -130,7 +130,7 @@ console.log(">>>>>>>>>>>> 2: ", salesInvoice);
             .then((result) => {
 console.log(">>>>>>>>>>>> 3: ", result);
                 return this.serviceClient.put("sales-invoice",
-                    `/api/salesinvoices/${invoiceNumber}`,
+                    `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
                     {status: "sent"},
                     true)
             })
