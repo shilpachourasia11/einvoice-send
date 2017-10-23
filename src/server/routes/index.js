@@ -111,10 +111,10 @@ module.exports.init = function(app, db, config)
     let supplierId = invoice.supplierId;
     let invoiceNumber = invoice.invoiceNumber;
 
-    Api.getInChannelConfig(supplierId)
-    .then((icc) => {
-console.log(">>>>>>>>>>>> 1: ", icc);
-        if (icc.inputType === 'keyIn') {
+//     Api.getInChannelConfig(supplierId)
+//     .then((icc) => {
+// console.log(">>>>>>>>>>>> 1: ", icc);
+//         if (icc.inputType === 'keyIn') {
 
             return this.serviceClient.put("sales-invoice",
                 `/api/salesinvoices/${invoiceNumber}`,
@@ -137,11 +137,14 @@ console.log(">>>>>>>>>>>> 3: ", result);
             .catch((e) => {
                 console.log("Error, transfer to a2a-integration does not work for "  + invoiceNumber + ": ", e);
             });
-        }
-        else {
-            console.log("Transfer of Sales-Invoice " + invoiceNumber + "stopped, because not 'keyIn'-InChannel configuration found for supplier " + supplierId + ".");
-        }
-    })
+    //     }
+    //     else {
+    //         console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped, because no 'keyIn'-InChannel configuration found for supplier " + supplierId + ".");
+    //     }
+    // })
+    // .catch((e) => {
+    //     console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped, because no InChannel configuration found for supplier " + supplierId + ".", e);
+    // })
 }
 
 
