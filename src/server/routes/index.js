@@ -507,7 +507,7 @@ module.exports.sendCustomer = function(req, res)
     })
 }
 
-module.exports.changeIt = function(req, res)
+module.exports.changeIt = function(req, res) // '/api/emailrcv/:tenantId/:messageId'
 {
     // const supplierId = req.params.tenantId;
     // const messageId = req.params.messageId;
@@ -590,35 +590,29 @@ module.exports.changeIt = function(req, res)
     //     res.status("400").json({message: e.message});
     // });
     // // ======================================================================================================
+    //
     const supplierId = 's_' + req.params.tenantId;
     const messageId = req.params.messageId;
 
     const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
     const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
-    const path = `/private/email/received/${messageId}/lol.txt`;
+    const path = `/private/email/received/${messageId}/`;
+
+    blobClient.listFiles(supplierId, path)
+    .then(result => {
+        var pdfName = result.filter(item => {if (item.extension == '.pdf') return true;}).sort((a,b) => {if (a.name > b.name){return 1}})[0].name;
+        return blobClient.readFile(supplierId, path + pdfName).then(result  => {
+
+            let subject = "Supplier's user's notification";
+
+            var base = {
+                to : 'daniil.naumetc@gmail.com',
+                subject,
+                html: result + pdfName
+            }
 
 
-
-    const file = blobClient.readFile(supplierId, path).then(result  => {
-        //const storedFile = blobClient.storeFile(supplierId, path, result); // What about file after path and some adjustments to store it?
-        //const infoStoredInDB = storeXMLinDb(result); // ???????????
-        return Promise.all([result]);
-    }).spread((result) => {
-        // Send notifications
-        // var link = 'http://habrahabr.ru';
-        // var payload = `This is an EMAIL with link: ${link}!!! `;
-
-        let subject = "Supplier's user's notification";
-        console.log('-------------------------------------------------------------------------------------');
-        console.log(result);
-        console.log('-------------------------------------------------------------------------------------');
-
-        
-
-        return serviceClient.post('email', '/api/send', {
-            to : 'daniil.naumetc@gmail.com',
-            subject,
-            html: result
+            return serviceClient.post('email', '/api/send', base);
         })
     }).then(() =>
     {
@@ -631,22 +625,67 @@ module.exports.changeIt = function(req, res)
 
 }
 
-module.exports.changeIt2 = function(req, res)
+module.exports.changeIt2 = function(req, res) // '/api/putpdf/:messageId/:tenantId/:message'
 {
-    const msg = req.params.message;
+    if (req.params.message[0] == '1')
+    {
+        const msg = req.params.message;
 
-    const messageId = req.params.messageId;
-    const supplierId = 's_'+req.params.tenantId;
-    const path = `/private/email/received/${messageId}/lol.txt`;
-    console.log('------------------------------------------------------------------------------------------------');
-    console.log(supplierId);
-    console.log(path);
-    console.log(msg);
-    console.log('------------------------------------------------------------------------------------------------');
+        const messageId = req.params.messageId;
+        const supplierId = req.params.tenantId;
+        const path = `/private/email/received/${messageId}/`;
+        console.log('------------------------------------------------------------------------------------------------');
+        console.log(supplierId);
+        console.log(path);
+        console.log(msg);
+        console.log(req.params.message[0]);
+        console.log('------------------------------------------------------------------------------------------------');
 
-    const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
-    //res.status("200").json({lol: 'blah'});
-    blobClient.storeFile(supplierId, path, new Buffer(msg), true)
-    .then(() => res.status("200").json({congrats: 'message Saved'}))
-    .catch(e => res.status("400").json({message: e.message}));
+        const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
+        //res.status("200").json({lol: 'blah'});
+        Promise.all([
+            blobClient.storeFile(supplierId, path+'lol.txt',new Buffer(msg), true),
+            blobClient.storeFile(supplierId, path+'thing.pdf', new Buffer(msg), true),
+            blobClient.storeFile(supplierId, path+'lol.pdf', new Buffer(msg), true)
+        ])
+        .then(() => res.status("200").json({congrats: 'message Saved'}))
+        .catch(e => res.status("400").json({message: e.message}));
+    }
+    else if (req.params.message[0] == '2')
+    {
+        const msg = req.params.message;
+
+        const messageId = req.params.messageId;
+        const supplierId = req.params.tenantId;
+
+        const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
+        serviceClient.get('supplier', `/api/suppliers/${supplierId}/contacts`, true)
+        .then(result => {
+            var emails = [];
+            result[0].forEach(item => {emails.push(item.email)});
+            res.status('200').json(emails.filter((value, index, self) => {
+                return self.indexOf(value) === index;
+            }));
+        })
+        .catch(e => res.status("400").json({message: e.message}));
+        // res.status('200').json({msg, messageId, supplierId})
+    }
+    else if (req.params.message[0] == '3')
+    {
+        const msg = req.params.message;
+
+        const messageId = req.params.messageId;
+        const supplierId = req.params.tenantId;
+
+        const path = `/private/email/received/${messageId}/`;
+        const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
+        blobClient.listFiles(supplierId, path)
+        .then(result => {
+            var pdfName = result.filter(item => {if (item.extension == '.pdf') return true;}).sort((a,b) => {if (a.name > b.name){return 1}})[0].name;
+
+        })
+    }
+
+
+
 }
