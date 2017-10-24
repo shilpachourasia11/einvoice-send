@@ -520,20 +520,46 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
     blobClient.listFiles(supplierId, path)
     .then(files => {
         var pdfName = files.filter(item => {if (item.extension == '.pdf') return true;}).sort((a,b) => {if (a.name > b.name){return 1}})[0].name;
-        return serviceClient.get('supplier', `/api/suppliers/${supplierIdForBlob}/contacts`, true)
+        return serviceClient.get('supplier', `/api/suppliers/${supplierIdForBlob}/addresses`, true)
         .then(result => {
-            var emails = result[0].map(item => item.email);
-            var email = emails.filter((value, index, self) => {
-                return self.indexOf(value) === index;
+            // var emails = result[0].map(item => item.email);
+            // var email = emails.filter((value, index, self) => {
+            //     return self.indexOf(value) === index;
+            // });
+            const emails = {'default': [], 'sales': [], 'rest':[]};
+            result[0].forEach(item => {
+                    switch (item.type) {
+                        case 'sales':
+                            emails.sales.push(item.email);
+                            break;
+                        case 'default':
+                            emails.default.push(item.email);
+                            break;
+                        default:
+                            emails.rest.push(item.email);
+                            break;
+                    }
             });
+            var chosenEmails;
+            if (emails.sales.length) {
+                chosenEmails = emails.sales;
+            } else if (emails.default.length) {
+                chosenEmails = emails.default;
+            } else {
+                chosenEmails = emails.rest;
+            }
 
-            return Promise.all([blobClient.readFile(supplierId, path + pdfName), email]);
+            const emailsString = chosenEmails.filter((value, index, self) => {
+                return self.indexOf(value) === index;
+            }).join(',');
+
+            return Promise.all([blobClient.readFile(supplierId, path + pdfName), emailsString]);
         })
         .spread((fileContents, email)  => {
             let subject = "Supplier's user's notification";
 
             var base = {
-                to : 'daniil.naumetc@gmail.com',
+                to : email,
                 subject,
                 html: fileContents + ', pdf name: ' + pdfName + ', to email: '+ email
             }
@@ -586,20 +612,48 @@ module.exports.changeIt2 = function(req, res) // '/api/putpdf/:messageId/:tenant
         const supplierId = req.params.tenantId;
 
         const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
-        serviceClient.get('supplier', `/api/suppliers/${supplierId}/contacts`, true)
+        serviceClient.get('supplier', `/api/suppliers/${supplierId}/addresses`, true)
         .then(result => {
-            var emails = [];
+            // var emails = [];
             console.log('-------------------------------------------------------------------------------');
             console.log(result);
             // result[0].forEach(item => {emails.push(item.email)});
             // res.status('200').json(emails.filter((value, index, self) => {
             //     return self.indexOf(value) === index;
             // }));
-            var emails = result[0].map(item => item.email);
-            var email = emails.filter((value, index, self) => {
-                return self.indexOf(value) === index;
+            //
+            // var emails = result[0].map(item => item.email);
+            // var email = emails.filter((value, index, self) => {
+            //     return self.indexOf(value) === index;
+            // });
+            // const [defEmails, salesEmails, restEmails] = [[],[],[]];
+            const emails = {'default': [], 'sales': [], 'rest':[]}
+            result[0].forEach(item => {
+                    switch (item.type) {
+                        case 'sales':
+                            emails.sales.push(item.email);
+                            break;
+                        case 'default':
+                            emails.default.push(item.email);
+                            break;
+                        default:
+                            emails.rest.push(item.email);
+                            break;
+                    }
             });
-            res.status('200').json(email);
+            var chosenEmails;
+            if (emails.sales.length) {
+                chosenEmails = emails.sales;
+            } else if (emails.default.length) {
+                chosenEmails = emails.default;
+            } else {
+                chosenEmails = emails.rest;
+            }
+
+            const emailsString = chosenEmails.filter((value, index, self) => {
+                return self.indexOf(value) === index;
+            }).join(',');
+            res.status('200').json(emailsString);
         })
         .catch(e => res.status("400").json({message: e.message}));
         // res.status('200').json({msg, messageId, supplierId})
@@ -616,7 +670,7 @@ module.exports.changeIt2 = function(req, res) // '/api/putpdf/:messageId/:tenant
         blobClient.listFiles(supplierId, path)
         .then(result => {
             var pdfName = result.filter(item => {if (item.extension == '.pdf') return true;}).sort((a,b) => {if (a.name > b.name){return 1}})[0].name;
-
+            res.status('200').json(pdfName);
         })
     }
 
