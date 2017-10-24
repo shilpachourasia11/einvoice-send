@@ -92,7 +92,6 @@ module.exports.init = function(app, db, config)
 
         // Key In related
         app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
-        app.get('/api/putpdf/:messageId/:tenantId/:message', (req, res) => this.changeIt2(req, res));
     });
 }
 
@@ -522,11 +521,8 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
         var pdfName = files.filter(item => {if (item.extension == '.pdf') return true;}).sort((a,b) => {if (a.name > b.name){return 1}})[0].name;
         return serviceClient.get('supplier', `/api/suppliers/${supplierIdForBlob}/addresses`, true)
         .then(result => {
-            // var emails = result[0].map(item => item.email);
-            // var email = emails.filter((value, index, self) => {
-            //     return self.indexOf(value) === index;
-            // });
             const emails = {'default': [], 'sales': [], 'rest':[]};
+
             result[0].forEach(item => {
                     switch (item.type) {
                         case 'sales':
@@ -540,7 +536,9 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
                             break;
                     }
             });
+
             var chosenEmails;
+
             if (emails.sales.length) {
                 chosenEmails = emails.sales;
             } else if (emails.default.length) {
@@ -556,7 +554,7 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
             return Promise.all([blobClient.readFile(supplierId, path + pdfName), emailsString]);
         })
         .spread((fileContents, email)  => {
-            let subject = "Supplier's user's notification";
+            let subject = "Supplier's user notification";
 
             var base = {
                 to : email,
@@ -575,105 +573,5 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
     {
         res.status("400").json({message: e.message});
     });
-
-}
-
-module.exports.changeIt2 = function(req, res) // '/api/putpdf/:messageId/:tenantId/:message'
-{
-    if (req.params.message[0] == '1')
-    {
-        const msg = req.params.message;
-
-        const messageId = req.params.messageId;
-        const supplierId = req.params.tenantId;
-        const path = `/private/email/received/${messageId}/`;
-        console.log('------------------------------------------------------------------------------------------------');
-        console.log(supplierId);
-        console.log(path);
-        console.log(msg);
-        console.log(req.params.message[0]);
-        console.log('------------------------------------------------------------------------------------------------');
-
-        const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
-        //res.status("200").json({lol: 'blah'});
-        Promise.all([
-            blobClient.storeFile(supplierId, path+'lol.txt',new Buffer(msg), true),
-            blobClient.storeFile(supplierId, path+'thing.pdf', new Buffer(msg), true),
-            blobClient.storeFile(supplierId, path+'lol.pdf', new Buffer(msg), true)
-        ])
-        .then(() => res.status("200").json({congrats: 'message Saved'}))
-        .catch(e => res.status("400").json({message: e.message}));
-    }
-    else if (req.params.message[0] == '2')
-    {
-        const msg = req.params.message;
-
-        const messageId = req.params.messageId;
-        const supplierId = req.params.tenantId;
-
-        const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
-        serviceClient.get('supplier', `/api/suppliers/${supplierId}/addresses`, true)
-        .then(result => {
-            // var emails = [];
-            console.log('-------------------------------------------------------------------------------');
-            console.log(result);
-            // result[0].forEach(item => {emails.push(item.email)});
-            // res.status('200').json(emails.filter((value, index, self) => {
-            //     return self.indexOf(value) === index;
-            // }));
-            //
-            // var emails = result[0].map(item => item.email);
-            // var email = emails.filter((value, index, self) => {
-            //     return self.indexOf(value) === index;
-            // });
-            // const [defEmails, salesEmails, restEmails] = [[],[],[]];
-            const emails = {'default': [], 'sales': [], 'rest':[]}
-            result[0].forEach(item => {
-                    switch (item.type) {
-                        case 'sales':
-                            emails.sales.push(item.email);
-                            break;
-                        case 'default':
-                            emails.default.push(item.email);
-                            break;
-                        default:
-                            emails.rest.push(item.email);
-                            break;
-                    }
-            });
-            var chosenEmails;
-            if (emails.sales.length) {
-                chosenEmails = emails.sales;
-            } else if (emails.default.length) {
-                chosenEmails = emails.default;
-            } else {
-                chosenEmails = emails.rest;
-            }
-
-            const emailsString = chosenEmails.filter((value, index, self) => {
-                return self.indexOf(value) === index;
-            }).join(',');
-            res.status('200').json(emailsString);
-        })
-        .catch(e => res.status("400").json({message: e.message}));
-        // res.status('200').json({msg, messageId, supplierId})
-    }
-    else if (req.params.message[0] == '3')
-    {
-        const msg = req.params.message;
-
-        const messageId = req.params.messageId;
-        const supplierId = req.params.tenantId;
-
-        const path = `/private/email/received/${messageId}/`;
-        const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
-        blobClient.listFiles(supplierId, path)
-        .then(result => {
-            var pdfName = result.filter(item => {if (item.extension == '.pdf') return true;}).sort((a,b) => {if (a.name > b.name){return 1}})[0].name;
-            res.status('200').json(pdfName);
-        })
-    }
-
-
 
 }
