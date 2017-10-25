@@ -14,6 +14,7 @@ services:
      - api-registry
      - acl
      - sales-invoice
+     - a2a-integration
     labels:
       SERVICE_NAME: 'einvoice-send'
       SERVICE_TAGS: 'external'
@@ -324,4 +325,33 @@ services:
       SERVICE_3018_CHECK_TIMEOUT: 3s
     ports:
      - '3018:3018'
+    command: "npm run dev"
+
+  a2a-integration:
+    image: opuscapita/a2a-integration:dev
+    depends_on:
+      - consul
+      - registrator
+      - supplier
+    labels:
+      SERVICE_NAME: 'a2a-integration'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      REDIS_AUTH: ${REDIS_AUTH}
+      SERVICE_3015_CHECK_HTTP: /api/health/check
+      SERVICE_3015_CHECK_INTERVAL: 15s
+      SERVICE_3015_CHECK_TIMEOUT: 3s
+      TIPFTP_USER: ${TIPFTP_USER}
+      TIPFTP_HOST: ${TIPFTP_HOST}
+      TIPFTP_PASSWORD: ${TIPFTP_PASSWORD}
+      TIPFTP_IP: ${TIPFTP_IP}
+      TIPFTP_PORT: ${TIPFTP_PORT}
+      TIPFTP_TYPE: ${TIPFTP_TYPE}
+      TIPFTP_PROTOCOL: ${TIPFTP_PROTOCOL}
+      TIPFTP_SUPPLIER_FOLDER: ${TIPFTP_SUPPLIER_FOLDER}
+      TIPFTP_SALES_INVOICE_FOLDER: ${TIPFTP_SALES_INVOICE_FOLDER}
+      TIPFTP_SUPPORT_EMAIL: ${TIPFTP_SUPPORT_EMAIL}
+    ports:
+      - '3015:3015'
     command: "npm run dev"
