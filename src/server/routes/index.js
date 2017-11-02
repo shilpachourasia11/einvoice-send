@@ -556,7 +556,7 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
         .spread((fileContents, email)  => {
             let subject = "Supplier's user notification";
 
-            var base = {
+            var base = { // needs to be replaced with the better configuration. HTML template a
                 to : email,
                 subject,
                 html: fileContents + ', pdf name: ' + pdfName + ', to email: '+ email
