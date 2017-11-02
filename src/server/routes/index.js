@@ -518,7 +518,7 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
 
     blobClient.listFiles(supplierId, path)
     .then(files => {
-        var pdfName = files.filter(item => {if (item.extension == '.pdf') return true;}).sort((a,b) => {if (a.name > b.name){return 1}})[0].name;
+        var pdfName = files.filter(item => {return item.extension == '.pdf'}).sort((a,b) => {if (a.name > b.name){return 1}})[0].name;
         return serviceClient.get('supplier', `/api/suppliers/${supplierIdForBlob}/addresses`, true)
         .then(result => {
             const emails = {'default': [], 'sales': [], 'rest':[]};
@@ -551,9 +551,9 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
                 return self.indexOf(value) === index;
             }).join(',');
 
-            return Promise.all([blobClient.readFile(supplierId, path + pdfName), emailsString]);
-        })
-        .spread((fileContents, email)  => {
+            return Promise.all([blobClient.readFile(supplierId, path + pdfName), emailsString, supplierId]);
+        }) // ↓ Send email
+        .spread((fileContents, email, supplierId)  => {
             let subject = "Supplier's user notification";
 
             var base = { // needs to be replaced with the better configuration. HTML template a
@@ -562,7 +562,22 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
                 html: fileContents + ', pdf name: ' + pdfName + ', to email: '+ email
             }
 
-            return serviceClient.post('email', '/api/send', base);
+            return Promise.all([serviceClient.post('email', '/api/send', base), supplierId]);
+        }) // ↓ (Notification) Get users of a supplier
+        .spread((sent, supplierId) => {
+            const queryString = 'supplierId=' + supplierId;
+            return serviceClient.get('user', `/api/users?${queryString}`)
+        })
+        .then(users => {
+            console.log(users);
+            var sentNotifications = users.map(user => {
+                return serviceClient.post('notification', '/api/notifications/', {
+                    'userId': user.id,
+                    'message': 'lol, thats me'
+                });
+            })
+
+            return Promise.all(sentNotifications);
         })
 
     }).then(() =>
