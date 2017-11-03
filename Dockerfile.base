@@ -1,4 +1,4 @@
-FROM gr4per/node-react-base
+FROM node:8-alpine
 MAINTAINER kwierchris
 WORKDIR /var/tmp/base
 COPY package.json .
