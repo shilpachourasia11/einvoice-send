@@ -1,12 +1,13 @@
 import React from 'react';
+import { Components } from '@opuscapita/service-base-ui';
+import translations from './i18n';
 import { Button,Col } from 'react-bootstrap';
 import {Form, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
-//import browserHistory from 'react-router/lib/browserHistory';
 import ajax from 'superagent-bluebird-promise';
 
 
-export default class ServiceConfigFlow1 extends React.Component {
-
+export default class ServiceConfigFlow1 extends Components.ContextComponent
+{
     static propTypes = {
         accepted : React.PropTypes.bool,
         onNext : React.PropTypes.func.isRequired,
@@ -17,9 +18,11 @@ export default class ServiceConfigFlow1 extends React.Component {
         accepted : false
     };
 
-    constructor(props)
+    constructor(props, context)
     {
         super(props)
+
+        context.i18n.register('ServiceConfigFlowPdf', translations);
 
         this.state = {
             accepted : this.props.accepted,
@@ -29,12 +32,6 @@ export default class ServiceConfigFlow1 extends React.Component {
             termsAndConditions:null
         }
     }
-
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-        locale: React.PropTypes.string
-    };
-
 
     componentDidMount() {
         let icc = this.props.inChannelConfig;
@@ -46,17 +43,21 @@ export default class ServiceConfigFlow1 extends React.Component {
                 validat:'success'
             });
 
-        this.setTermsAndConditions(this.context.locale);
+        return this.setTermsAndConditions(this.context.locale);
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
+        this.props = nextProps;
+
         if (nextContext.locale != this.context.locale) {
-            this.setTermsAndConditions(nextContext.locale);
+            return this.setTermsAndConditions(nextContext.locale);
         }
+
+        this.setState({ });
     }
 
     setTermsAndConditions(locale) {
-        this.getTermsAndConditions(locale)
+        return this.getTermsAndConditions(locale)
         .then ((termsAndConditions) => {
             this.setState({ termsAndConditions: termsAndConditions.text });
         })
@@ -72,6 +73,7 @@ export default class ServiceConfigFlow1 extends React.Component {
         .catch((e) => {
             return ajax.get(path + filename + '.html');
         })
+        .catch(e => this.context.showNotification(e.message, 'error', 10));
     }
 
 

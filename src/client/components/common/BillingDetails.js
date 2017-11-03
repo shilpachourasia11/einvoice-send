@@ -1,12 +1,14 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import { Components } from '@opuscapita/service-base-ui';
+import translations from './i18n';
 
-export default class BillingDetails extends React.Component {
+export default class BillingDetails extends Components.ContextComponent
+{
+    constructor(props, context) {
+        super(props);
 
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-    };
-
+        context.i18n.register('BillingDetails', translations);
+    }
     render() {
         var styleFree = {
             float:"right",
@@ -20,15 +22,15 @@ export default class BillingDetails extends React.Component {
         if(this.props.inputType === "eInvoice" && this.props.voucher[this.props.inputType + "Enabled"]) {
             return (
                 <div style={styleFree}>
-                    {this.context.i18n.getMessage('ServiceConfigFlowStart.freeFor', {customerName : this.props.voucher.customerName})}
+                    {this.context.i18n.getMessage('BillingDetails.freeFor', {customerName : this.props.voucher.customerName})}
                     <br/>
-                    {this.context.i18n.getMessage('ServiceConfigFlowStart.add2EInvoice', {customerName : this.props.voucher.customerName})}
+                    {this.context.i18n.getMessage('BillingDetails.add2EInvoice', {customerName : this.props.voucher.customerName})}
                 </div>
             );
         }
         else if (this.props.inputType && this.props.voucher[this.props.inputType + "Enabled"]) {
             return (
-                <span style={styleFree}>{this.context.i18n.getMessage('ServiceConfigFlowStart.freeFor', {customerName : this.props.voucher.customerName})}</span>
+                <span style={styleFree}>{this.context.i18n.getMessage('BillingDetails.freeFor', {customerName : this.props.voucher.customerName})}</span>
             );
         }
         else {

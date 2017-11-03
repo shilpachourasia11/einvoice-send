@@ -284,7 +284,7 @@ export default class App extends React.Component
                     <Route path="/keyin/2" component={ () => (<ServiceConfigFlowKeyIn currentTab={2} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
                     <Route path="/keyin/3" component={ () => (<ServiceConfigFlowKeyIn currentTab={3} gotoStart={this.navigate2Start} finalizeFlow={this.finalizeFlow} voucher={this.state.voucher} inChannelConfig={this.state.inChannelConfig} customerTermsAndConditions={this.state.customerTermsAndConditions} />) } />
 
-                    
+
                     <Route path="/key-in" component={KeyIn}/>
 
                     <Route exact path="/test" component={Test}/>

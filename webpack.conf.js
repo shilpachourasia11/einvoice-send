@@ -29,7 +29,7 @@ var config = {
             loader: 'style-loader!css-loader?modules&localIdentName=[name]---[local]---[hash:base64:5]'
         }, {
             test: /\.less$/,
-            loader: 'style-loader!css-loader!less-loader'
+            loader: 'style-loader!css-loader'
         }]
     }
 }

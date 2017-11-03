@@ -1,6 +1,7 @@
 version: '3'
 services:
   main:
+    image: opuscapita/einvoice-send:dev
     depends_on:
      - mysql
      - consul
@@ -34,7 +35,7 @@ services:
 
 
   mysql:
-    image: 'mysql:5.6'
+    image: 'mysql:5.7'
     ports:
       - '3306:3306'
     environment:

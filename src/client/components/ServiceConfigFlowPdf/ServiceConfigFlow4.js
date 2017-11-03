@@ -1,9 +1,10 @@
 import React from 'react';
+import { Components } from '@opuscapita/service-base-ui';
+import translations from './i18n';
 import { Button } from 'react-bootstrap';
-//import browserHistory from 'react-router/lib/browserHistory';
 
-export default class ServiceConfigFlow5 extends React.Component {
-
+export default class ServiceConfigFlow5 extends Components.ContextComponent
+{
     static propTypes = {
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired
@@ -12,17 +13,21 @@ export default class ServiceConfigFlow5 extends React.Component {
     static defaultProps = {
     };
 
-    constructor(props)
+    constructor(props, context)
     {
         super(props)
+
+        context.i18n.register('ServiceConfigFlowPdf', translations);
 
         this.state = {
         }
     }
 
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-    };
+    componentWillReceiveProps(nextProps)
+    {
+        this.props = nextProps;
+        this.setState({ });
+    }
 
 
     render()
