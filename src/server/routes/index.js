@@ -18,6 +18,9 @@ let xml2js = require('xml2js');
 // const PDFParser = require("pdf2json");
 const base64 = require('base-64');
 
+const handlebars = require('handlebars');
+const readFileAsync = Promise.promisify(fs.readFile);
+
 /* Conventions:
 InChannelConfig.status = new | approved | activated   // inPreparation
 InChannelContract.status = new | approved
@@ -508,19 +511,40 @@ module.exports.sendCustomer = function(req, res)
 
 module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageId'
 {
-    const supplierId = 's_' + req.params.tenantId;
-    const supplierIdForBlob = req.params.tenantId;
+    const tenantId = req.params.tenantId;
+    if (!tenantId.startsWith('s_')) res.status("400").json({message: 'Invalid tenantId'});
+
+    const supplierId = req.params.tenantId.substring(2);
     const messageId = req.params.messageId;
+    var link = `/einvoice-send/#/key-in/${messageId}/`;
 
     const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
     const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
     const path = `/private/email/received/${messageId}/`;
+    class lol {
+        constructor(){
+            this.n = 0
+            console.log('======== start ======== ' + this.n);
+        }
 
-    blobClient.listFiles(supplierId, path)
+        lol(smth){
+            console.log('-------- ' + ++this.n + ' --------');
+            console.log(smth);
+        }
+    }
+    var io = new lol();
+
+    blobClient.listFiles(tenantId, path)
     .then(files => {
+        io.lol(JSON.stringify(files)) // 1
+
         var pdfName = files.filter(item => {return item.extension == '.pdf'}).sort((a,b) => {if (a.name > b.name){return 1}})[0].name;
-        return serviceClient.get('supplier', `/api/suppliers/${supplierIdForBlob}/addresses`, true)
+        link += pdfName.substring(pdfName.length-4);
+        console.log('------------------------- '+ link);
+
+        return serviceClient.get('supplier', `/api/suppliers/${supplierId}/addresses`, true)
         .then(result => {
+            io.lol(JSON.stringify(result)) // 2
             const emails = {'default': [], 'sales': [], 'rest':[]};
 
             result[0].forEach(item => {
@@ -537,7 +561,7 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
                     }
             });
 
-            var chosenEmails;
+            let chosenEmails;
 
             if (emails.sales.length) {
                 chosenEmails = emails.sales;
@@ -551,30 +575,41 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
                 return self.indexOf(value) === index;
             }).join(',');
 
-            return Promise.all([blobClient.readFile(supplierId, path + pdfName), emailsString, supplierId]);
+            return Promise.all([blobClient.readFile(tenantId, path + pdfName), emailsString, supplierId, link]);
         }) // ↓ Send email
-        .spread((fileContents, email, supplierId)  => {
-            let subject = "Supplier's user notification";
+        .spread((fileContents, emails, supplierId, link)  => {
+            io.lol(JSON.stringify(fileContents)) // 3
+            const subject = "Supplier's user notification";
+            try {
+                const templateSource = await readFileAsync('../templates/supplier-notification-email.html', 'utf8');
+            } catch(e) {
+                Promise.reject(e);
+            }
+            const compiledTemplate = handlebars.compile(templateSource);
+            const context = { emails, link }
+            const html = compiledTemplate(context);
 
-            var base = { // needs to be replaced with the better configuration. HTML template a
-                to : email,
+            const base = { // needs to be replaced with the better configuration. HTML template a
+                to : 'naumezd07@gmail.com', // emails
                 subject,
-                html: fileContents + ', pdf name: ' + pdfName + ', to email: '+ email
+                html
             }
 
-            return Promise.all([serviceClient.post('email', '/api/send', base), supplierId]);
+            return Promise.all([serviceClient.post('email', '/api/send', base, true), supplierId]);
         }) // ↓ (Notification) Get users of a supplier
         .spread((sent, supplierId) => {
+            io.lol(tenantId) // 4
             const queryString = 'supplierId=' + supplierId;
-            return serviceClient.get('user', `/api/users?${queryString}`)
+            return serviceClient.get('user', `/api/users?${queryString}`, true)
         })
         .then(users => {
-            console.log(users);
-            var sentNotifications = users.map(user => {
+            io.lol(JSON.stringify(users)) // 5
+            const sentNotifications = users[0].map(user => {
                 return serviceClient.post('notification', '/api/notifications/', {
                     'userId': user.id,
-                    'message': 'lol, thats me'
-                });
+                    'message': 'lol, thats me',
+                    'status': 'new'
+                }, true);
             })
 
             return Promise.all(sentNotifications);
@@ -589,4 +624,28 @@ module.exports.getPdf = function(req, res) // '/api/emailrcv/:tenantId/:messageI
         res.status("400").json({message: e.message});
     });
 
+}
+
+module.exports.lol = function(req, res)
+{
+    const msg = 'lol thatsme';
+
+    const messageId = req.params.messageId;
+    const supplierId = 's_' + req.params.tenantId;
+    const path = `/private/email/received/${messageId}/`;
+    console.log('------------------------------------------------------------------------------------------------');
+    console.log(supplierId);
+    console.log(path);
+    console.log(msg);
+    console.log('------------------------------------------------------------------------------------------------');
+
+    const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
+    //res.status("200").json({lol: 'blah'});
+    Promise.all([
+        blobClient.storeFile(supplierId, path+'lol.txt',new Buffer(msg), true),
+        blobClient.storeFile(supplierId, path+'thing.pdf', new Buffer(msg), true),
+        blobClient.storeFile(supplierId, path+'lol.pdf', new Buffer(msg), true)
+    ])
+    .then(() => res.status("200").json({congrats: 'message Saved'}))
+    .catch(e => res.status("400").json({message: e.message}));
 }
