@@ -3,6 +3,7 @@ export default {
         KeyIn:{
             name: "Invoice Key In",
             header: "Configuration Invoice Key In",
+            backToTypeSelection: "Back to Type Selection",
             Step1: {
                 subheader: "Guidelines for Invoice Key In",
                 subsubheader: "You have successfully registered on behalf of {customerName}. Please read carefully through the following prerequisites as well as Supplier Guideline description and accept the terms before sending your first E-invoice by using Interconnect Operator Network.",

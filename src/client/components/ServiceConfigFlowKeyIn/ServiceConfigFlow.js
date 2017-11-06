@@ -148,7 +148,7 @@ export default class ServiceConfigFlow extends Components.ContextComponent
                         <div className="control-bar text-right pull-right">
                             <Button onClick={ () => this.props.gotoStart()}>
                                 <i className="fa fa-angle-left"/>
-                                &nbsp;&nbsp;{this.context.i18n.getMessage('ServiceConfigFlow.backToTypeSelection')}
+                                &nbsp;&nbsp;{this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.backToTypeSelection')}
                             </Button>
                         </div>
                     </h1>

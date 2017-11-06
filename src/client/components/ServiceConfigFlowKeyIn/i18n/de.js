@@ -3,6 +3,7 @@ export default {
         KeyIn:{
             name: "Key-In",
             header: "Konfiguration Key-In-Rechnungserfassung ",
+            backToTypeSelection: "Zurück zur Selektion",
             Step1: {
                 subheader: "Richtlinien für die Key-In-Rechnungserfassung",
                 subsubheader: "Um die eInvoice-Anbindung für Ihren Kunden {customerName} zu konfigurieren, prüfen Sie bitte die hier aufgeführten Voraussetzungen sowie den Lieferantenleitfaden und akzeptieren diese unten auf der Seite.",
