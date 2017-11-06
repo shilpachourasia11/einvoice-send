@@ -30,7 +30,7 @@ db.init({
         mode : server.Server.Mode.Dev,
         staticFilePath : './src/server/static',
         indexFilePath : process.cwd() + '/src/server/templates/index.html',
-        indexFileRoutes : [ '/', '/pdf', '/pdf/*', '/paper', '/paper/*', '/einvoice', '/einvoice/*', '/keyin', '/keyin/*' ],
+        indexFileRoutes : [ '/', '/pdf', '/pdf/*', '/paper', '/paper/*', '/einvoice', '/einvoice/*', '/keyin', '/keyin/*', '/key-in', '/key-in/*' ],
         enableBouncer : isProduction,
         webpack : {
             useWebpack : !isProduction,
