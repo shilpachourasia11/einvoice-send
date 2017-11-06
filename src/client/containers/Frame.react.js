@@ -139,30 +139,6 @@ class Frame extends Components.ContextComponent
         this.context.router.push('/einvoice-send');
     }
 
-    updateEinvoiceAndGotoStart(intention = null)
-    {
-        if(intention != null)
-        {
-            const config = this.state.inChannelConfig;
-
-            if(config)
-            {
-                config.EInvoiceChannelConfig = config.EInvoiceChannelConfig || { };
-                config.EInvoiceChannelConfig.intention = intention;
-
-                this.setState({ inChannelConfig : config });
-
-                this.context.router.push('/einvoice-send');
-            }
-            else
-            {
-                return this.loadInChannelConfig().then(() => this.context.router.push('/einvoice-send'))
-            }
-        }
-
-        return Promise.resolve();
-    }
-
     updateKeyInAndGotoStart(intention = null)
     {
         if(intention != null)
@@ -226,7 +202,7 @@ class Frame extends Components.ContextComponent
                     wizardType === 'einvoice' ?
                         <ServiceConfigFlowFrameEinvoice
                             currentTab={currentTab}
-                            gotoStart={currentTab === 1 ? this.updateEinvoiceAndGotoStart.bind(this) : this.navigate2Start.bind(this)}
+                            gotoStart={this.navigate2Start.bind(this)}
                             finalizeFlow={this.finalizeFlow.bind(this)}
                             voucher={voucher}
                             inChannelConfig={inChannelConfig}
