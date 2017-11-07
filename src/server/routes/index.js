@@ -112,40 +112,44 @@ module.exports.init = function(app, db, config)
     let supplierId = invoice.supplierId;
     let invoiceNumber = invoice.invoiceNumber;
 
-//     Api.getInChannelConfig(supplierId)
-//     .then((icc) => {
-// console.log(">>>>>>>>>>>> 1: ", icc);
-//         if (icc.inputType === 'keyIn') {
-
+    Api.getInChannelConfig(supplierId)
+    .then((icc) => {
+        if (icc.inputType === 'keyIn') {
             return this.serviceClient.put("sales-invoice",
                 `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
                 {status: "sending"},
                 true)
             .spread((salesInvoice, response) => {
-console.log(">>>>>>>>>>>> 2: ", salesInvoice);
                 return this.serviceClient.post("a2a-integration",
                     "/api/sales-invoices",
                     invoice,
                     true)
             })
             .then((result) => {
-console.log(">>>>>>>>>>>> 3: ", result);
                 return this.serviceClient.put("sales-invoice",
                     `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
                     {status: "sent"},
                     true)
             })
             .catch((e) => {
-                console.log("Error, transfer to a2a-integration does not work for "  + invoiceNumber + ": ", e);
+                console.log("Error, transfer to a2a-integration does not work for invoice " + invoice.id + "(" + supplierId + "-" + invoiceNumber + "): ", e);
             });
-    //     }
-    //     else {
-    //         console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped, because no 'keyIn'-InChannel configuration found for supplier " + supplierId + ".");
-    //     }
-    // })
-    // .catch((e) => {
-    //     console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped, because no InChannel configuration found for supplier " + supplierId + ".", e);
-    // })
+        }
+        else {
+            console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped, because 'keyIn'-InChannel configuration is not defined found for supplier " + supplierId + ". Setting status of Sales-Invoice to 'sendingNotGranted'.");
+            this.serviceClient.put("sales-invoice",
+                `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
+                {status: "sendingNotGranted"},
+                true);
+        }
+    })
+    .catch((e) => {
+        console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped: ", e);
+        this.serviceClient.put("sales-invoice",
+            `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
+            {status: "sendingNotGranted"},
+            true);
+    })
 }
 
 
