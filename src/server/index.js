@@ -29,7 +29,7 @@ db.init({
         port : process.env.PORT || 3007,
         staticFilePath : './src/server/static',
         indexFilePath : process.cwd() + '/src/server/templates/index.html',
-        indexFileRoutes : [ '/', '/pdf', '/pdf/*', '/paper', '/paper/*', '/einvoice', '/einvoice/*', '/keyin', '/keyin/*', '/key-in', '/key-in/*' ],
+        indexFileRoutes : [ '/', '/pdf', '/pdf/*', '/paper', '/paper/*', '/einvoice', '/einvoice/*', '/keyin', '/keyin/*', '/key-in', '/key-in/*', '/invoice-search' ],
         enableBouncer : isProduction,
         webpack : {
             useWebpack : !isProduction,
