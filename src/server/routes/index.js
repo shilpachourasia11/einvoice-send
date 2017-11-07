@@ -94,7 +94,7 @@ module.exports.init = function(app, db, config)
         app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
 
         // Key In related
-        app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
+        app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.lol(req, res));
     });
 }
 
@@ -566,6 +566,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
             const compiledTemplate = handlebars.compile(templateSource);
             const context = { emails: emailsString, link }
             const html = compiledTemplate(context);
+
             const base = { // needs to be replaced with the better configuration. HTML template a
                 to : emailsString, // emailsString
                 subject,
@@ -591,4 +592,28 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
     } catch(e) {
         res.status("400").json({message: e.message});
     }
+}
+
+module.exports.lol = function(req, res)
+{
+    const msg = 'lol thatsme';
+
+    const messageId = req.params.messageId;
+    const supplierId = req.params.tenantId;
+    const path = `/private/email/received/${messageId}/`;
+    console.log('------------------------------------------------------------------------------------------------');
+    console.log(supplierId);
+    console.log(path);
+    console.log(msg);
+    console.log('------------------------------------------------------------------------------------------------');
+
+    const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
+    //res.status("200").json({lol: 'blah'});
+    Promise.all([
+        blobClient.storeFile(supplierId, path+'lol.txt',new Buffer(msg), true),
+        blobClient.storeFile(supplierId, path+'thing.pdf', new Buffer(msg), true),
+        blobClient.storeFile(supplierId, path+'lol.pdf', new Buffer(msg), true)
+    ])
+    .then(() => res.status("200").json({congrats: 'message Saved'}))
+    .catch(e => res.status("400").json({message: e.message}));
 }
