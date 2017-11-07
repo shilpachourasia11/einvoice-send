@@ -39,6 +39,6 @@ module.exports = new Config().extend('webpack.base.config.js').merge({
         unsafe_comps: true,
         screw_ie8: true
       }
-    })
+  })
   ]
 });

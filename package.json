@@ -84,6 +84,6 @@
     "api-doc": "mkdir -p wiki/api-doc ; ${NODE_PATH}/.bin/jsdoc2md -f $(find src/server) > wiki/api-doc/Home.md",
     "doc": "npm run rest-doc ; npm run domain-doc ",
     "build": "npm run build:client",
-    "build:client": "webpack -p --config ./webpack.production.config.js --env=production --profile --colors --bail"
+    "build:client": "npx webpack -p --config ./webpack.production.config.js --env=production --profile --colors --bail"
   }
 }
