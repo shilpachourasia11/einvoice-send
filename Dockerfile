@@ -7,7 +7,7 @@ WORKDIR /home/node/einvoice-send
 # Setting NODE_ENV is necessary for "npm install" below.
 ENV NODE_ENV=production
 COPY . .
-RUN NODE_ENV=development yarn install && yarn run build:client
+RUN apk add --no-cache curl ; NODE_ENV=development yarn install && yarn run build:client
 
 # Set the user name or UID to use when running the image and for any RUN, CMD and ENTRYPOINT instructions that follow
 USER node
