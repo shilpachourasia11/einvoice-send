@@ -1,11 +1,13 @@
 import React from 'react';
+import { Components } from '@opuscapita/service-base-ui';
 import { Button } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
+import translations from './i18n'
 import Promise from 'bluebird';
 
 
-export default class ServiceConfigFlow2 extends React.Component {
-
+export default class ServiceConfigFlow2 extends Components.ContextComponent
+{
     static propTypes = {
         accepted : React.PropTypes.bool,
         customerTermsAndConditions : React.PropTypes.string,
@@ -21,9 +23,11 @@ export default class ServiceConfigFlow2 extends React.Component {
         customerTermsAndConditions : ""
     };
 
-    constructor(props)
+    constructor(props, context)
     {
-        super(props)
+        super(props);
+
+        context.i18n.register('ServiceConfigFlowEinvoice', translations);
 
         this.state = {
             accepted : this.props.accepted,
@@ -31,15 +35,15 @@ export default class ServiceConfigFlow2 extends React.Component {
         }
     }
 
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-        locale : React.PropTypes.string,
-    };
-
-
     componentDidMount() {
         this.setTermsAndConditions(this.context.locale);
         this.loadInChannelContract();
+    }
+
+    componentWillReceiveProps(nextProps)
+    {
+        this.props = nextProps;
+        this.setState({ });
     }
 
     loadInChannelContract() {

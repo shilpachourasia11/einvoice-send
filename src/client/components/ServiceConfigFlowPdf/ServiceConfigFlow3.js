@@ -1,9 +1,11 @@
 import React from 'react';
+import { Components } from '@opuscapita/service-base-ui';
+import translations from './i18n';
 import { Button, FormControl } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
 
-export default class ServiceConfigFlow3 extends React.Component {
-
+export default class ServiceConfigFlow3 extends Components.ContextComponent
+{
     static propTypes = {
         hasValidFile : React.PropTypes.bool,
         filename : React.PropTypes.string,
@@ -16,9 +18,11 @@ export default class ServiceConfigFlow3 extends React.Component {
         filename : null
     };
 
-    constructor(props)
+    constructor(props, context)
     {
         super(props);
+
+        context.i18n.register('ServiceConfigFlowPdf', translations);
 
         this.state = {
             hasValidFile : this.props.hasValidFile,
@@ -26,9 +30,11 @@ export default class ServiceConfigFlow3 extends React.Component {
         };
     }
 
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-    };
+    componentWillReceiveProps(nextProps)
+    {
+        this.props = nextProps;
+        this.setState({ });
+    }
 
 
     onFileDrop = function(e)

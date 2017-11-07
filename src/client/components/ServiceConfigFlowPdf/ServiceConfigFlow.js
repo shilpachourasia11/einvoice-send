@@ -1,4 +1,6 @@
 import React from 'react';
+import { Components } from '@opuscapita/service-base-ui';
+import translations from './i18n';
 import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
 
@@ -18,8 +20,7 @@ const MyDiv = () =>
     return <div className="connecting-line"/>;
 };
 
-
-export default class ServiceConfigFlow extends React.Component
+export default class ServiceConfigFlow extends Components.ContextComponent
 {
     static propTypes = {
         currentTab : React.PropTypes.number,
@@ -34,9 +35,11 @@ export default class ServiceConfigFlow extends React.Component
         inputType: null
     };
 
-    constructor(props)
+    constructor(props, context)
     {
         super(props);
+
+        context.i18n.register('ServiceConfigFlowPdf', translations);
 
         this.state = {
             currentTab : this.props.currentTab,
@@ -45,11 +48,11 @@ export default class ServiceConfigFlow extends React.Component
         };
     }
 
-
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired
-    };
-
+    componentWillReceiveProps(nextProps)
+    {
+        this.props = nextProps;
+        this.setState({ });
+    }
 
     /////////////////////////////////////////////////////////
     // Events
@@ -80,7 +83,7 @@ export default class ServiceConfigFlow extends React.Component
                 status: InChannelContract.status.approved
             }
 
-            InChannelContract.get(supplierId, customerId)
+            return InChannelContract.get(supplierId, customerId)
             .then((contract) => {
                 return InChannelContract.update(supplierId, customerId, inChannelContractData);
             })
@@ -89,20 +92,21 @@ export default class ServiceConfigFlow extends React.Component
             })
         })
         .catch((e) => {
-            console.log("Error appeared: ", e);
+            this.context.showNotification(e.message, 'error', 10);
             return Promise.reject();
-        })
+        });
     }
 
 
     finalApprove = () => {
-        InChannelConfig.activate(this.props.voucher.supplierId)
+        return InChannelConfig.activate(this.props.voucher.supplierId)
         .then(() => {
             this.props.finalizeFlow();
         })
         .catch((e) => {
-            console.log("Error appeared: ", e);
-            alert ("The forwarding to the Invoice mapping team did not succeed. Please retry.")
+            this.context.showNotification(e.message, 'error', 10);
+            return Promise.reject();
+            //alert ("The forwarding to the Invoice mapping team did not succeed. Please retry.")
         })
     }
 
@@ -111,7 +115,7 @@ export default class ServiceConfigFlow extends React.Component
     }
 
     approveOcTc = (tabNo,email) => {
-        InChannelConfig.update(
+        return InChannelConfig.update(
             this.props.voucher.supplierId,
             {
                 'status': InChannelConfig.getNextStatus(this.props.inChannelConfig && this.props.inChannelConfig.status, InChannelConfig.status.approved),
@@ -121,7 +125,7 @@ export default class ServiceConfigFlow extends React.Component
     }
 
     approveCustomerTC = (tabNo) => {
-        this.setApprovedCustomerTc()
+        return this.setApprovedCustomerTc()
         .then(() => this.setCurrentTab(tabNo));
     }
 
@@ -134,50 +138,44 @@ export default class ServiceConfigFlow extends React.Component
         }
 
         return (
-            <div style={{ minHeight: '100vh' }}>
-                <section className="content" style={{ overflow: 'visible' }}>
-                    <div className="content-wrap">
-                        <div className="container">
-                            <section className="header">
-                                <h1>
-                                    {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.header')}
-                                    <div className="control-bar text-right pull-right">
-                                        <Button onClick={ () => this.props.gotoStart()}>
-                                            <i className="fa fa-angle-left"/>
-                                            &nbsp;&nbsp;{this.context.i18n.getMessage('ServiceConfigFlow.backToTypeSelection')}
-                                        </Button>
-                                    </div>
-                                </h1>
-                            </section>
+            <div>
+                <section className="header">
+                    <h1>
+                        {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.header')}
+                        <div className="control-bar text-right pull-right">
+                            <Button onClick={ () => this.props.gotoStart()}>
+                                <i className="fa fa-angle-left"/>
+                                &nbsp;&nbsp;{this.context.i18n.getMessage('ServiceConfigFlow.Pdf.backToTypeSelection')}
+                            </Button>
+                        </div>
+                    </h1>
+                </section>
 
-                            <div className="container">
-                                <div className="row">
-                                    <section>
-                                        <div className="wizard">
-                                            <div className="wizard-inner">
-                                                <Tab.Container activeKey={ this.state.currentTab } onSelect={ currentTab => this.setState({ currentTab }) } id="stepsContainer">
-                                                    <Row className="clearfix">
-                                                        <PdfNav
-                                                            currentTab={this.state.currentTab}
-                                                            customerTermsAndConditions={this.props.customerTermsAndConditions} />
-                                                        <PdfTabContent
-                                                            setCurrentTab = { (tabNo) => this.setCurrentTab(tabNo) }
-                                                            approveOcTc = { (tabNo,email) => this.approveOcTc(tabNo,email) }
-                                                            approveCustomerTc = { (tabNo) => this.approveCustomerTC(tabNo) }
-                                                            finalApprove = { () => this.finalApprove() }
-                                                            voucher = {this.props.voucher}
-                                                            inChannelConfig={this.props.inChannelConfig}
-                                                            customerTermsAndConditions={this.props.customerTermsAndConditions}/>
-                                                    </Row>
-                                                </Tab.Container>
-                                            </div>
-                                        </div>
-                                    </section>
+                <div className="container">
+                    <div className="row">
+                        <section>
+                            <div className="wizard">
+                                <div className="wizard-inner">
+                                    <Tab.Container activeKey={ this.state.currentTab } onSelect={ currentTab => this.setState({ currentTab }) } id="stepsContainer">
+                                        <Row className="clearfix">
+                                            <PdfNav
+                                                currentTab={this.state.currentTab}
+                                                customerTermsAndConditions={this.props.customerTermsAndConditions} />
+                                            <PdfTabContent
+                                                setCurrentTab = { (tabNo) => this.setCurrentTab(tabNo) }
+                                                approveOcTc = { (tabNo,email) => this.approveOcTc(tabNo,email) }
+                                                approveCustomerTc = { (tabNo) => this.approveCustomerTC(tabNo) }
+                                                finalApprove = { () => this.finalApprove() }
+                                                voucher = {this.props.voucher}
+                                                inChannelConfig={this.props.inChannelConfig}
+                                                customerTermsAndConditions={this.props.customerTermsAndConditions}/>
+                                        </Row>
+                                    </Tab.Container>
                                 </div>
                             </div>
-                        </div>
+                        </section>
                     </div>
-                </section>
+                </div>
             </div>
         )
     }

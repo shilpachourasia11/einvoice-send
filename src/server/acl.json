@@ -14,6 +14,31 @@
             "type": "rest",
             "resourceId": "^[/]$",
             "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/einvoice",
+            "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/pdf",
+            "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/keyin",
+            "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/key-in",
+            "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/paper",
+            "actions": ["view"]
         }]
     },
     "x-tenant-manage": {
