@@ -27,7 +27,6 @@ db.init({
 .then((db) => server.init({
     server : {
         port : process.env.PORT || 3007,
-        mode : server.Server.Mode.Dev,
         staticFilePath : './src/server/static',
         indexFilePath : process.cwd() + '/src/server/templates/index.html',
         indexFileRoutes : [ '/', '/pdf', '/pdf/*', '/paper', '/paper/*', '/einvoice', '/einvoice/*', '/keyin', '/keyin/*', '/key-in', '/key-in/*' ],
