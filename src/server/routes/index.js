@@ -98,7 +98,7 @@ module.exports.init = function(app, db, config)
             // forwarding of REST calls
             app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
 
-            app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
+            app.put('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
         });
     });
 }
