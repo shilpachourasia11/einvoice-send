@@ -585,13 +585,12 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
     try {
         const files = await blobClient.listFiles(tenantId, path)
         var pdfFile = files.filter(item => item.extension == '.pdf').sort((a,b) => a.name > b.name )[0];
-        var jsonFile = files.filter(item => item.extension == '.json').sort((a,b) => a.name > b.name )[0];
 
-        if (pdfFile && jsonFile) {
+        if (pdfFile && files.map(file => file.name).includes('email.json')) {
             var link = `/einvoice-send/key-in/${messageId}/${pdfFile.name}`;
 
-            const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + jsonFile.name));
-            const destEmail = jsonFileContents.email;
+            const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + 'email.json'));
+            const destEmail = jsonFileContents.From;
 
             const pdfFileContents = await blobClient.readFile(tenantId, path + pdfFile.name);
 
