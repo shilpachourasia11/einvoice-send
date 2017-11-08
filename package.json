@@ -22,6 +22,7 @@
     "bluebird": "^3.5.1",
     "css-loader": "^0.28.7",
     "extend": "^3.0.1",
+    "handlebars": "4.0.11",
     "ocbesbn-blob-client": "^1.0.19",
     "ocbesbn-config": "^2.2.11",
     "ocbesbn-db-init": "^1.1.11",
