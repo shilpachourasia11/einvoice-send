@@ -14,29 +14,27 @@ export default class KeyIn extends React.Component {
 
     componentWillMount()
     {
-        this.InvoiceEditorForm = serviceComponent({
+        const SimpleInvoiceEditor = serviceComponent({
             serviceRegistry : (service) => ({ url:'/sales-invoice' }),
             serviceName: 'sales-invoice',
             moduleName: 'invoice_editor',
             jsFileName: 'invoice_editor-bundle',
             componentPath: 'SimpleInvoiceEditor'
         });
+
+        this.InvoiceEditorForm = {SimpleInvoiceEditor}
     }
 
     render() {
+        // TODO: Check which additional params we have/can use.
 
         // context: currentUserData and showNotification are both required as contextTypes
         // props: invoiceId, createMode, readOnly(boolean) and a functon. There are listed in the propTypes.
 
-        // console.log("*** this.context.currentUserData: ", this.context.currentUserData);
-
-        // TODO: Check which additional params we have/can use.
-        // TODO: onCancel ??? Is it needed?
-        //    <this.InvoiceEditorForm createMode={true} readOnly={false} onCancel={ (param) =>  alert(param) }/>
-
+        const {SimpleInvoiceEditor} = this.InvoiceEditorForm;
         return (
             <div>
-                <this.InvoiceEditorForm createMode={true} readOnly={false}/>
+                <SimpleInvoiceEditor createMode={true} readOnly={false} />
             </div>
         )
     }

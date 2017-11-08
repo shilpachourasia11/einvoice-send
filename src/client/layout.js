@@ -3,6 +3,7 @@ import { SidebarMenu, HeaderMenu } from '@opuscapita/react-menus';
 import ajax from 'superagent-bluebird-promise';
 import I18nManager from 'opuscapita-i18n/lib/utils/I18nManager';
 import translations from './i18n';
+import formatPatterns from './i18n/formatPatterns';
 import NotificationSystem from 'react-notification-system';
 
 class Layout extends Component
@@ -27,7 +28,7 @@ class Layout extends Component
         super(props);
 
         this.state = {
-            i18n : new I18nManager('en', [ ]),
+            i18n : new I18nManager('en', [ ], formatPatterns),
             locale : 'en',
             currentUserData : { },
             dataLoaded : false
@@ -60,7 +61,7 @@ class Layout extends Component
 
     setLocale = (locale) =>
     {
-        var i18n = new I18nManager(locale, []);
+        var i18n = new I18nManager(locale, [ ], formatPatterns);
         i18n.register('ServiceConfigFlow', translations);
 
         var currentUserData = this.state.currentUserData;
