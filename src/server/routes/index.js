@@ -1,6 +1,7 @@
 'use strict'
 
 const Promise = require('bluebird');
+const Multer = require('multer');
 
 const RedisEvents = require('ocbesbn-redis-events');
 const BlobClient = require('ocbesbn-blob-client');
@@ -13,6 +14,8 @@ const Voucher = require('../api/voucher.js');
 const fs = require('fs');
 const writeFile = Promise.promisify(fs.writeFile);
 
+const handlebars = require('handlebars');
+const readFileAsync = Promise.promisify(fs.readFile);
 
 /* Conventions:
 InChannelConfig.status = new | approved | activated   // inPreparation
@@ -42,59 +45,60 @@ module.exports.init = function(app, db, config)
 
 
         //  Test event subscriptions:
-        const evt1 = this.events.subscribe('inChannelConfig.created', (data) => {
+        this.events.subscribe('inChannelConfig.created', (data) => {
             console.log("Event received for \"inChannelConfig.created\"", data);
         });
-        const evt2 = this.events.subscribe('inChannelConfig.updated', (data) => {
+        this.events.subscribe('inChannelConfig.updated', (data) => {
             console.log("Event received for \"inChannelConfig.updated\"", data);
         });
-        const evt3 = this.events.subscribe('inChannelContract.created', (data) => {
+        this.events.subscribe('inChannelContract.created', (data) => {
             console.log("Event received for \"inChannelContract.created\"", data);
         });
-        const evt4 = this.events.subscribe('inChannelContract.updated', (data) => {
+        this.events.subscribe('inChannelContract.updated', (data) => {
             console.log("Event received for \"inChannelContract.updated\"", data);
         });
-        const evt5 = this.events.subscribe('voucher.created', (data) => {
+        this.events.subscribe('voucher.created', (data) => {
             console.log("Event received for \"voucher.created\"", data);
         });
 
 
-        const evt6 = this.events.subscribe('sales-inoivce.created', (data) => {
+        this.events.subscribe('sales-inoivce.created', (data) => {
             this.transferSalesInvoice(data);
         });
 
-        return Promise.all([ evt1, evt2, evt3, evt4, evt5, evt6 ]).then(() =>
-        {
-            this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
 
-            app.use(checkContentType);
+        this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
 
-            // InChannelConfig
-            //
-            app.get('/api/config/inchannels/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
-            app.put('/api/config/inchannels/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
-            app.post('/api/config/inchannels', (req, res) => this.addInChannelConfig(req, res));
-            app.put('/api/config/inchannels/:supplierId/finish', (req, res) => this.approveInChannelConfig(req, res));
+        app.use(checkContentType);
 
-            // InChannelContract
-            //
-            app.get('/api/config/inchannelcontracts/:tenantId', (req, res) => this.sendInChannelContracts(req, res));
-            app.get('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.sendInChannelContract(req, res));
-            app.put('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.updateInChannelContract(req, res));
-            app.post('/api/config/inchannelcontracts/:tenantId', (req, res) => this.addInChannelContract(req, res));
+        // InChannelConfig
+        //
+        app.get('/api/config/inchannels/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
+        app.put('/api/config/inchannels/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
+        app.post('/api/config/inchannels', (req, res) => this.addInChannelConfig(req, res));
+        app.put('/api/config/inchannels/:supplierId/finish', (req, res) => this.approveInChannelConfig(req, res));
+
+        // InChannelContract
+        //
+        app.get('/api/config/inchannelcontracts/:tenantId', (req, res) => this.sendInChannelContracts(req, res));
+        app.get('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.sendInChannelContract(req, res));
+        app.put('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.updateInChannelContract(req, res));
+        app.post('/api/config/inchannelcontracts/:tenantId', (req, res) => this.addInChannelContract(req, res));
 
 
-            // Voucher
-            //
-            // TODO: search only for Vouchers with state != 'closed'
-            app.get('/api/config/vouchers/:supplierId', (req, res) => this.sendOneVoucher(req, res));
-            app.post('/api/config/vouchers', (req, res) => this.addVoucher(req, res));
-            // TODO: voucher vs. vouchers - for first step of adjustments, we keep "voucher". As soon as onboarding is adjusted: remove
-            app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
+        // Voucher
+        //
+        // TODO: search only for Vouchers with state != 'closed'
+        app.get('/api/config/vouchers/:supplierId', (req, res) => this.sendOneVoucher(req, res));
+        app.post('/api/config/vouchers', (req, res) => this.addVoucher(req, res));
+        // TODO: voucher vs. vouchers - for first step of adjustments, we keep "voucher". As soon as onboarding is adjusted: remove
+        app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
 
-            // forwarding of REST calls
-            app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
-        });
+        // forwarding of REST calls
+        app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
+
+        // Key In related
+        app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
     });
 }
 
@@ -563,4 +567,63 @@ module.exports.sendCustomer = function(req, res)
         console.log("getCustomer - Error: ", e);
         res.status("400").json({message: e.message});
     })
+}
+
+module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:messageId'
+{
+    const tenantId = req.params.tenantId;
+    if (!tenantId.startsWith('s_')) res.status("400").json({message: 'Invalid tenantId'});
+
+    const supplierId = req.params.tenantId.substring(2);
+    const messageId = req.params.messageId;
+
+    const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
+    const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
+    const path = `/private/email/received/${messageId}/`;
+
+    try {
+        const files = await blobClient.listFiles(tenantId, path)
+        var pdfFile = files.filter(item => item.extension == '.pdf').sort((a,b) => a.name > b.name )[0];
+        var jsonFile = files.filter(item => item.extension == '.json').sort((a,b) => a.name > b.name )[0];
+
+        if (pdfFile && jsonFile) {
+            var link = `/einvoice-send/key-in/${messageId}/${pdfFile.name}`;
+
+            const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + jsonFile.name));
+            const destEmail = jsonFileContents.email;
+
+            const pdfFileContents = await blobClient.readFile(tenantId, path + pdfFile.name);
+
+            const subject = "Supplier's user notification";
+            const templateSource = await readFileAsync(__dirname + '/../templates/supplier-notification-email.html', 'utf8');
+
+            const compiledTemplate = handlebars.compile(templateSource);
+            const context = { emails: destEmail, link }  // change
+            const html = compiledTemplate(context);
+
+            const base = { // needs to be replaced with the better configuration. HTML template a
+                to : destEmail, // emailsString
+                subject,
+                html
+            }
+            const sentChangeAfter = await serviceClient.post('email', '/api/send', base, true);
+
+            const queryString = 'supplierId=' + supplierId;
+            const users = (await serviceClient.get('user', `/api/users?${queryString}`, true))[0];
+
+            const sentNotifications = await Promise.all(users.map(user => {
+                return serviceClient.post('notification', '/api/notifications/', {
+                    'userId': user.id,
+                    'message': link, // change
+                    'status': 'new'
+                }, true);
+            }));
+
+            res.status("200").json({message: 'Success'}); // change
+        } else {
+            res.status("400").json({message: 'Pdf or JSON file was not found'}); // change
+        }
+    } catch(e) {
+        res.status("400").json({message: e.message});
+    }
 }

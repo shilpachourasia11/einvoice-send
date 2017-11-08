@@ -187,5 +187,22 @@
             "actions": ["view"],
             "fields": ["customerName"]
         }]
+    },
+    "supplier-pdf": {
+        "translations": {
+            "name": {
+                "en": "Process PDF invoices and notify suppliers.",
+                "de": "Change! Lesen der Stammdaten eines beliebigen Kunden."
+            },
+            "description": {
+                "en": "Enables read access to data of a supplier.",
+                "de": "Change! Ermöglicht das lesen aller Stammdaten eines beliebigen Kunden."
+            }
+        },
+        "resources": [{
+            "type": "rest",
+            "resourceId": "/api/emailrcv/[^/]+/[^/]+",
+            "actions": ["view"]
+        }]
     }
 }
