@@ -68,7 +68,7 @@ module.exports.init = function(app, db, config)
 
         return Promise.all([ evt1, evt2, evt3, evt4, evt5, evt6 ]).then(() =>
         {
-            this.blob = new BlobClient({forceServiceToken:true});   // ??? Why does this.blobclient not work?
+            this.blob = new BlobClient({forceServiceToken:true});
 
             app.use(checkContentType);
 
