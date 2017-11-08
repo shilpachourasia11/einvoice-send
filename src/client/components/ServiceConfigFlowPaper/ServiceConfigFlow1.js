@@ -1,10 +1,11 @@
 import React from 'react';
+import { Components } from '@opuscapita/service-base-ui';
 import { Button } from 'react-bootstrap';
-//import browserHistory from 'react-router/lib/browserHistory';
 import ajax from 'superagent-bluebird-promise';
+import translations from './i18n'
 
-export default class ServiceConfigFlow1 extends React.Component {
-
+export default class ServiceConfigFlow1 extends Components.ContextComponent
+{
     static propTypes = {
         accepted : React.PropTypes.bool,
         onNext : React.PropTypes.func.isRequired,
@@ -15,9 +16,11 @@ export default class ServiceConfigFlow1 extends React.Component {
         accepted : false
     };
 
-    constructor(props)
+    constructor(props, context)
     {
         super(props)
+
+        context.i18n.register('ServiceConfigFlowPaper', translations);
 
         this.state = {
             accepted : this.props.accepted,
@@ -25,10 +28,11 @@ export default class ServiceConfigFlow1 extends React.Component {
         }
     }
 
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-        locale: React.PropTypes.string
-    };
+    componentWillReceiveProps(nextProps)
+    {
+        this.props = nextProps;
+        this.setState({ });
+    }
 
 //    componentDidMount() {
 //      console.log(">>>> ServiceConfigFlow1 - props", this.props);
@@ -232,7 +236,7 @@ export default class ServiceConfigFlow1 extends React.Component {
     {
         return (
             <div>
-                <h3>{this.context.i18n.getMessage('congratulations')}</h3>
+                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Paper.congratulations')}</h3>
                 <div>
                     {this.context.i18n.getMessage('ServiceConfigFlow.Paper.subheader', {customerName : this.props.voucher.customerName})}
                 </div>
@@ -249,7 +253,7 @@ export default class ServiceConfigFlow1 extends React.Component {
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            {this.context.i18n.getMessage('ServiceConfigFlow.readOCTaC')}
+                            {this.context.i18n.getMessage('ServiceConfigFlow.Paper.readOCTaC')}
                         </a>
                     </label>
                 </div>

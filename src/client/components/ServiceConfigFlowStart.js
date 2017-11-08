@@ -1,13 +1,13 @@
 import React from 'react';
+import { Components, System } from '@opuscapita/service-base-ui';
+import translations from './i18n';
 import { Button, Radio } from 'react-bootstrap';
-import { Redirect } from 'react-router';
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
+import extend from 'extend';
 
 import BillingDetails from './common/BillingDetails'
-
 import InChannelConfig from '../api/InChannelConfig.js';
-
 
 
 // A workaround to prevent a browser warning about unknown properties 'active', 'activeKey' and 'activeHref'
@@ -17,7 +17,7 @@ const MyDiv = () =>
     return <div className="connecting-line"/>;
 };
 
-export default class ServiceConfigFlowStart extends React.Component
+export default class ServiceConfigFlowStart extends Components.ContextComponent
 {
     static propTypes = {
         invoiceSendingType : React.PropTypes.string,
@@ -30,27 +30,29 @@ export default class ServiceConfigFlowStart extends React.Component
         preValidationSuccess : false
     };
 
-    constructor(props)
+    constructor(props, context)
     {
         super(props);
+
+        context.i18n.register('ServiceConfigFlowStart', translations);
+
         this.state = {
             invoiceSendingType : this.props.invoiceSendingType,
             preValidationSuccess : this.props.preValidationSuccess
         };
     }
 
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-        inChannelConfig : React.PropTypes.object
-    };
-
-
     /////////////////////////////////////////////
     // Lifecycle methods
     /////////////////////////////////////////////
+    componentWillReceiveProps(nextProps)
+    {
+        this.props = nextProps;
+        this.setState({ });
+    }
 
-    componentWillMount() {
-        this.preValidation();
+    componentDidMount() {
+        return this.preValidation();
     }
 
     // TODO: Any type dependent prevalidation needed?
@@ -59,14 +61,13 @@ export default class ServiceConfigFlowStart extends React.Component
 
         // Check on existance of Supplier.VatIdentificationNo or SupplierBankAccount.AccountNumber
         return ajax.get('/supplier/api/suppliers/' + this.props.user.supplierId + "?include=bankAccounts")
-            .set('Content-Type', 'application/json')
-            .promise()
         .then((supplier) => {
             let bankAccounts = supplier.body.bankAccounts;
             let aBankAccount = bankAccounts && bankAccounts[0] && bankAccounts[0].accountNumber;
             let vatId = supplier.body.vatIdentificationNo;
 
-            this.setState({"preValidationSuccess" : !!vatId || !!aBankAccount});
+            // TODO: What is this for?
+            //this.setState({"preValidationSuccess" : !!vatId || !!aBankAccount});
             this.setState({"preValidationSuccess" : true});
         })
 
@@ -86,6 +87,7 @@ export default class ServiceConfigFlowStart extends React.Component
         let supplierId = this.props.voucher.supplierId;
 
         let icc = this.props.inChannelConfig;
+
         // Don't take status from other types (that were configured before)
         // TODO: Potentially loses previously added info for this type. Has to be fixed with Status on ExtendedConfig entry!
         let oldStatus = (icc && icc.inputType == this.state.invoiceSendingType) ? icc.status : InChannelConfig.status.new;
@@ -128,17 +130,12 @@ export default class ServiceConfigFlowStart extends React.Component
     renderStandardHello = (customerName) => {
         if (this.state.preValidationSuccess && this.props.voucher.customerId) {
             let hello = this.context.i18n.getMessage('ServiceConfigFlowStart.hello', { customerName: this.props.voucher.customerName});
-            let intro1 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro1', { customerName: this.props.voucher.customerName});
-            let intro2 = this.context.i18n.getMessage('ServiceConfigFlowStart.intro2');
+            let intro = this.context.i18n.getMessage('ServiceConfigFlowStart.intro', { customerName: this.props.voucher.customerName});
 
             return (
                 <div className="bs-callout bs-callout-info">
                     <h4>{hello}</h4>
-                    <p>
-                        {intro1}
-                        <br/>
-                        {intro2}
-                    </p>
+                    <p>{System.UI.nl2br(intro)}</p>
                 </div>
             );
         }

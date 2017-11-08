@@ -1,10 +1,11 @@
 import React, { PropTypes, Component } from 'react';
+import { Components } from '@opuscapita/service-base-ui';
 import _ from 'underscore';
 import request from 'superagent-bluebird-promise';
 import { Line, LineChart, XAxis, YAxis, Legend, CartesianGrid } from 'recharts';
 import i18n from './i18n'
 
-export default class ConnectSupplierWidget extends Component
+export default class ConnectSupplierWidget extends Components.ContextComponent
 {
   static propTypes = {
     actionUrl: PropTypes.string.isRequired,
@@ -12,11 +13,7 @@ export default class ConnectSupplierWidget extends Component
     locale: PropTypes.string.isRequired
   };
 
-  static contextTypes = {
-    i18n: React.PropTypes.object.isRequired
-  }
-
-  constructor(props)
+  constructor(props, context)
   {
     super(props);
 
@@ -24,7 +21,7 @@ export default class ConnectSupplierWidget extends Component
       inChannelContracts: []
     }
 
-
+    context.i18n.register('CSWTranslations', i18n);
   };
 
   componentDidMount()
@@ -37,11 +34,6 @@ export default class ConnectSupplierWidget extends Component
         return Promise.resolve(null);
       }).
       catch(error => Promise.resolve(null));
-  }
-
-  componentWillMount()
-  {
-    this.context.i18n.register('CSWTranslations', i18n);
   }
 
   getData()

@@ -1,6 +1,8 @@
 import React from 'react';
+import { Components } from '@opuscapita/service-base-ui';
 import { Button, Nav, NavItem, Tab, Row } from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
+import translations from './i18n';
 
 import ServiceConfigFlow1 from './ServiceConfigFlow1.js';
 import ServiceConfigFlow2 from './ServiceConfigFlow2.js';
@@ -18,7 +20,7 @@ const MyDiv = () =>
 };
 
 
-export default class ServiceConfigFlow extends React.Component
+export default class ServiceConfigFlow extends Components.ContextComponent
 {
     static propTypes = {
         currentTab : React.PropTypes.number,
@@ -33,9 +35,11 @@ export default class ServiceConfigFlow extends React.Component
         inputType: null
     };
 
-    constructor(props)
+    constructor(props, context)
     {
         super(props);
+
+        context.i18n.register('ServiceConfigFlowKeyIn', translations);
 
         this.state = {
             currentTab : this.props.currentTab,
@@ -44,10 +48,11 @@ export default class ServiceConfigFlow extends React.Component
         };
     }
 
-
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-    };
+    componentWillReceiveProps(nextProps)
+    {
+        this.props = nextProps;
+        this.setState({ });
+    }
 
 
     /////////////////////////////////////////////////////////
@@ -136,48 +141,42 @@ export default class ServiceConfigFlow extends React.Component
         }
 
         return (
-            <div style={{ minHeight: '100vh' }}>
-                <section className="content" style={{ overflow: 'visible' }}>
-                    <div className="content-wrap">
-                        <div className="container">
-                            <section className="header">
-                                <h1>
-                                    {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.header')}
-                                    <div className="control-bar text-right pull-right">
-                                        <Button onClick={ () => this.props.gotoStart()}>
-                                            <i className="fa fa-angle-left"/>
-                                            &nbsp;&nbsp;{this.context.i18n.getMessage('ServiceConfigFlow.backToTypeSelection')}
-                                        </Button>
-                                    </div>
-                                </h1>
-                            </section>
+            <div>
+                <section className="header">
+                    <h1>
+                        {this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.header')}
+                        <div className="control-bar text-right pull-right">
+                            <Button onClick={ () => this.props.gotoStart()}>
+                                <i className="fa fa-angle-left"/>
+                                &nbsp;&nbsp;{this.context.i18n.getMessage('ServiceConfigFlow.KeyIn.backToTypeSelection')}
+                            </Button>
+                        </div>
+                    </h1>
+                </section>
 
-                            <div className="container">
-                                <div className="row">
-                                    <section>
-                                        <div className="wizard">
-                                            <div className="wizard-inner">
-                                                <Tab.Container activeKey={ this.state.currentTab } onSelect={ currentTab => this.setState({ currentTab }) } id="stepsContainer">
-                                                    <Row className="clearfix">
-                                                        <PortalNav
-                                                            currentTab={this.state.currentTab} />
-                                                        <PortalTabContent
-                                                            setCurrentTab = { (tabNo) => this.setCurrentTab(tabNo) }
-                                                            approveOcTc = { (tabNo) => this.approveOcTc(tabNo) }
-                                                            approveCustomerTc = { (tabNo) => this.approveCustomerTC(tabNo) }
-                                                            finalApprove = { () => this.finalApprove() }
-                                                            voucher = {this.props.voucher}
-                                                            inChannelConfig={this.props.inChannelConfig} />
-                                                    </Row>
-                                                </Tab.Container>
-                                            </div>
-                                        </div>
-                                    </section>
+                <div className="container">
+                    <div className="row">
+                        <section>
+                            <div className="wizard">
+                                <div className="wizard-inner">
+                                    <Tab.Container activeKey={ this.state.currentTab } onSelect={ currentTab => this.setState({ currentTab }) } id="stepsContainer">
+                                        <Row className="clearfix">
+                                            <PortalNav
+                                                currentTab={this.state.currentTab} />
+                                            <PortalTabContent
+                                                setCurrentTab = { (tabNo) => this.setCurrentTab(tabNo) }
+                                                approveOcTc = { (tabNo) => this.approveOcTc(tabNo) }
+                                                approveCustomerTc = { (tabNo) => this.approveCustomerTC(tabNo) }
+                                                finalApprove = { () => this.finalApprove() }
+                                                voucher = {this.props.voucher}
+                                                inChannelConfig={this.props.inChannelConfig} />
+                                        </Row>
+                                    </Tab.Container>
                                 </div>
                             </div>
-                        </div>
+                        </section>
                     </div>
-                </section>
+                </div>
             </div>
         )
     }
