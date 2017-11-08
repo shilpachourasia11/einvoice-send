@@ -1,7 +1,6 @@
 'use strict'
 
 const Promise = require('bluebird');
-const Multer = require('multer');
 
 const RedisEvents = require('ocbesbn-redis-events');
 const BlobClient = require('ocbesbn-blob-client');
@@ -14,8 +13,6 @@ const Voucher = require('../api/voucher.js');
 const fs = require('fs');
 const writeFile = Promise.promisify(fs.writeFile);
 
-const handlebars = require('handlebars');
-const readFileAsync = Promise.promisify(fs.readFile);
 
 /* Conventions:
 InChannelConfig.status = new | approved | activated   // inPreparation
@@ -45,60 +42,61 @@ module.exports.init = function(app, db, config)
 
 
         //  Test event subscriptions:
-        this.events.subscribe('inChannelConfig.created', (data) => {
+        const evt1 = this.events.subscribe('inChannelConfig.created', (data) => {
             console.log("Event received for \"inChannelConfig.created\"", data);
         });
-        this.events.subscribe('inChannelConfig.updated', (data) => {
+        const evt2 = this.events.subscribe('inChannelConfig.updated', (data) => {
             console.log("Event received for \"inChannelConfig.updated\"", data);
         });
-        this.events.subscribe('inChannelContract.created', (data) => {
+        const evt3 = this.events.subscribe('inChannelContract.created', (data) => {
             console.log("Event received for \"inChannelContract.created\"", data);
         });
-        this.events.subscribe('inChannelContract.updated', (data) => {
+        const evt4 = this.events.subscribe('inChannelContract.updated', (data) => {
             console.log("Event received for \"inChannelContract.updated\"", data);
         });
-        this.events.subscribe('voucher.created', (data) => {
+        const evt5 = this.events.subscribe('voucher.created', (data) => {
             console.log("Event received for \"voucher.created\"", data);
         });
 
 
-        this.events.subscribe('sales-inoivce.created', (data) => {
+        const evt6 = this.events.subscribe('sales-inoivce.created', (data) => {
             this.transferSalesInvoice(data);
         });
 
+        return Promise.all([ evt1, evt2, evt3, evt4, evt5, evt6 ]).then(() =>
+        {
+            this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
 
-        this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
+            app.use(checkContentType);
 
-        app.use(checkContentType);
+            // InChannelConfig
+            //
+            app.get('/api/config/inchannels/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
+            app.put('/api/config/inchannels/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
+            app.post('/api/config/inchannels', (req, res) => this.addInChannelConfig(req, res));
+            app.put('/api/config/inchannels/:supplierId/finish', (req, res) => this.approveInChannelConfig(req, res));
 
-        // InChannelConfig
-        //
-        app.get('/api/config/inchannels/:supplierId', (req, res) => this.sendInChannelConfig(req, res));
-        app.put('/api/config/inchannels/:supplierId', (req, res) => this.updateInChannelConfig(req, res));
-        app.post('/api/config/inchannels', (req, res) => this.addInChannelConfig(req, res));
-        app.put('/api/config/inchannels/:supplierId/finish', (req, res) => this.approveInChannelConfig(req, res));
-
-        // InChannelContract
-        //
-        app.get('/api/config/inchannelcontracts/:tenantId', (req, res) => this.sendInChannelContracts(req, res));
-        app.get('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.sendInChannelContract(req, res));
-        app.put('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.updateInChannelContract(req, res));
-        app.post('/api/config/inchannelcontracts/:tenantId', (req, res) => this.addInChannelContract(req, res));
+            // InChannelContract
+            //
+            app.get('/api/config/inchannelcontracts/:tenantId', (req, res) => this.sendInChannelContracts(req, res));
+            app.get('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.sendInChannelContract(req, res));
+            app.put('/api/config/inchannelcontracts/:tenantId1/:tenantId2', (req, res) => this.updateInChannelContract(req, res));
+            app.post('/api/config/inchannelcontracts/:tenantId', (req, res) => this.addInChannelContract(req, res));
 
 
-        // Voucher
-        //
-        // TODO: search only for Vouchers with state != 'closed'
-        app.get('/api/config/vouchers/:supplierId', (req, res) => this.sendOneVoucher(req, res));
-        app.post('/api/config/vouchers', (req, res) => this.addVoucher(req, res));
-        // TODO: voucher vs. vouchers - for first step of adjustments, we keep "voucher". As soon as onboarding is adjusted: remove
-        app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
+            // Voucher
+            //
+            // TODO: search only for Vouchers with state != 'closed'
+            app.get('/api/config/vouchers/:supplierId', (req, res) => this.sendOneVoucher(req, res));
+            app.post('/api/config/vouchers', (req, res) => this.addVoucher(req, res));
+            // TODO: voucher vs. vouchers - for first step of adjustments, we keep "voucher". As soon as onboarding is adjusted: remove
+            app.post('/api/config/voucher', (req, res) => this.addVoucher(req, res));
 
-        // forwarding of REST calls
-        app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
+            // forwarding of REST calls
+            app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
 
-        // Key In related
-        app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
+            app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
+        });
     });
 }
 
