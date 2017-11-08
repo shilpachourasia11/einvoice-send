@@ -588,7 +588,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
         var jsonFile = files.filter(item => item.extension == '.json').sort((a,b) => a.name > b.name )[0];
 
         if (pdfFile && jsonFile) {
-            var link = `/einvoice-send/key-in/${messageId}/${pdfFile.name}`;
+            var link = `/sales-invoice/create/${messageId}/${pdfFile.name}`;
 
             const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + jsonFile.name));
             const destEmail = jsonFileContents.email;
