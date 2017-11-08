@@ -13,6 +13,9 @@ const Voucher = require('../api/voucher.js');
 const fs = require('fs');
 const writeFile = Promise.promisify(fs.writeFile);
 
+const handlebars = require('handlebars');
+const readFileAsync = Promise.promisify(fs.readFile);
+
 
 /* Conventions:
 InChannelConfig.status = new | approved | activated   // inPreparation
