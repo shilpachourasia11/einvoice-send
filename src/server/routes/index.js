@@ -68,7 +68,7 @@ module.exports.init = function(app, db, config)
 
         return Promise.all([ evt1, evt2, evt3, evt4, evt5, evt6 ]).then(() =>
         {
-            this.blob = new BlobClient({});   // ??? Why does this.blobclient not work?
+            this.blob = new BlobClient({forceServiceToken:true});   // ??? Why does this.blobclient not work?
 
             app.use(checkContentType);
 
@@ -587,7 +587,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
         var pdfFile = files.filter(item => item.extension == '.pdf').sort((a,b) => a.name > b.name )[0];
 
         if (pdfFile && files.map(file => file.name).includes('email.json')) {
-            var link = `/einvoice-send/key-in/${messageId}/${pdfFile.name}`;
+            var link = `/sales-invoice/create/${messageId}/${pdfFile.name}`;
 
             const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + 'email.json'));
             const destEmail = jsonFileContents.From;
