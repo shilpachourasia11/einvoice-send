@@ -29,11 +29,12 @@ export default class KeyIn extends Components.ContextComponent {
         // props: invoiceId, createMode, readOnly(boolean) and a functon. There are listed in the propTypes.
 
         const {SimpleInvoiceEditor} = this.InvoiceEditorForm;
+        let pdfName = this.context.router.params.pdfName;
+        let blobFolder = this.context.router.params.blobFolder;
         return (
             <div>
-                <SimpleInvoiceEditor createMode={true} readOnly={false} />
+                <SimpleInvoiceEditor createMode={true} readOnly={false} pdfName={pdfName} blobFolder={blobFolder}/>
             </div>
         )
     }
-
 }

@@ -94,6 +94,8 @@ module.exports.init = function(app, db, config)
 
             // forwarding of REST calls
             app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
+
+            app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
         });
     });
 }
@@ -563,4 +565,63 @@ module.exports.sendCustomer = function(req, res)
         console.log("getCustomer - Error: ", e);
         res.status("400").json({message: e.message});
     })
+}
+
+module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:messageId'
+{
+    const tenantId = req.params.tenantId;
+    if (!tenantId.startsWith('s_')) res.status("400").json({message: 'Invalid tenantId'});
+
+    const supplierId = req.params.tenantId.substring(2);
+    const messageId = req.params.messageId;
+
+    const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
+    const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
+    const path = `/private/email/received/${messageId}/`;
+
+    try {
+        const files = await blobClient.listFiles(tenantId, path)
+        var pdfFile = files.filter(item => item.extension == '.pdf').sort((a,b) => a.name > b.name )[0];
+        var jsonFile = files.filter(item => item.extension == '.json').sort((a,b) => a.name > b.name )[0];
+
+        if (pdfFile && jsonFile) {
+            var link = `/einvoice-send/key-in/${messageId}/${pdfFile.name}`;
+
+            const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + jsonFile.name));
+            const destEmail = jsonFileContents.email;
+
+            const pdfFileContents = await blobClient.readFile(tenantId, path + pdfFile.name);
+
+            const subject = "Supplier's user notification";
+            const templateSource = await readFileAsync(__dirname + '/../templates/supplier-notification-email.html', 'utf8');
+
+            const compiledTemplate = handlebars.compile(templateSource);
+            const context = { emails: destEmail, link }  // change
+            const html = compiledTemplate(context);
+
+            const base = { // needs to be replaced with the better configuration. HTML template a
+                to : destEmail, // emailsString
+                subject,
+                html
+            }
+            const sentChangeAfter = await serviceClient.post('email', '/api/send', base, true);
+
+            const queryString = 'supplierId=' + supplierId;
+            const users = (await serviceClient.get('user', `/api/users?${queryString}`, true))[0];
+
+            const sentNotifications = await Promise.all(users.map(user => {
+                return serviceClient.post('notification', '/api/notifications/', {
+                    'userId': user.id,
+                    'message': link, // change
+                    'status': 'new'
+                }, true);
+            }));
+
+            res.status("200").json({message: 'Success'}); // change
+        } else {
+            res.status("400").json({message: 'Pdf or JSON file was not found'}); // change
+        }
+    } catch(e) {
+        res.status("400").json({message: e.message});
+    }
 }
