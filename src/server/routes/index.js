@@ -94,7 +94,7 @@ module.exports.init = function(app, db, config)
         app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
 
         // Key In related
-        app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.lol(req, res));
+        app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
     });
 }
 
@@ -524,39 +524,13 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
     try {
         const files = await blobClient.listFiles(tenantId, path)
         var pdfFile = files.filter(item => item.extension == '.pdf').sort((a,b) => a.name > b.name )[0];
-        if (pdfFile) {
-            var link = `/einvoice-send/#/key-in/${messageId}/${pdfFile.name.substring(0, pdfFile.name.length-4)}`;
-            const supplierAddresses = (await serviceClient.get('supplier', `/api/suppliers/${supplierId}/addresses`, true))[0];
+        var jsonFile = files.filter(item => item.extension == '.json').sort((a,b) => a.name > b.name )[0];
 
-            const emails = {'default': [], 'sales': [], 'rest':[]};
+        if (pdfFile && jsonFile) {
+            var link = `/einvoice-send/key-in/${messageId}/${pdfFile.name}`;
 
-            supplierAddresses.forEach(item => {
-                    switch (item.type) {
-                        case 'sales':
-                            emails.sales.push(item.email);
-                            break;
-                        case 'default':
-                            emails.default.push(item.email);
-                            break;
-                        default:
-                            emails.rest.push(item.email);
-                            break;
-                    }
-            });
-
-            let chosenEmails;
-
-            if (emails.sales.length) {
-                chosenEmails = emails.sales;
-            } else if (emails.default.length) {
-                chosenEmails = emails.default;
-            } else {
-                chosenEmails = emails.rest;
-            }
-
-            const emailsString = chosenEmails.filter((value, index, self) => {
-                return self.indexOf(value) === index;
-            }).join(',');
+            const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + jsonFile.name));
+            const destEmail = jsonFileContents.email;
 
             const pdfFileContents = await blobClient.readFile(tenantId, path + pdfFile.name);
 
@@ -564,11 +538,11 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
             const templateSource = await readFileAsync(__dirname + '/../templates/supplier-notification-email.html', 'utf8');
 
             const compiledTemplate = handlebars.compile(templateSource);
-            const context = { emails: emailsString, link }
+            const context = { emails: destEmail, link }  // change
             const html = compiledTemplate(context);
 
             const base = { // needs to be replaced with the better configuration. HTML template a
-                to : emailsString, // emailsString
+                to : destEmail, // emailsString
                 subject,
                 html
             }
@@ -580,40 +554,16 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
             const sentNotifications = await Promise.all(users.map(user => {
                 return serviceClient.post('notification', '/api/notifications/', {
                     'userId': user.id,
-                    'message': link,
+                    'message': link, // change
                     'status': 'new'
                 }, true);
             }));
 
-            res.status("200").json({congrats: 'cool'});
+            res.status("200").json({message: 'Success'}); // change
         } else {
-            res.status("400").json({message: 'no pdf file found. actually its weird error'});
+            res.status("400").json({message: 'Pdf or JSON file was not found'}); // change
         }
     } catch(e) {
         res.status("400").json({message: e.message});
     }
-}
-
-module.exports.lol = function(req, res)
-{
-    const msg = 'lol thatsme';
-
-    const messageId = req.params.messageId;
-    const supplierId = req.params.tenantId;
-    const path = `/private/email/received/${messageId}/`;
-    console.log('------------------------------------------------------------------------------------------------');
-    console.log(supplierId);
-    console.log(path);
-    console.log(msg);
-    console.log('------------------------------------------------------------------------------------------------');
-
-    const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
-    //res.status("200").json({lol: 'blah'});
-    Promise.all([
-        blobClient.storeFile(supplierId, path+'lol.txt',new Buffer(msg), true),
-        blobClient.storeFile(supplierId, path+'thing.pdf', new Buffer(msg), true),
-        blobClient.storeFile(supplierId, path+'lol.pdf', new Buffer(msg), true)
-    ])
-    .then(() => res.status("200").json({congrats: 'message Saved'}))
-    .catch(e => res.status("400").json({message: e.message}));
 }
