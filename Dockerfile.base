@@ -1,6 +1,0 @@
-FROM node:8-alpine
-MAINTAINER kwierchris
-WORKDIR /var/tmp/base
-COPY package.json .
-ENV NODE_ENV=development
-RUN apk add --no-cache rsync curl git ; yarn install

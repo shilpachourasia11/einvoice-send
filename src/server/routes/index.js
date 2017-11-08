@@ -14,10 +14,6 @@ const Voucher = require('../api/voucher.js');
 const fs = require('fs');
 const writeFile = Promise.promisify(fs.writeFile);
 
-let xml2js = require('xml2js');
-// const PDFParser = require("pdf2json");
-const base64 = require('base-64');
-
 const handlebars = require('handlebars');
 const readFileAsync = Promise.promisify(fs.readFile);
 
