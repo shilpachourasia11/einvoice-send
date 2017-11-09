@@ -164,7 +164,7 @@ class Frame extends Components.ContextComponent
 
     finalizeFlow()
     {
-        this.context.router.push('/bnp/dashboard');
+        this.context.router.push('/bnp');
     }
 
     render()
