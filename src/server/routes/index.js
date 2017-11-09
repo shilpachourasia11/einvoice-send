@@ -602,6 +602,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
 
             const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + 'email.json'));
             const destEmail = jsonFileContents.From;
+            const name = jsonFileContents.FromName;
 
             const pdfFileContents = await blobClient.readFile(tenantId, path + pdfFile.name);
 
@@ -609,7 +610,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
             const templateSource = await readFileAsync(__dirname + '/../templates/supplier-notification-email.html', 'utf8');
 
             const compiledTemplate = handlebars.compile(templateSource);
-            const context = { emails: destEmail, link }  // change
+            const context = { emails: destEmail, link , name}  // change
             const html = compiledTemplate(context);
 
             const base = { // needs to be replaced with the better configuration. HTML template a
