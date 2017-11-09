@@ -16,6 +16,7 @@ const writeFile = Promise.promisify(fs.writeFile);
 const handlebars = require('handlebars');
 const readFileAsync = Promise.promisify(fs.readFile);
 
+const configMain = require('ocbesbn-config');
 
 /* Conventions:
 InChannelConfig.status = new | approved | activated   // inPreparation
@@ -34,7 +35,17 @@ InChannelContract.status = new | approved
  */
 module.exports.init = function(app, db, config)
 {
+    const configInit = configMain.get('ext-url/', true).then(props =>
+    {
+        this.extUrlConfigs = {
+            scheme : props['ext-url/scheme'],
+            host : props['ext-url/host'],
+            port : props['ext-url/port']
+        }
+    });
+
     return Promise.all([
+        configInit,
         Api.init(db),
         InChannelContract.init(db),
         Voucher.init(db)
@@ -587,7 +598,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
         var pdfFile = files.filter(item => item.extension == '.pdf').sort((a,b) => a.name > b.name )[0];
 
         if (pdfFile && files.map(file => file.name).includes('email.json')) {
-            var link = `/sales-invoice/create/${messageId}/${pdfFile.name}`;
+            var link = `${this.extUrlConfigs.scheme}://${this.extUrlConfigs.host}:${this.extUrlConfigs.port}/sales-invoice/create/${messageId}/${pdfFile.name}`;
 
             const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + 'email.json'));
             const destEmail = jsonFileContents.From;
