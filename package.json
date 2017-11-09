@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@opuscapita/react-loaders": "^0.1.9",
-    "@opuscapita/service-base-ui": "^1.0.28",
+    "@opuscapita/service-base-ui": "^1.0.34",
     "bluebird": "^3.5.1",
     "css-loader": "^0.28.7",
     "extend": "^3.0.1",
