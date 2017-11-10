@@ -109,7 +109,7 @@ module.exports.init = function(app, db, config)
             // forwarding of REST calls
             app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
 
-            app.put('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
+            app.get('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
         });
     });
 }
@@ -602,6 +602,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
 
             const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + 'email.json'));
             const destEmail = jsonFileContents.From;
+            const userName = jsonFileContents.FromName || destEmail;
 
             const pdfFileContents = await blobClient.readFile(tenantId, path + pdfFile.name);
 
@@ -609,7 +610,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
             const templateSource = await readFileAsync(__dirname + '/../templates/supplier-notification-email.html', 'utf8');
 
             const compiledTemplate = handlebars.compile(templateSource);
-            const context = { emails: destEmail, link }  // change
+            const context = { emails: destEmail, link, name: userName }  // change
             const html = compiledTemplate(context);
 
             const base = { // needs to be replaced with the better configuration. HTML template a
@@ -634,6 +635,42 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
         } else {
             res.status("400").json({message: 'Pdf or JSON file was not found'}); // change
         }
+    } catch(e) {
+        res.status("400").json({message: e.message});
+    }
+}
+
+module.exports.lol = async function(req, res) // '/api/emailrcv/:tenantId/:messageId'
+{
+    const tenantId = req.params.tenantId;
+    if (!tenantId.startsWith('s_')) res.status("400").json({message: 'Invalid tenantId'});
+
+    const supplierId = req.params.tenantId.substring(2);
+    const messageId = req.params.messageId;
+
+    const blobClient = new BlobClient({ serviceClient: req.opuscapita.serviceClient });
+    const serviceClient = new ServiceClient({ consul : { host : 'consul' } });
+    const path = `/private/email/received/${messageId}/`;
+    console.log('============================');
+    console.log(tenantId);
+    console.log(path);
+
+    try {
+        var obj = { From: 'naumezd07@gmail.com', FromName: 'Daniil'};
+        const doneJsone =  blobClient.storeFile(tenantId, path + 'email.json', new Buffer(JSON.stringify(obj)), true).
+        then(() => {
+            console.log('------------ Created JSON ------------');
+        });
+
+        const donePdf = blobClient.storeFile(tenantId, path + 'lol.pdf', new Buffer(JSON.stringify(obj)), true).
+        then(() => {
+            console.log('------------ Created PDF  ------------');
+        });
+
+        return Promise.all([ doneJsone, donePdf]).
+        then(() => res.status("200").json({message: 'Success'})).
+        catch( e => res.status("400").json({message: e}))
+
     } catch(e) {
         res.status("400").json({message: e.message});
     }
