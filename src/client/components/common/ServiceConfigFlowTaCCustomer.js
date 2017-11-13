@@ -1,12 +1,12 @@
 import React from 'react';
+import { Components } from '@opuscapita/service-base-ui';
+import translations from './i18n';
 import { Button } from 'react-bootstrap';
-//import browserHistory from 'react-router/lib/browserHistory';
 import ajax from 'superagent-bluebird-promise';
 import Promise from 'bluebird';
 
-
-export default class ServiceConfigFlow2 extends React.Component {
-
+export default class ServiceConfigFlowTaCCustomer extends Components.ContextComponent
+{
     static propTypes = {
         accepted : React.PropTypes.bool,
         customerTermsAndConditions : React.PropTypes.string,
@@ -22,9 +22,11 @@ export default class ServiceConfigFlow2 extends React.Component {
         customerTermsAndConditions : ""
     };
 
-    constructor(props)
+    constructor(props, context)
     {
         super(props)
+
+        context.i18n.register('ServiceConfigFlowTaCCustomer', translations);
 
         this.state = {
             accepted : this.props.accepted,
@@ -32,21 +34,15 @@ export default class ServiceConfigFlow2 extends React.Component {
         }
     }
 
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-        locale : React.PropTypes.string,
-    };
-
-
     componentDidMount() {
-        this.setTermsAndConditions(this.context.locale);
-        this.loadInChannelContract();
+        return Promise.all([
+            this.setTermsAndConditions(this.context.locale),
+            this.loadInChannelContract()
+        ])
     }
 
     loadInChannelContract() {
         return ajax.get('/einvoice-send/api/config/inchannelcontracts/c_' + this.props.voucher.customerId + '/s_' + this.props.voucher.supplierId)
-            .set('Content-Type', 'application/json')
-            .promise()
         .then ((contract) => {
             let targetType = this.props.targetType ? this.props.targetType : this.props.inChannelConfig.inputType;
             if (contract && contract.body && contract.body.inputType == targetType) {
@@ -56,18 +52,20 @@ export default class ServiceConfigFlow2 extends React.Component {
             }
         })
         .catch((e) => {
-            console.log("Error determined when fetching InChannelContract for c_" + this.props.voucher.customerId + " and s_" + this.props.voucher.supplierId + ": ", e);
+            //console.log("Error determined when fetching InChannelContract for c_" + this.props.voucher.customerId + " and s_" + this.props.voucher.supplierId + ": ", e);
+            this.showNotification(e.message, 'error', 10);
         });
     }
 
 
     setTermsAndConditions(locale) {
-        this.getCustomerTermsAndConditions(locale)
+        return this.getCustomerTermsAndConditions(locale)
         .then ((newTermsAndConditions) => {
             this.setState({ customerTermsAndConditions: newTermsAndConditions.text });
         })
         .catch((e) => {
-            console.log("Error determined when fetching customer T&C for c_" + this.props.voucher.customerId + ": ", e);
+            //console.log("Error determined when fetching customer T&C for c_" + this.props.voucher.customerId + ": ", e);
+            this.showNotification(e.message, 'error', 10);
         })
     }
 
@@ -78,15 +76,13 @@ export default class ServiceConfigFlow2 extends React.Component {
         })
     }
 
-
-
     render()
     {
         return (
             <div>
-                <h3>{this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.subheader', {customerName:this.props.voucher.customerName})}</h3>
+                <h3>{this.context.i18n.getMessage('CustomerTaC.subheader', {customerName:this.props.voucher.customerName})}</h3>
                 <div>
-                    {this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.subsubheader')}
+                    {this.context.i18n.getMessage('CustomerTaC.subsubheader')}
                 </div>
 
                 <hr/>
@@ -101,7 +97,7 @@ export default class ServiceConfigFlow2 extends React.Component {
                     <label className="oc-check">
                         <input type="checkbox" checked={ this.state.accepted } onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            {this.context.i18n.getMessage('ServiceConfigFlow.CustomerTaC.readTaC', {customerName:this.props.voucher.customerName})}
+                            {this.context.i18n.getMessage('CustomerTaC.readTaC', {customerName:this.props.voucher.customerName})}
                         </a>
                     </label>
                 </div>

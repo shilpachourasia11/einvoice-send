@@ -1,0 +1,10 @@
+body {
+    overflow: auto;
+    height: 100%;
+}
+
+.line-item {
+    padding-right: 3px;
+    padding-left: 3px;
+    padding-bottom: 5px;
+}

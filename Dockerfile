@@ -1,18 +1,13 @@
-FROM opuscapita/einvoice-send-base:dev
+FROM node:8-alpine
 MAINTAINER kwierchris
-
-WORKDIR /var/tmp/base
-COPY package.json .
-
-# Make sure node can load modules from /var/tmp/base/node_modules
-# Setting NODE_ENV is necessary for "npm install" below.
-ENV NODE_ENV=development NODE_PATH=/var/tmp/base/node_modules PATH=${PATH}:${NODE_PATH}/.bin
-RUN yarn install
 
 WORKDIR /home/node/einvoice-send
 
-# Bundle app source by overwriting all WORKDIR content.
+# Make sure node can load modules from /var/tmp/base/node_modules
+# Setting NODE_ENV is necessary for "npm install" below.
+ENV NODE_ENV=production
 COPY . .
+RUN apk add --no-cache curl ; NODE_ENV=development yarn install && yarn run build:client
 
 # Set the user name or UID to use when running the image and for any RUN, CMD and ENTRYPOINT instructions that follow
 USER node

@@ -1,12 +1,14 @@
 import React from 'react';
+import { Components } from '@opuscapita/service-base-ui';
 import { Button,Col } from 'react-bootstrap';
 import {Form, FormGroup, FormControl, ControlLabel, HelpBlock} from 'react-bootstrap';
 import ajax from 'superagent-bluebird-promise';
+import translations from './i18n'
 import Promise from 'bluebird';
 
 
-export default class ServiceConfigFlow1 extends React.Component {
-
+export default class ServiceConfigFlow1 extends Components.ContextComponent
+{
     static propTypes = {
         accepted : React.PropTypes.bool,
         onNext : React.PropTypes.func.isRequired,
@@ -18,25 +20,23 @@ export default class ServiceConfigFlow1 extends React.Component {
         accepted : false
     };
 
-    constructor(props)
+    constructor(props, context)
     {
-        super(props)
+        super(props);
+
+        context.i18n.register('ServiceConfigFlowEinvoice', translations);
 
         this.state = {
             accepted : this.props.accepted
         }
     }
 
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-        locale : React.PropTypes.string
-    };
-
     componentWillMount() {
         this.loadInChannelContract();
     }
 
-    componentWillReceiveProps() {
+    componentWillReceiveProps(props) {
+        this.props = props;
         this.loadInChannelContract();
     }
 

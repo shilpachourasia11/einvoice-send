@@ -14,6 +14,36 @@
             "type": "rest",
             "resourceId": "^[/]$",
             "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/einvoice",
+            "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/pdf",
+            "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/keyin",
+            "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/key-in",
+            "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/paper",
+            "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/invoice-search",
+            "actions": ["view"]
         }]
     },
     "x-tenant-manage": {
@@ -161,6 +191,23 @@
             "resourceId": "/api/customers/[%w | %p]*",
             "actions": ["view"],
             "fields": ["customerName"]
+        }]
+    },
+    "supplier-pdf": {
+        "translations": {
+            "name": {
+                "en": "Process PDF invoices and notify suppliers.",
+                "de": "Change! Lesen der Stammdaten eines beliebigen Kunden."
+            },
+            "description": {
+                "en": "Enables read access to data of a supplier.",
+                "de": "Change! Ermöglicht das lesen aller Stammdaten eines beliebigen Kunden."
+            }
+        },
+        "resources": [{
+            "type": "rest",
+            "resourceId": "/api/emailrcv/[^/]+/[^/]+",
+            "actions": ["edit"]
         }]
     }
 }

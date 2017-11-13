@@ -3,5 +3,6 @@ services:
   main:
     build: .
     volumes:
-     - .:/home/node/einvoice-send
+     - ./config:/home/node/einvoice-send/config
+     - ./src:/home/node/einvoice-send/src
     command: 'npm run dev'

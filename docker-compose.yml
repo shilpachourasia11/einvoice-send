@@ -1,6 +1,7 @@
 version: '3'
 services:
   main:
+    image: opuscapita/einvoice-send:dev
     depends_on:
      - mysql
      - consul
@@ -14,6 +15,7 @@ services:
      - api-registry
      - acl
      - sales-invoice
+     - a2a-integration
     labels:
       SERVICE_NAME: 'einvoice-send'
       SERVICE_TAGS: 'external'
@@ -27,13 +29,14 @@ services:
       SERVICE_3007_CHECK_HTTP: '/api/health/check'
       SERVICE_3007_CHECK_INTERVAL: '15s'
       SERVICE_3007_CHECK_TIMEOUT: '3s'
+      NODE_ENV: 'development'
     ports:
      - '3007:3007'
 
 
 
   mysql:
-    image: 'mysql:5.6'
+    image: 'mysql:5.7'
     ports:
       - '3306:3306'
     environment:
@@ -53,7 +56,6 @@ services:
 
   postgres:
     image: postgres:9.4
-    container_name: postgres
     ports:
       - '5432:5432'
     environment:
@@ -97,6 +99,29 @@ services:
       - mysql
     volumes:
       - .:/usr/local/kong/logs
+
+  email:
+    image: opuscapita/email:dev
+    environment:
+      NODE_ENV: 'production'
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      REDIS_AUTH: ${REDIS_AUTH}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      MAIL_API_KEY: ${MAIL_API_KEY}
+      MAIL_API_SECRET: ${MAIL_API_SECRET}
+      GATEWAY_SCHEME: ${GATEWAY_SCHEME}
+      GATEWAY_IP: ${GATEWAY_IP}
+      GATEWAY_PORT: ${GATEWAY_PORT}
+      SERVICE_3050_CHECK_HTTP: /api/health/check
+      SERVICE_3050_CHECK_INTERVAL: 15s
+      SERVICE_3050_CHECK_TIMEOUT: 3s
+    depends_on:
+      - registrator
+    ports:
+      - '3050:3050' #uncomment in case you want to have access to kue UI
+    command: 'npm run dev:production'
 
   registrator:
     image: gliderlabs/registrator
@@ -166,6 +191,26 @@ services:
      - '3013:3013'
     depends_on:
       - kong
+    command: 'npm run dev'
+
+  notification:
+    image: opuscapita/notification:dev
+    depends_on:
+      - mysql
+      - consul
+      - registrator
+      - redis
+    labels:
+      SERVICE_NAME: 'notification'
+    environment:
+      SERVICE_3011_CHECK_HTTP: /api/health/check
+      SERVICE_3011_CHECK_INTERVAL: 15s
+      SERVICE_3011_CHECK_TIMEOUT: 3s
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      REDIS_AUTH: ${REDIS_AUTH}
+    ports:
+      - '3011:3011'
     command: 'npm run dev'
 
   auth:
@@ -324,4 +369,33 @@ services:
       SERVICE_3018_CHECK_TIMEOUT: 3s
     ports:
      - '3018:3018'
+    command: "npm run dev"
+
+  a2a-integration:
+    image: opuscapita/a2a-integration:dev
+    depends_on:
+      - consul
+      - registrator
+      - supplier
+    labels:
+      SERVICE_NAME: 'a2a-integration'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      REDIS_AUTH: ${REDIS_AUTH}
+      SERVICE_3015_CHECK_HTTP: /api/health/check
+      SERVICE_3015_CHECK_INTERVAL: 15s
+      SERVICE_3015_CHECK_TIMEOUT: 3s
+      TIPFTP_USER: ${TIPFTP_USER}
+      TIPFTP_HOST: ${TIPFTP_HOST}
+      TIPFTP_PASSWORD: ${TIPFTP_PASSWORD}
+      TIPFTP_IP: ${TIPFTP_IP}
+      TIPFTP_PORT: ${TIPFTP_PORT}
+      TIPFTP_TYPE: ${TIPFTP_TYPE}
+      TIPFTP_PROTOCOL: ${TIPFTP_PROTOCOL}
+      TIPFTP_SUPPLIER_FOLDER: ${TIPFTP_SUPPLIER_FOLDER}
+      TIPFTP_SALES_INVOICE_FOLDER: ${TIPFTP_SALES_INVOICE_FOLDER}
+      TIPFTP_SUPPORT_EMAIL: ${TIPFTP_SUPPORT_EMAIL}
+    ports:
+      - '3015:3015'
     command: "npm run dev"

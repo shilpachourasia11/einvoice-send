@@ -1,8 +1,10 @@
 import React from 'react';
+import { Components } from '@opuscapita/service-base-ui';
 import { Button } from 'react-bootstrap';
+import translations from './i18n'
 
-export default class ServiceConfigFlow3 extends React.Component {
-
+export default class ServiceConfigFlow3 extends Components.ContextComponent
+{
     static propTypes = {
         onNext : React.PropTypes.func.isRequired,
         onPrevious : React.PropTypes.func.isRequired
@@ -11,18 +13,21 @@ export default class ServiceConfigFlow3 extends React.Component {
     static defaultProps = {
     };
 
-    constructor(props)
+    constructor(props, context)
     {
-        super(props)
+        super(props);
+
+        context.i18n.register('ServiceConfigFlowEinvoice', translations);
 
         this.state = {
         }
     }
 
-    static contextTypes = {
-        i18n : React.PropTypes.object.isRequired,
-    };
-
+    componentWillReceiveProps(nextProps)
+    {
+        this.props = nextProps;
+        this.setState({ });
+    }
 
     render()
     {
