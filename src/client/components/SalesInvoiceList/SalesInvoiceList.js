@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Components } from '@opuscapita/service-base-ui';
+import ajax from 'superagent-bluebird-promise';
 import SalesInvoices from '../../api/SalesInvoices.js';
+import extend from 'extend';
 import translations from './i18n';
 
 class SalesInvoiceList extends Components.ContextComponent
@@ -16,24 +18,27 @@ class SalesInvoiceList extends Components.ContextComponent
     }
 
     static columns = [{
-            key : 'campaignId',
-            name : 'SalesInvoiceList.header.campaignId'
+            key : 'invoiceNumber',
+            name : 'SalesInvoiceList.header.invoiceNumber'
         }, {
-            key : 'startsOn',
-            name : 'SalesInvoiceList.header.startsOn'
+            key : 'customerName',
+            name : 'SalesInvoiceList.header.customer'
         }, {
-            key : 'endsOn',
-            name : 'SalesInvoiceList.header.endsOn'
+            key : 'invoiceDateLabel',
+            name : 'SalesInvoiceList.header.invoiceDate'
+        }, {
+            key : 'orderNumber',
+            name : 'SalesInvoiceList.header.orderNumber'
+        }, {
+            key : 'totalNetPriceLabel',
+            name : 'SalesInvoiceList.header.totalNetPrice'
         }, {
             key : 'status',
             name : 'SalesInvoiceList.header.status'
-        }, {
-            key : 'campaignType',
-            name : 'SalesInvoiceList.header.campaignType'
         }
     ];
 
-    static itemButtons = [{
+    /*static itemButtons = [{
         key : 'edit',
         label : 'System.edit',
         icon : 'edit'
@@ -41,7 +46,8 @@ class SalesInvoiceList extends Components.ContextComponent
         key : 'delete',
         label : 'System.delete',
         icon : 'trash'
-    }];
+    }];*/
+    static itemButtons = [ ];
 
     constructor(props, context)
     {
@@ -53,6 +59,7 @@ class SalesInvoiceList extends Components.ContextComponent
             columns : [ ],
             items : [ ],
             origItems : [ ],
+            customerMap : null,
             supplierId : props.supplierId
         }
 
@@ -61,6 +68,8 @@ class SalesInvoiceList extends Components.ContextComponent
 
     componentDidMount()
     {
+        this.loadCustomerData();
+
         this.setState({
             itemButtons : this.getTranslatedButtons(),
             columns : this.getTranslatedColumns()
@@ -77,6 +86,22 @@ class SalesInvoiceList extends Components.ContextComponent
             columns : this.getTranslatedColumns(),
             supplierId : nextPops.supplierId
         });
+    }
+
+    loadCustomerData()
+    {
+        const mapCusomters = (customers) =>
+        {
+            const results = { };
+            customers.forEach(c => results[c.id] = c);
+
+            return results;
+        }
+
+        return ajax.get('/customer/api/customers').then(res => res && res.body)
+            .catch(res => { throw new Error((res.body && res.body.message) || res.body || res.message) })
+            .then(customers => this.setState({ customerMap : mapCusomters(customers) }))
+            .catch(e => this.context.showNotification(e.message, 'error', 10));
     }
 
     getTranslatedColumns()
@@ -133,8 +158,20 @@ class SalesInvoiceList extends Components.ContextComponent
 
     render()
     {
-        const { itemButtons, columns, items, origItems } = this.state;
-        const localItems = items || origItems;
+        const { customerMap, itemButtons, columns, items, origItems } = this.state;
+        const { i18n } = this.context;
+        const localItems = extend(true, [ ], items || origItems);
+        const getCustomerName = (customerId) => customerId && customerMap[customerId] && customerMap[customerId].customerName;
+
+        if(!customerMap)
+            return null;
+
+        localItems.forEach(item =>
+        {
+            item.customerName = getCustomerName(item.customerId);
+            item.invoiceDateLabel = i18n.formatDate(item.invoiceDate);
+            item.totalNetPriceLabel = i18n.formatDecimalNumber(item.totalNetPrice) + ' ' + item.currencyId;
+        });
 
         return(
             <Components.ListTable
