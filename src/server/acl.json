@@ -39,6 +39,11 @@
             "type": "rest",
             "resourceId": "^/paper",
             "actions": ["view"]
+        },
+        {
+            "type": "rest",
+            "resourceId": "^/invoice-search",
+            "actions": ["view"]
         }]
     },
     "x-tenant-manage": {
