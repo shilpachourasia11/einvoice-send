@@ -602,7 +602,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
 
             const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + 'email.json'));
             const destEmail = jsonFileContents.From;
-            const name = jsonFileContents.FromName || destEmail;
+            const name = jsonFileContents.FromName.replace(/.<.+>/, '') || destEmail;
 
             const pdfFileContents = await blobClient.readFile(tenantId, path + pdfFile.name);
 
