@@ -606,7 +606,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
 
             const pdfFileContents = await blobClient.readFile(tenantId, path + pdfFile.name);
 
-            const subject = "Supplier's user notification";
+            const subject = "Your invoice requires review";
             const templateSource = await readFileAsync(__dirname + '/../templates/supplier-notification-email.html', 'utf8');
 
             const compiledTemplate = handlebars.compile(templateSource);
