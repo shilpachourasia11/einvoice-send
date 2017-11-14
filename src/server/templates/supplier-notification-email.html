@@ -121,18 +121,7 @@
                                 <td valign="top" class="preheaderContent">
 
                                 	<!-- // Begin Module: Standard Preheader \ -->
-                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                    	<tr>
-                                        	<td valign="top"></td>
-                                            <!-- *|IFNOT:ARCHIVE_PAGE|* -->
-											<td valign="top" width="190">
-                                            	<div mc:edit="std_preheader_links">
-                                                	Is this email not displaying correctly?<br /><a href="*|ARCHIVE|*" target="_blank">View it in your browser</a>.
-                                                </div>
-                                            </td>
-											<!-- *|END:IF|* -->
-                                        </tr>
-                                    </table>
+
                                 	<!-- // End Module: Standard Preheader \ -->
 
                                 </td>
@@ -184,10 +173,12 @@
                                         <tr>
                                             <td class="bodyContent" width="100%" style="padding-left:20px; padding-right:10px;">
                                             	<div mc:edit="Header_content">
-                                                    <h4>Dear sender of an invoice</h4>
-                                                    We received an invoice from and prepared it for processing.
+                                                    <h4>Dear {{name}},</h4>
+                                                    we received an invoice via email.
                                                     <br />
-                                                    Please check your <a target="_blank" href="{{link}}">invoice</a> by pressing the link.
+						    This invoice requires Your review in order to be processed.
+                                                    <br />
+                                                    Please check your <a target="_blank" href="{{link}}">invoice</a> via this link.
                                             	</div>
                                             </td>
 
