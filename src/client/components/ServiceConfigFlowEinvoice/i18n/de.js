@@ -9,6 +9,7 @@ export default {
             },
             Step1: {
                 subheader: "Richtlinien zur eInvoice-Anbindung",
+                intro: "Eine E-Rechnung (eInvoice) enthält strukturierte Rechnungsdaten, ausgestellt im elektronischen Format. Eine E-Rechnung umfasst dieselben Inhalte wie eine Rechnung im Papierformat. Sie enthält Rechnungsdatenfelder und ein visualisiertes Rechnungsbild. Eine E-Rechnung kann direkt über ein elektronisches System zur Bearbeitung von Rechnungen im elektronischen Format empfangen und darüber weiterverarbeitet werden. Bitte beachten Sie, dass eine PDF-Rechnung im Anhang einer E-Mail keine E-Rechnung darstellt.",
                 subsubheader: "Um die eInvoice-Anbindung für Ihren Kunden {customerName} zu konfigurieren, prüfen Sie bitte die hier aufgeführten Voraussetzungen sowie den Lieferantenleitfaden und akzeptieren diese unten auf der Seite.",
                 text1: "E-invoice Übertragung",
                 li1: "Kontaktieren Sie Ihren E-Rechnungsdienstleisters oder",

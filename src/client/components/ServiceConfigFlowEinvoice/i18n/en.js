@@ -9,6 +9,7 @@ export default {
             },
             Step1: {
                 subheader: "Guidelines for eInvoicing",
+                intro: "An E-invoice contains structured invoice data issued in electronic formats. An e-invoice has the same contents as a paper invoice. It consists of invoice data fields and invoice image. An e-invoice can be received directly to an electronic purchase invoice handling system in electronic format where it can be processed further. Please note that a PDF invoice sent as an attachment of an email is not a real e-invoice.",
                 subsubheader: "You have successfully registered on behalf of {customerName}. Please read carefully through the following prerequisites as well as Supplier Guideline description and accept the terms before sending your first E-invoice by using Interconnect Operator Network.",
                 text1: "E-invoice Sending",
                 li1: "Connect with your existing service provider for e-invoicing",
