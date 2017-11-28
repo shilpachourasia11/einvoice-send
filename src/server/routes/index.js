@@ -53,6 +53,7 @@ module.exports.init = function(app, db, config)
     .then(() => {
         this.events = new RedisEvents({ consul : { host : 'consul' } });
         this.serviceClient = new ServiceClient({ consul : { host : 'consul' } });
+        console.log('=========================================================================');
 
 
         //  Test event subscriptions:
@@ -124,6 +125,8 @@ module.exports.init = function(app, db, config)
  module.exports.transferSalesInvoice = function(invoice) {
 
     console.log("transferSalesInvoice started with: ", invoice);
+    console.log('---------------------------------------------------------------------------------------------');
+    console.log(JSON.stringify(invoice));
 
     let supplierId = invoice.supplierId;
     let invoiceNumber = invoice.invoiceNumber;
@@ -131,17 +134,27 @@ module.exports.init = function(app, db, config)
     Api.getInChannelConfig(supplierId)
     .then((icc) => {
         if (icc.inputType === 'keyIn') {
+            console.log('============= 1 step');
             return this.serviceClient.put("sales-invoice",
                 `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
                 {status: "sending"},
                 true)
             .spread((salesInvoice, response) => {
-                return this.serviceClient.post("a2a-integration",
-                    "/api/sales-invoices",
-                    invoice,
-                    true)
+                console.log('============= 2 step');
+                console.log('------------------------------- ' + invoice.status);
+                if ( invoice.status == 'approved' ){
+                    console.log('------------------------------- Approved');
+                    return this.serviceClient.post("a2a-integration",
+                        "/api/sales-invoices",
+                        invoice,
+                        true)
+                    } else {
+                        console.log('----------------------------------\n Resolving');
+                        return Promise.resolve('lol');
+                    }
             })
             .then((result) => {
+                console.log('============= 3 step');
                 return this.serviceClient.put("sales-invoice",
                     `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
                     {status: "sent"},
