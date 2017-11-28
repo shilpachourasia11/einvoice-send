@@ -30,8 +30,8 @@ export default {
         pdf : "PDF per Email",
         pdfDesc: "Sie möchten Ihre Rechnung als Anhang einer E-Mail verschicken? Kein Problem. In der Vervollständigung der Registrierung finden Sie mehr Informationen hierzu.",
 
-        keyIn : "Rechnungserfassung / Key-In",
-        keyInDesc: "Wählen Sie diese Option, um Rechnungen über ein Formular selbständig zu hinterlegen.",
+        keyIn : "Key-In-Rechnungserfassung",
+        keyInDesc: "Wählen Sie diese Option, um Ihre Rechnungen über ein Erfassungsformular selbständig zu hinterlegen.",
 
         paper : "Papierrechnung",
         paperDesc: "So gewünscht, können Sie auch Papierrechnungen verschicken. Lesen Sie mehr dazu in der Registrierung.",

@@ -60,7 +60,7 @@ export default class ServiceConfigFlow1 extends Components.ContextComponent
         const customerId = this.props.voucher.customerId;
         const customerName = this.props.voucher.customerName;
         const localeExt = (!this.context.locale || this.context.locale == 'en') ? "" : ("_" + this.context.locale);
-        const pdfUrl = "/blob/public/api/c_" + customerId + "/files/public/einvoice-send/SupplierEInvoicingGuide" + localeExt + ".pdf";
+        const pdfUrl = "/blob/public/api/c_" + customerId + "/files/public/einvoice-send/SupplierKeyInGuide" + localeExt + ".pdf";
 
         return (
             <div>

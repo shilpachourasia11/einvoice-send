@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const Config = require('webpack-config').default;
+const Visualizer = require('webpack-visualizer-plugin');
 
 module.exports = new Config().extend('webpack.base.config.js').merge({
   entry: {
@@ -33,12 +34,11 @@ module.exports = new Config().extend('webpack.base.config.js').merge({
       compressor: {
         warnings: false,
         drop_console: true,
-        unsafe: true,
         pure_getters: true,
         dead_code: true,
-        unsafe_comps: true,
         screw_ie8: true
       }
-  })
+  }),
+    new Visualizer({filename: './statistics.html'})
   ]
 });
