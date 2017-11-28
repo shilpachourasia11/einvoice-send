@@ -76,9 +76,9 @@ export default class ServiceConfigFlow2 extends Components.ContextComponent
     }
 
     getCustomerTermsAndConditions(locale) {
-        return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId + '/files/public/einvoice-send/PortalTermsAndConditions_' + locale + '.html')
+        return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId + '/files/public/einvoice-send/KeyInTermsAndConditions_' + locale + '.html')
         .catch((e) => {
-            return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId +  '/files/public/einvoice-send/PortalTermsAndConditions.html')
+            return ajax.get('/blob/public/api/c_' + this.props.voucher.customerId +  '/files/public/einvoice-send/KeyInTermsAndConditions.html')
         })
     }
 

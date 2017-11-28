@@ -67,6 +67,10 @@ export default class ServiceConfigFlow1 extends Components.ContextComponent
             <div>
                 <h3>{this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step1.subheader', {customerName:this.props.voucher.customerName})}</h3>
                 <div>
+                    {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step1.intro', {customerName:this.props.voucher.customerName})}
+                </div>
+                <br/>
+                <div>
                     {this.context.i18n.getMessage('ServiceConfigFlow.Einvoice.Step1.subsubheader', {customerName:this.props.voucher.customerName})}
                 </div>
 

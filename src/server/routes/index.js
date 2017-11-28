@@ -35,13 +35,16 @@ InChannelContract.status = new | approved
  */
 module.exports.init = function(app, db, config)
 {
-    const configInit = configMain.get('ext-url/', true).then(props =>
+    const configInit = configMain.init().then(() =>
     {
-        this.extUrlConfigs = {
-            scheme : props['ext-url/scheme'],
-            host : props['ext-url/host'],
-            port : props['ext-url/port']
-        }
+        return configMain.get('ext-url/', true).then(props =>
+        {
+            this.extUrlConfigs = {
+                scheme : props['ext-url/scheme'],
+                host : props['ext-url/host'],
+                port : props['ext-url/port']
+            }
+        });
     });
 
     return Promise.all([

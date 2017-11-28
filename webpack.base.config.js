@@ -58,7 +58,7 @@ module.exports = new Config().merge({
         loader: 'url-loader?limit=8192'
       },
       {
-        test: /.jsx?$/,
+        test: /\.jsx?$/,
         loader: 'babel-loader',
         include: [
           path.join(__dirname, 'src/client')

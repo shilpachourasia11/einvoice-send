@@ -1,17 +1,20 @@
 import React, { PropTypes, Component } from 'react';
-import { Components } from '@opuscapita/service-base-ui';
 import _ from 'underscore';
 import request from 'superagent-bluebird-promise';
 import { Line, LineChart, XAxis, YAxis, Legend, CartesianGrid } from 'recharts';
 import i18n from './i18n'
 
-export default class ConnectSupplierWidget extends Components.ContextComponent
+export default class ConnectSupplierWidget extends Component
 {
   static propTypes = {
     actionUrl: PropTypes.string.isRequired,
     customerId: PropTypes.string.isRequired,
     locale: PropTypes.string.isRequired
   };
+
+  static contextTypes = {
+      i18n: PropTypes.object.isRequired
+  }
 
   constructor(props, context)
   {
