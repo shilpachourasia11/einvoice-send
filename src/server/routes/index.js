@@ -18,6 +18,7 @@ const readFileAsync = Promise.promisify(fs.readFile);
 
 const configMain = require('ocbesbn-config');
 
+
 /* Conventions:
 InChannelConfig.status = new | approved | activated   // inPreparation
 InChannelContract.status = new | approved
@@ -35,16 +36,13 @@ InChannelContract.status = new | approved
  */
 module.exports.init = function(app, db, config)
 {
-    const configInit = configMain.init().then(() =>
+    const configInit = configMain.get('ext-url/', true).then(props =>
     {
-        return configMain.get('ext-url/', true).then(props =>
-        {
-            this.extUrlConfigs = {
-                scheme : props['ext-url/scheme'],
-                host : props['ext-url/host'],
-                port : props['ext-url/port']
-            }
-        });
+        this.extUrlConfigs = {
+            scheme : props['ext-url/scheme'],
+            host : props['ext-url/host'],
+            port : props['ext-url/port']
+        }
     });
 
     return Promise.all([
@@ -80,6 +78,7 @@ module.exports.init = function(app, db, config)
         const evt6 = this.events.subscribe('sales-inoivce.created', (data) => {
             this.transferSalesInvoice(data);
         });
+
 
         return Promise.all([ evt1, evt2, evt3, evt4, evt5, evt6 ]).then(() =>
         {
@@ -130,6 +129,7 @@ module.exports.init = function(app, db, config)
     console.log("transferSalesInvoice started with: ", invoice);
     console.log('---------------------------------------------------------------------------------------------');
     console.log(JSON.stringify(invoice));
+    const blobClient = new BlobClient({ serviceClient: this.serviceClient });
 
     let supplierId = invoice.supplierId;
     let invoiceNumber = invoice.invoiceNumber;
@@ -145,16 +145,59 @@ module.exports.init = function(app, db, config)
             .spread((salesInvoice, response) => {
                 console.log('============= 2 step');
                 console.log('------------------------------- ' + invoice.status);
-                if ( invoice.status == 'approved' ){
-                    console.log('------------------------------- Approved');
-                    return this.serviceClient.post("a2a-integration",
-                        "/api/sales-invoices",
+
+                var fetchSupplier = (id) => {
+                    return this.serviceClient.get(`/supplier/api/suppliers/${id}`)
+                    .then((response) => Promise.resolve(response.body)
+                    )
+                    .catch((error) => { throw Error(error); })
+                };
+
+                var fetchCustomer = (id) => {
+                    return this.serviceClient.get(`/customer/api/customers/${id}`)
+                    .then((response) => Promise.resolve(response.body));
+                };
+
+                var fetchSalesInvoiceItems = (id) => {
+                    return this.serviceClient.get(`/sales-invoice/api/salesinvoices/${id}/items`)
+                    .then((response) => Promise.resolve(response.body))
+                };
+
+
+
+                invoice.intrastatId = '000';
+                invoice.bookingDate = invoice.invoiceDate;
+                invoice.methodOfPaymentId = 'BankAccount';
+
+                Promise.all([
+                    fetchSupplier(invoice.supplierId),
+                    fetchCustomer(invoice.customerId),
+                    fetchSalesInvoiceItems(invoice.id)
+                ]).spread((supplier, customer, invoiceItems) => {
+                    console.log('----------- making json');
+
+                    var json = {
+                        supplier,
+                        customer,
                         invoice,
-                        true)
-                    } else {
-                        console.log('----------------------------------\n Resolving');
-                        return Promise.resolve('lol');
+                        invoiceItems
                     }
+
+                    return this.serviceClient.put('sales-invoice',
+                        '/api/pdfpreview',
+                        {
+                            json
+                        });
+                }).then(pdfString => {
+                    console.log('-------- mking pdf');
+                    var pdfBuff = new Buffer(pdfString.split(';base64,').pop(), 'base64');
+                    blobClient.storeFile('s_lol', '/private/pdf/my_pdf.pdf', pdfBuff, true)
+                }).catch(e => {console.log('----------- couldnt make it((( ');console.log(e)})
+
+                return this.serviceClient.post("a2a-integration",
+                    "/api/sales-invoices",
+                    invoice,
+                    true)
             })
             .then((result) => {
                 console.log('============= 3 step');
