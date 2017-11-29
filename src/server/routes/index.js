@@ -18,7 +18,6 @@ const readFileAsync = Promise.promisify(fs.readFile);
 
 const configMain = require('ocbesbn-config');
 
-
 /* Conventions:
 InChannelConfig.status = new | approved | activated   // inPreparation
 InChannelContract.status = new | approved
@@ -36,13 +35,16 @@ InChannelContract.status = new | approved
  */
 module.exports.init = function(app, db, config)
 {
-    const configInit = configMain.get('ext-url/', true).then(props =>
+    const configInit = configMain.init().then(() =>
     {
-        this.extUrlConfigs = {
-            scheme : props['ext-url/scheme'],
-            host : props['ext-url/host'],
-            port : props['ext-url/port']
-        }
+        return configMain.get('ext-url/', true).then(props =>
+        {
+            this.extUrlConfigs = {
+                scheme : props['ext-url/scheme'],
+                host : props['ext-url/host'],
+                port : props['ext-url/port']
+            }
+        });
     });
 
     return Promise.all([
@@ -54,7 +56,6 @@ module.exports.init = function(app, db, config)
     .then(() => {
         this.events = new RedisEvents({ consul : { host : 'consul' } });
         this.serviceClient = new ServiceClient({ consul : { host : 'consul' } });
-        console.log('=========================================================================');
 
 
         //  Test event subscriptions:
@@ -138,6 +139,7 @@ module.exports.init = function(app, db, config)
     .then((icc) => {
         if (icc.inputType === 'keyIn') {
             console.log('============= 1 step');
+            console.log();
             return this.serviceClient.put("sales-invoice",
                 `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
                 {status: "sending"},
@@ -147,21 +149,23 @@ module.exports.init = function(app, db, config)
                 console.log('------------------------------- ' + invoice.status);
 
                 var fetchSupplier = (id) => {
-                    return this.serviceClient.get(`/supplier/api/suppliers/${id}`)
-                    .then((response) => Promise.resolve(response.body)
-                    )
-                    .catch((error) => { throw Error(error); })
+                    console.log('============= 2.1 step');
+                    return this.serviceClient.get('supplier', `/api/suppliers/${id}`)
+                    .then((response1) => {
+                        console.log('============= 2.1 step finished');
+                        Promise.resolve(response1.body)
+                    })
                 };
 
                 var fetchCustomer = (id) => {
-                    return this.serviceClient.get(`/customer/api/customers/${id}`)
-                    .then((response) => Promise.resolve(response.body));
+                    console.log('============= 2.2 step');
+                    return this.serviceClient.get(`customer`, `/api/customers/${id}`)
+                    .then((response2) => {
+                        console.log('============= 2.2 step finished');
+                        Promise.resolve(response2.body)
+                    })
                 };
 
-                var fetchSalesInvoiceItems = (id) => {
-                    return this.serviceClient.get(`/sales-invoice/api/salesinvoices/${id}/items`)
-                    .then((response) => Promise.resolve(response.body))
-                };
 
 
 
@@ -169,35 +173,36 @@ module.exports.init = function(app, db, config)
                 invoice.bookingDate = invoice.invoiceDate;
                 invoice.methodOfPaymentId = 'BankAccount';
 
-                Promise.all([
+                return Promise.all([
                     fetchSupplier(invoice.supplierId),
-                    fetchCustomer(invoice.customerId),
-                    fetchSalesInvoiceItems(invoice.id)
-                ]).spread((supplier, customer, invoiceItems) => {
-                    console.log('----------- making json');
-
+                    fetchCustomer(invoice.customerId)
+                ]).spread((supplier, customer) => {
+                    console.log('============= 2.3 step');
                     var json = {
                         supplier,
                         customer,
                         invoice,
-                        invoiceItems
+                        invoiceItems: invoice.items
                     }
-
+                    console.log('============= 2.4 step');
                     return this.serviceClient.put('sales-invoice',
                         '/api/pdfpreview',
                         {
                             json
-                        });
+                        },
+                        true);
                 }).then(pdfString => {
-                    console.log('-------- mking pdf');
-                    var pdfBuff = new Buffer(pdfString.split(';base64,').pop(), 'base64');
-                    blobClient.storeFile('s_lol', '/private/pdf/my_pdf.pdf', pdfBuff, true)
-                }).catch(e => {console.log('----------- couldnt make it((( ');console.log(e)})
-
-                return this.serviceClient.post("a2a-integration",
-                    "/api/sales-invoices",
-                    invoice,
-                    true)
+                    const pdfBuff = new Buffer(pdfString.split(';base64,').pop(), 'base64');
+                    console.log('============= 2.5 step');
+                    return blobClient.storeFile(supplierId, `/private/salesinvoices/${invoice.id}.pdf`, pdfBuff, true)
+                }).then(result => {
+                    console.log('============= 2.6 step');
+                    invoice.attachments = [`https://localhost:8080/blob/api/${supplierId}/files/private/salesinvoices/${invoice.id}.pdf`]; //https://develop.businessnetwork.opuscapita.com/blob/api/s_hard001/files/private/email/received/4709/salesInvoice_TEST.pdf
+                    return this.serviceClient.post("a2a-integration",
+                        "/api/sales-invoices",
+                        invoice,
+                        true)
+                })
             })
             .then((result) => {
                 console.log('============= 3 step');
@@ -661,7 +666,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
 
             const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + 'email.json'));
             const destEmail = jsonFileContents.From;
-            const name = jsonFileContents.FromName.replace(/.<.+>/, '') || destEmail;
+            const name = jsonFileContents.FromName || destEmail;
 
             const pdfFileContents = await blobClient.readFile(tenantId, path + pdfFile.name);
 
