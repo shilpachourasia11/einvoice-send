@@ -139,7 +139,6 @@ module.exports.init = function(app, db, config)
     .then((icc) => {
         if (icc.inputType === 'keyIn') {
             console.log('============= 1 step');
-            console.log();
             return this.serviceClient.put("sales-invoice",
                 `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
                 {status: "sending"},
@@ -150,20 +149,19 @@ module.exports.init = function(app, db, config)
 
                 var fetchSupplier = (id) => {
                     console.log('============= 2.1 step');
-                    return this.serviceClient.get('supplier', `/api/suppliers/${id}`)
-                    .then((response1) => {
-                        console.log('============= 2.1 step finished');
-                        Promise.resolve(response1.body)
-                    })
+                    return this.serviceClient.get('supplier', `/api/suppliers/${id}`, true)
+
                 };
 
                 var fetchCustomer = (id) => {
-                    console.log('============= 2.2 step');
-                    return this.serviceClient.get(`customer`, `/api/customers/${id}`)
-                    .then((response2) => {
-                        console.log('============= 2.2 step finished');
-                        Promise.resolve(response2.body)
-                    })
+                    console.log('============= 2.2.1 step');
+                    return this.serviceClient.get(`customer`, `/api/customers/${id}`, true)
+
+                };
+
+                var fetchCustomerAddress = (id) => {
+                    console.log('============= 2.2.2 step');
+                    return this.serviceClient.get(`customer`, `/api/customers/${id}/addresses`, true)
                 };
 
 
@@ -175,16 +173,30 @@ module.exports.init = function(app, db, config)
 
                 return Promise.all([
                     fetchSupplier(invoice.supplierId),
-                    fetchCustomer(invoice.customerId)
-                ]).spread((supplier, customer) => {
+                    fetchCustomer(invoice.customerId),
+                    fetchCustomerAddress(invoice.customerId)
+                ]).spread((supplier, customer, customerAddresses) => {
                     console.log('============= 2.3 step');
-                    var json = {
+                    console.log(
                         supplier,
+                        '++++++++++++++++++++++++++++++++++ 1',
                         customer,
+                        '++++++++++++++++++++++++++++++++++ 2',
                         invoice,
-                        invoiceItems: invoice.items
+                        '++++++++++++++++++++++++++++++++++ 3',
+                        invoice.SalesInvoiceItems
+                    );
+
+                    customer[0].address = customerAddresses[0][0];
+
+                    var json = {
+                        supplier: supplier[0],
+                        customer: customer[0],
+                        invoice,
+                        invoiceItems: invoice.SalesInvoiceItems
                     }
                     console.log('============= 2.4 step');
+                    console.log('+++++++++++++++++++++++++++++++',invoice.SalesInvoiceItems[0].taxRate);
                     return this.serviceClient.put('sales-invoice',
                         '/api/pdfpreview',
                         {
@@ -192,16 +204,17 @@ module.exports.init = function(app, db, config)
                         },
                         true);
                 }).then(pdfString => {
-                    const pdfBuff = new Buffer(pdfString.split(';base64,').pop(), 'base64');
-                    console.log('============= 2.5 step');
+                    console.log('============= 2.5 step', pdfString.toString('base64'));
+                    const pdfBuff = new Buffer(pdfString.toString('base64').split(';base64,').pop(), 'base64');
+
                     return blobClient.storeFile(supplierId, `/private/salesinvoices/${invoice.id}.pdf`, pdfBuff, true)
                 }).then(result => {
-                    console.log('============= 2.6 step');
+                    console.log('============= 2.6 step'); // http://localhost:8080/blob/api/hard001/files/private/salesinvoices/2.pdf
                     invoice.attachments = [`https://localhost:8080/blob/api/${supplierId}/files/private/salesinvoices/${invoice.id}.pdf`]; //https://develop.businessnetwork.opuscapita.com/blob/api/s_hard001/files/private/email/received/4709/salesInvoice_TEST.pdf
                     return this.serviceClient.post("a2a-integration",
                         "/api/sales-invoices",
                         invoice,
-                        true)
+                        true).catch(e => console.log(e));
                 })
             })
             .then((result) => {
@@ -666,7 +679,7 @@ module.exports.getPdf = async function(req, res) // '/api/emailrcv/:tenantId/:me
 
             const jsonFileContents = JSON.parse(await blobClient.readFile(tenantId, path + 'email.json'));
             const destEmail = jsonFileContents.From;
-            const name = jsonFileContents.FromName || destEmail;
+            const name = jsonFileContents.FromName.replace(/.<.+>/, '') || destEmail;
 
             const pdfFileContents = await blobClient.readFile(tenantId, path + pdfFile.name);
 
