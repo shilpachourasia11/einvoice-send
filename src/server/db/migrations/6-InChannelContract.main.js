@@ -3,12 +3,12 @@
  module.exports.up = (db,config)=> {
  	return db.queryInterface.addColumn(
  		'InChannelContract',
- 		'SupplierCustomerId', {
+ 		'supplierCustomerId', {
       type : DataTypes.STRING(30),
       allowNull : true,
  		}
  	);
  }
  module.exports.down = (db,config)=> {
- 	return db.queryInterface.dropColumn('InChannelContract', 'SupplierCustomerId');
+ 	return db.queryInterface.dropColumn('InChannelContract', 'supplierCustomerId');
  }
