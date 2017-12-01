@@ -286,7 +286,11 @@ module.exports.init = function(db, config)
             type : DataTypes.DATE(),
             allowNull : true,
             defaultValue : DataTypes.NOW
-        }
+        },
+        supplierCustomerId : {
+          type : DataTypes.STRING(30),
+          allowNull : true,
+     		}
     }, {
         updatedAt : 'changedOn',
         createdAt : 'createdOn',
