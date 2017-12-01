@@ -382,6 +382,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+      USER_NAME: 'svc_a2a-integration'
+      PASSWORD: 'test'
       REDIS_AUTH: ${REDIS_AUTH}
       SERVICE_3015_CHECK_HTTP: /api/health/check
       SERVICE_3015_CHECK_INTERVAL: 15s
