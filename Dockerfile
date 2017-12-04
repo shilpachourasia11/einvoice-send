@@ -1,13 +1,26 @@
 FROM node:8-alpine
-MAINTAINER kwierchris
+MAINTAINER shilpa
 
-WORKDIR /home/node/einvoice-send
+# Set the working directory for any RUN, CMD, ENTRYPOINT, COPY and ADD instructions that follow.
+# If the directory does not exists, it will be created automatically.
+WORKDIR /var/tmp/base
+
+COPY package.json .
+
+RUN apk add --no-cache rsync curl git ; yarn
 
 # Make sure node can load modules from /var/tmp/base/node_modules
 # Setting NODE_ENV is necessary for "npm install" below.
-ENV NODE_ENV=production
-COPY . .
-RUN apk add --no-cache curl ; NODE_ENV=development yarn install && yarn run build:client
+ENV NODE_ENV=development NODE_PATH=/var/tmp/base/node_modules PATH=${PATH}:${NODE_PATH}/.bin
+RUN yarn
+
+WORKDIR /home/node/einvoice-send
+
+# Bundle app source by overwriting all WORKDIR content.
+COPY . tmp
+
+# Change owner since COPY/ADD assignes UID/GID 0 to all copied content.
+RUN chown -Rf node:node tmp; rsync -a tmp/ ./ && rm -rf tmp
 
 # Set the user name or UID to use when running the image and for any RUN, CMD and ENTRYPOINT instructions that follow
 USER node

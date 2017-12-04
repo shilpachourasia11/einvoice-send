@@ -1,14 +1,14 @@
 'use strict'
  const DataTypes = require('sequelize');
  module.exports.up = (db,config)=> {
- 	return db.queryInterface.addColumn(
- 		'SupplierCustomerId',
- 		'intention', {
- 			type:DataTypes.BOOLEAN,
- 			allowNull:true
- 		}
- 	);
- }
+    return db.queryInterface.addColumn(
+ 		     'InChannelContract',
+ 		      'supplierCustomerId', {
+              type : DataTypes.STRING(30),
+              allowNull : true,
+ 		      }
+ 	   );
+}
  module.exports.down = (db,config)=> {
- 	return db.queryInterface.dropColumn('SupplierCustomerId', 'SupplierCustomerId');
+    return db.queryInterface.dropColumn('InChannelContract', 'supplierCustomerId');
  }

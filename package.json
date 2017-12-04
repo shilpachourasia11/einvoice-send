@@ -67,7 +67,7 @@
   "scripts": {
     "start": "node src/server/index.js",
     "dev": "npm run setupConsul ; npx nodemon --watch src/server src/server/index.js",
-    "test": "npm run clean ; npm run setupConsul ; npx nyc ./node_modules/.bin/mocha --recursive -R mocha-junit-reporter",
+    "test": "npm run clean ; npm run setupConsul ; npx nyc ${NODE_PATH}/.bin/mocha --recursive -R mocha-junit-reporter",
     "clean": "npx rimraf .nyc_output coverage test-resulsts.xml",
     "sc-db": "curl -X PUT -d ${MYSQL_DATABASE} http://consul:8500/v1/kv/einvoice-send/db-init/database",
     "sc-dbuser": "curl -X PUT -d 'root' http://consul:8500/v1/kv/einvoice-send/db-init/user",
