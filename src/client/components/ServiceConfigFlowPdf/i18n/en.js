@@ -5,6 +5,7 @@ export default {
             header: "Configuration PDF by Email ",
             subheader: "You have successfully registered on behalf of {customerName}. Please read through the following prerequisites and requirements and accept the terms in order to send your first invoice in PDF-format by E-Mail.",
             intro: "Email Invoice Digitizing enables {customerName} to receive invoices as email attachments.",
+            accepted: "I have read and understood OpusCapitas terms and conditions of the service.",
             rejection:"Rejection Email",
             additionalHelp:"In the case that problems appear when processing your PDF invoices, we need an email address that we can use to contact you.",
             backToTypeSelection: "Back to Type Selection",

@@ -79,11 +79,9 @@ module.exports.init = function(app, db, config)
         const evt6 = this.events.subscribe('sales-inoivce.created', (data) => {
             this.transferSalesInvoice(data);
         });
-
-        const evt7 = this.events.subscribe('sales-inoivce.created', (data) => {
+        const evt7 = this.events.subscribe('sales-inoivce.updated', (data) => {
             this.transferSalesInvoice(data);
         });
-
 
         return Promise.all([ evt1, evt2, evt3, evt4, evt5, evt6, evt7 ]).then(() =>
         {
@@ -130,6 +128,12 @@ module.exports.init = function(app, db, config)
  * 3. set STatus to sent/sendingfailed
  */
  module.exports.transferSalesInvoice = function(invoice) {
+
+    if (invoice.status != "approved") {
+        console.log("transferSalesInvoice is rejected for invoice status != 'approved'");
+        return;
+    }
+
     console.log("transferSalesInvoice started with: ", invoice);
     const blobClient = new BlobClient({ serviceClient: this.serviceClient });
 
@@ -138,79 +142,74 @@ module.exports.init = function(app, db, config)
 
     Api.getInChannelConfig(supplierId)
     .then((icc) => {
-        if ( invoice.status === 'approved' ) {
-            if (icc.inputType === 'keyIn') {
+        if (icc.inputType === 'keyIn') {
 
-                return this.serviceClient.put("sales-invoice",
-                    `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
-                    {status: "sending"},
-                    true)
-                .spread((salesInvoice, response) => {
-                    invoice.intrastatId = '000';
-                    invoice.bookingDate = invoice.invoiceDate;
-                    invoice.methodOfPaymentId = 'BankAccount';
+            return this.serviceClient.put("sales-invoice",
+                `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
+                {status: "sending"},
+                true)
+            .spread((salesInvoice, response) => {
+                invoice.intrastatId = '000';
+                invoice.bookingDate = invoice.invoiceDate;
+                invoice.methodOfPaymentId = 'BankAccount';
 
-                    return Promise.all([
-                        this.serviceClient.get('supplier', `/api/suppliers/${invoice.supplierId}?include=addresses`, true),
-                        this.serviceClient.get(`customer`, `/api/customers/${invoice.customerId}?include=addresses`, true)
-                    ]).spread((supplier, customer) => {
-                        const checkAdd = (thisInvoice, type) => {
-                            for (var item in thisInvoice.addresses){
-                                if (thisInvoice.addresses[item].type == type){
-                                    thisInvoice.address = thisInvoice.addresses[item];
-                                    return true;
-                                }
+                return Promise.all([
+                    this.serviceClient.get('supplier', `/api/suppliers/${invoice.supplierId}?include=addresses`, true),
+                    this.serviceClient.get(`customer`, `/api/customers/${invoice.customerId}?include=addresses`, true)
+                ]).spread((supplier, customer) => {
+                    const checkAdd = (thisInvoice, type) => {
+                        for (var item in thisInvoice.addresses){
+                            if (thisInvoice.addresses[item].type == type){
+                                thisInvoice.address = thisInvoice.addresses[item];
+                                return true;
                             }
-                            return false;
                         }
+                        return false;
+                    }
 
-                        checkAdd(customer[0], 'default');
+                    checkAdd(customer[0], 'default');
 
-                        if ( !checkAdd(supplier[0], 'invoice') ) checkAdd(supplier[0], 'default');
+                    if ( !checkAdd(supplier[0], 'invoice') ) checkAdd(supplier[0], 'default');
 
-                        const json = {
-                            supplier: supplier[0],
-                            customer: customer[0],
-                            invoice,
-                            invoiceItems: invoice.SalesInvoiceItems
-                        }
-                        return this.serviceClient.put('sales-invoice',
-                            '/api/pdfpreview',
-                            { json },
-                            true);
-                    }).then(pdfString => {
-                        const pdfBuff = new Buffer(pdfString.toString('base64').split(';base64,').pop(), 'base64');
+                    const json = {
+                        supplier: supplier[0],
+                        customer: customer[0],
+                        invoice,
+                        invoiceItems: invoice.SalesInvoiceItems
+                    }
+                    return this.serviceClient.put('sales-invoice',
+                        '/api/pdfpreview',
+                        { json },
+                        true);
+                }).then(pdfString => {
+                    const pdfBuff = new Buffer(pdfString.toString('base64').split(';base64,').pop(), 'base64');
 
-                        return blobClient.storeFile('s_' + supplierId, `/private/salesinvoices/${invoice.id}.pdf`, pdfBuff, true)
-                    }).then(result => {
-                        invoice.attachments = [`http://localhost:8080/blob/api/${supplierId}/files/private/salesinvoices/${invoice.id}.pdf`];
+                    return blobClient.storeFile('s_' + supplierId, `/private/salesinvoices/${invoice.id}.pdf`, pdfBuff, true)
+                }).then(result => {
+                    invoice.attachments = [`http://localhost:8080/blob/api/${supplierId}/files/private/salesinvoices/${invoice.id}.pdf`];
 
-                        return this.serviceClient.post("a2a-integration",
-                            "/api/sales-invoices",
-                            invoice,
-                            true).catch(e => console.log(e));
-                    })
+                    return this.serviceClient.post("a2a-integration",
+                        "/api/sales-invoices",
+                        invoice,
+                        true).catch(e => console.log(e));
                 })
-                .then(result => {
-                    return this.serviceClient.put("sales-invoice",
-                        `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
-                        {status: "sent"},
-                        true)
-                })
-                .catch((e) => {
-                    console.log("Error, transfer to a2a-integration does not work for invoice " + invoice.id + "(" + supplierId + "-" + invoiceNumber + "): ", e);
-                });
-            }
-            else {
-                console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped, because 'keyIn'-InChannel configuration is not defined found for supplier " + supplierId + ". Setting status of Sales-Invoice to 'sendingNotGranted'.");
+            })
+            .then(result => {
                 return this.serviceClient.put("sales-invoice",
                     `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
-                    {status: "sendingNotGranted"},
-                    true
-                )
-            }
-        } else {
-            console.log(`Error: Transfer of Sales-Invoice ${invoiceNumber} is not possible, because the invoice's status is not 'approved'.`);
+                    {status: "sent"},
+                    true)
+            })
+            .catch((e) => {
+                console.log("Error, transfer to a2a-integration does not work for invoice " + invoice.id + "(" + supplierId + "-" + invoiceNumber + "): ", e);
+            });
+        }
+        else {
+            console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped, because 'keyIn'-InChannel configuration is not defined for supplier " + supplierId + ". Setting status of Sales-Invoice to 'sendingFailed'.");
+            this.serviceClient.put("sales-invoice",
+                `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
+                {status: "sendingFailed"},
+                true);
         }
 
     })
@@ -218,7 +217,7 @@ module.exports.init = function(app, db, config)
         console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped: ", e);
         this.serviceClient.put("sales-invoice",
             `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
-            {status: "sendingNotGranted"},
+            {status: "sendingFailed"},
             true);
     })
 }

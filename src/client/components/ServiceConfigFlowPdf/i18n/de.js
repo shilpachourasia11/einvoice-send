@@ -5,6 +5,7 @@ export default {
             header: "Konfiguration PDF per Email",
             subheader: "Sie haben sich erfolgreich für Ihren Kunden {customerName} registriert. Bitte lesen Sie sorgfältig die Voraussetzungen und Bedingungen und akzeptieren diese, bevor Sie Ihre PDF-Rechnungen per E-Mail an uns senden.",
             intro: "Der OpusCapita Digitalisierungs-Service erlaubt Ihnen Ihre Rechnungen an {customerName} per E-Mail-Anhang bereitzustellen.",
+            accepted: "Ich habe die Anforderungen der OpusCapita gelesen und akzeptiert.",
             rejection:"Rückweisungs E-Mail",
             additionalHelp:"Für den Fall eines Problems mit der Verarbeitung Ihrer PDF-Rechnungen benötigen wir von Ihnen eine E-Mail-Adresse, unter der wir Sie kontaktieren können.",
             backToTypeSelection: "Zurück zur Selektion",
