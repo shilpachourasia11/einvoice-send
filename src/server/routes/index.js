@@ -128,6 +128,18 @@ module.exports.init = function(app, db, config)
  * 2. trigger transfer of a2a-integration
  * 3. set STatus to sent/sendingfailed
  */
+function getAddressOfType(addresses, type)
+{
+    if (!addresses)
+        return null;
+
+    for(let i = 0; i < addresses.length; i++) {
+        if (addresses[i].type == type)
+            return addresses[i];
+    }
+    return null;
+}
+
  module.exports.transferSalesInvoice = function(invoice) {
 
     if (invoice.status != "approved") {
@@ -136,6 +148,7 @@ module.exports.init = function(app, db, config)
     }
 
     console.log("transferSalesInvoice started with: ", invoice);
+    const blobClient = new BlobClient({ serviceClient: this.serviceClient });
 
     let supplierId = invoice.supplierId;
     let invoiceNumber = invoice.invoiceNumber;
@@ -148,12 +161,45 @@ module.exports.init = function(app, db, config)
                 {status: "sending"},
                 true)
             .spread((salesInvoice, response) => {
-                return this.serviceClient.post("a2a-integration",
-                    "/api/sales-invoices",
-                    invoice,
-                    true)
+                return Promise.all([
+                    this.serviceClient.get('supplier', `/api/suppliers/${invoice.supplierId}?include=addresses`, true),
+                    this.serviceClient.get(`customer`, `/api/customers/${invoice.customerId}?include=addresses`, true)
+                ])
+                .spread((supplierResponse, customerResponse) => {
+                    const supplier = supplierResponse[0];
+                    const customer = customerResponse[0]
+
+                    customer.address = getAddressOfType(customer.addresses, 'default');
+                    supplier.address = getAddressOfType(supplier.addresses, 'invoice');
+                    if (!supplier.address)
+                        supplier.address = getAddressOfType(supplier.addresses, 'default');
+
+                    const json = {
+                        supplier: supplier,
+                        customer: customer,
+                        invoice,
+                        invoiceItems: invoice.SalesInvoiceItems
+                    }
+                    return this.serviceClient.put('sales-invoice',
+                        '/api/pdfpreview',
+                        { json },
+                        true);
+                })
+                .then(pdfString => {
+                    // TODO: get rid of the base64 encoding
+                    const pdfBuff = new Buffer(pdfString.toString('base64').split(';base64,').pop(), 'base64');
+                    return blobClient.storeFile('s_' + supplierId, `/private/salesinvoices/${invoice.id}.pdf`, pdfBuff, true)
+                })
+                .then(result => {
+                    invoice.attachments = [`/blob/api/${supplierId}/files/private/salesinvoices/${invoice.id}.pdf`];
+
+                    return this.serviceClient.post("a2a-integration",
+                        "/api/sales-invoices",
+                        invoice,
+                        true).catch(e => console.log(e));
+                })
             })
-            .then((result) => {
+            .then(result => {
                 return this.serviceClient.put("sales-invoice",
                     `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
                     {status: "sent"},
@@ -170,6 +216,7 @@ module.exports.init = function(app, db, config)
                 {status: "sendingFailed"},
                 true);
         }
+
     })
     .catch((e) => {
         console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped: ", e);
