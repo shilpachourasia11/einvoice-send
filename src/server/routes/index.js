@@ -194,7 +194,7 @@ console.log("Cleansed SalesInvoice: ", json);
                     return blobClient.storeFile('s_' + supplierId, `/private/salesinvoices/${invoice.id}.pdf`, pdfBuff, true)
                 })
                 .then(result => {
-                    invoice.attachments = [`http://localhost:8080/blob/api/${supplierId}/files/private/salesinvoices/${invoice.id}.pdf`];
+                    invoice.attachments = [`/blob/api/${supplierId}/files/private/salesinvoices/${invoice.id}.pdf`];
 
                     return this.serviceClient.post("a2a-integration",
                         "/api/sales-invoices",
