@@ -180,9 +180,6 @@ function getAddressOfType(addresses, type)
                         invoice,
                         invoiceItems: invoice.SalesInvoiceItems
                     }
-
-console.log("Cleansed SalesInvoice: ", json);
-
                     return this.serviceClient.put('sales-invoice',
                         '/api/pdfpreview',
                         { json },
