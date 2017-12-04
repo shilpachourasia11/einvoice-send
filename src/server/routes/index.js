@@ -79,8 +79,12 @@ module.exports.init = function(app, db, config)
         const evt6 = this.events.subscribe('sales-inoivce.created', (data) => {
             this.transferSalesInvoice(data);
         });
+        const evt7 = this.events.subscribe('sales-inoivce.updated', (data) => {
+            this.transferSalesInvoice(data);
+        });
 
-        return Promise.all([ evt1, evt2, evt3, evt4, evt5, evt6 ]).then(() =>
+
+        return Promise.all([ evt1, evt2, evt3, evt4, evt5, evt6, evt7 ]).then(() =>
         {
             this.blob = new BlobClient({forceServiceToken:true});
 
@@ -126,6 +130,11 @@ module.exports.init = function(app, db, config)
  */
  module.exports.transferSalesInvoice = function(invoice) {
 
+    if (invoice.status != "approved") {
+        console.log("transferSalesInvoice is rejected for invoice status != 'approved'");
+        return;
+    }
+
     console.log("transferSalesInvoice started with: ", invoice);
 
     let supplierId = invoice.supplierId;
@@ -155,10 +164,10 @@ module.exports.init = function(app, db, config)
             });
         }
         else {
-            console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped, because 'keyIn'-InChannel configuration is not defined found for supplier " + supplierId + ". Setting status of Sales-Invoice to 'sendingNotGranted'.");
+            console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped, because 'keyIn'-InChannel configuration is not defined for supplier " + supplierId + ". Setting status of Sales-Invoice to 'sendingFailed'.");
             this.serviceClient.put("sales-invoice",
                 `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
-                {status: "sendingNotGranted"},
+                {status: "sendingFailed"},
                 true);
         }
     })
@@ -166,7 +175,7 @@ module.exports.init = function(app, db, config)
         console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped: ", e);
         this.serviceClient.put("sales-invoice",
             `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
-            {status: "sendingNotGranted"},
+            {status: "sendingFailed"},
             true);
     })
 }

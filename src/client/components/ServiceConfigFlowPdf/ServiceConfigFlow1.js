@@ -128,7 +128,7 @@ export default class ServiceConfigFlow1 extends Components.ContextComponent
                         <input type="checkbox" checked={ this.state.accepted }
                             onChange={ e => this.setState({ accepted: e.target.checked }) }/>
                         <a href="#" onClick={e => { this.setState({ accepted: !this.state.accepted }); e.preventDefault(); }}>
-                            {this.context.i18n.getMessage('ServiceConfigFlow.readOCTaC')}
+                            {this.context.i18n.getMessage('ServiceConfigFlow.Pdf.accepted')}
                         </a>
                     </label>
                 </div>
