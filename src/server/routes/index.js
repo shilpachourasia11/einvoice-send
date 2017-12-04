@@ -83,6 +83,7 @@ module.exports.init = function(app, db, config)
             this.transferSalesInvoice(data);
         });
 
+
         return Promise.all([ evt1, evt2, evt3, evt4, evt5, evt6, evt7 ]).then(() =>
         {
             this.blob = new BlobClient({forceServiceToken:true});
@@ -127,6 +128,18 @@ module.exports.init = function(app, db, config)
  * 2. trigger transfer of a2a-integration
  * 3. set STatus to sent/sendingfailed
  */
+function getAddressOfType(addresses, type)
+{
+    if (!addresses)
+        return null;
+
+    for(let i = 0; i < addresses.length; i++) {
+        if (addresses[i].type == type)
+            return addresses[i];
+    }
+    return null;
+}
+
  module.exports.transferSalesInvoice = function(invoice) {
 
     if (invoice.status != "approved") {
@@ -143,49 +156,44 @@ module.exports.init = function(app, db, config)
     Api.getInChannelConfig(supplierId)
     .then((icc) => {
         if (icc.inputType === 'keyIn') {
-
             return this.serviceClient.put("sales-invoice",
                 `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
                 {status: "sending"},
                 true)
             .spread((salesInvoice, response) => {
-                invoice.intrastatId = '000';
-                invoice.bookingDate = invoice.invoiceDate;
-                invoice.methodOfPaymentId = 'BankAccount';
-
                 return Promise.all([
                     this.serviceClient.get('supplier', `/api/suppliers/${invoice.supplierId}?include=addresses`, true),
                     this.serviceClient.get(`customer`, `/api/customers/${invoice.customerId}?include=addresses`, true)
-                ]).spread((supplier, customer) => {
-                    const checkAdd = (thisInvoice, type) => {
-                        for (var item in thisInvoice.addresses){
-                            if (thisInvoice.addresses[item].type == type){
-                                thisInvoice.address = thisInvoice.addresses[item];
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
+                ])
+                .spread((supplierResponse, customerResponse) => {
+                    const supplier = supplierResponse[0];
+                    const customer = customerResponse[0]
 
-                    checkAdd(customer[0], 'default');
-
-                    if ( !checkAdd(supplier[0], 'invoice') ) checkAdd(supplier[0], 'default');
+                    customer.address = getAddressOfType(customer.addresses, 'default');
+                    supplier.address = getAddressOfType(supplier.addresses, 'invoice');
+                    if (!supplier.address)
+                        supplier.address = getAddressOfType(supplier.addresses, 'default');
 
                     const json = {
-                        supplier: supplier[0],
-                        customer: customer[0],
+                        supplier: supplier,
+                        customer: customer,
                         invoice,
                         invoiceItems: invoice.SalesInvoiceItems
                     }
+
+console.log("Cleansed SalesInvoice: ", json);
+
                     return this.serviceClient.put('sales-invoice',
                         '/api/pdfpreview',
                         { json },
                         true);
-                }).then(pdfString => {
+                })
+                .then(pdfString => {
+                    // TODO: get rid of the base64 encoding
                     const pdfBuff = new Buffer(pdfString.toString('base64').split(';base64,').pop(), 'base64');
-
                     return blobClient.storeFile('s_' + supplierId, `/private/salesinvoices/${invoice.id}.pdf`, pdfBuff, true)
-                }).then(result => {
+                })
+                .then(result => {
                     invoice.attachments = [`http://localhost:8080/blob/api/${supplierId}/files/private/salesinvoices/${invoice.id}.pdf`];
 
                     return this.serviceClient.post("a2a-integration",
