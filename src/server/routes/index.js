@@ -458,7 +458,11 @@ module.exports.addInChannelContract = function(req, res)
                     obj.customerSupplierId = voucher.customerSupplierId;
                     return InChannelContract.add(obj, true)
                 })
+                // TODO: Check, what about inherited InChannelContracts from master customers? one event, or multiple, or depending on what?
                 .then(icc => this.events.emit(icc, 'inChannelContract.created').then(() => icc))
+                .then((icc) => {
+                    return inheritInChannelContract(icc, obj);
+                })
                 .then(icc => res.status(200).json(icc));
             }
         });
@@ -492,9 +496,16 @@ module.exports.updateInChannelContract = function(req, res)
                     obj.customerSupplierId = voucher.customerSupplierId;
                     return InChannelContract.update(bp.customerId, bp.supplierId, obj)
                 })
-                .then( () => {
-                    return InChannelContract.get(bp.customerId, bp.supplierId);
+                .then((icc) => {
+                    obj.customerId = bp.customerId;
+                    obj.supplierId = bp.supplierId;
+                    obj.createdBy = req.opuscapita.userData('id');
+                    return inheritInChannelContract(icc, obj).then(() => icc);
                 })
+                // .then( () => {
+                //     return InChannelContract.get(bp.customerId, bp.supplierId);
+                // })
+                // TODO: Which events to be send in case of inheritance - see comment in add method!
                 .then((icc) => this.events.emit(icc, 'inChannelContract.updated').then(() => icc))
                 .then((icc) => {
                     res.status(200).json(icc);
@@ -511,6 +522,48 @@ module.exports.updateInChannelContract = function(req, res)
     }
 }
 
+
+function inheritInChannelContract(masterIcc, data) {
+
+    // Attention: Workaround for dekabank!!!
+    // TODO: Introduct CustomerGroup structure. As long as we don't have it, copy data for dekabank customers manually.
+
+    // TODO: optimize with bulk upsert/delete
+
+    const dekaCustomerIds = ['dekaBestvestor', 'dekaDeutscheGiro', 'dekaImmobilien', 'dekaImmobilienInvest', 'dekaInvest', 'dekaWestInvest'];
+    let promises = [];
+
+    if (masterIcc.inputType != "keyIn") {
+        // Delete inherited ICCs.
+        //
+        for (let i = 0; i < dekaCustomerIds.length; i++) {
+            InChannelContract.get(dekaCustomerIds[i], masterIcc.supplierId)
+            .then(foundIcc => {
+                if (foundIcc)
+                    promises.push(InChannelContract.delete(dekaCustomerIds[i], masterIcc.supplierId));
+            });
+        }
+        return masterIcc;
+    }
+    else
+    {
+        // Check whether Customer is a master of a a group. If yes, then copy the icc entries to all subcustomers
+        if (masterIcc.customerId == 'dekabank')
+        {
+            for (let i = 0; i < dekaCustomerIds.length; i++) {
+                let obj = Object.assign({}, data, {customerId: dekaCustomerIds[i]});
+                InChannelContract.get(obj.customerId, obj.supplierId)
+                .then(foundIcc => {
+                    if (foundIcc)
+                        promises.push(InChannelContract.update(obj.customerId, obj.supplierId, obj));
+                    else
+                        promises.push(InChannelContract.add(obj, true));
+                });
+            }
+        }
+        return Promise.all(promises);
+    }
+}
 
 
 //////////////////////////////////////////////////////////////////////
