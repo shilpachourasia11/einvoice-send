@@ -23,7 +23,7 @@
     "css-loader": "^0.28.7",
     "extend": "^3.0.1",
     "handlebars": "^4.0.11",
-    "ocbesbn-blob-client": "^1.0.19",
+    "ocbesbn-blob-client": "^1.0.21",
     "ocbesbn-config": "^2.3.2",
     "ocbesbn-db-init": "^1.1.11",
     "ocbesbn-logger": "^1.0.5",
