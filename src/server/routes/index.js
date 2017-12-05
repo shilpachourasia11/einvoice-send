@@ -148,7 +148,6 @@ function getAddressOfType(addresses, type)
     }
 
     console.log("transferSalesInvoice started with: ", invoice);
-    const blobClient = new BlobClient({ serviceClient: this.serviceClient });
 
     let supplierId = invoice.supplierId;
     let invoiceNumber = invoice.invoiceNumber;
@@ -188,7 +187,7 @@ function getAddressOfType(addresses, type)
                 .then(pdfString => {
                     // TODO: get rid of the base64 encoding
                     const pdfBuff = new Buffer(pdfString.toString('base64').split(';base64,').pop(), 'base64');
-                    return blobClient.storeFile('s_' + supplierId, `/private/salesinvoices/${invoice.id}.pdf`, pdfBuff, true);
+                    return this.blob.storeFile('s_' + supplierId, `/private/salesinvoices/${invoice.id}.pdf`, pdfBuff, true);
                 })
                 .then(result => {
                     invoice.attachments = [`/blob/api/s_${supplierId}/files/private/salesinvoices/${invoice.id}.pdf`];
