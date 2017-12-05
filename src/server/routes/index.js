@@ -192,6 +192,12 @@ function getAddressOfType(addresses, type)
                 .then(result => {
                     invoice.attachments = [`/blob/api/s_${supplierId}/files/private/salesinvoices/${invoice.id}.pdf`];
 
+                    // add emtpy arrays to avoid errors on a2a-integration
+                    if (!invoice.taxDistribution)
+                        invoice.taxDistribution = [];
+                    if (!invoice.SalesInvoiceItems)
+                        invoice.SalesInvoiceItems = [];
+
                     return this.serviceClient.post("a2a-integration",
                         "/api/sales-invoices",
                         invoice,
