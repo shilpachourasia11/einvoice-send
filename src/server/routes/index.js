@@ -117,10 +117,11 @@ module.exports.init = function(app, db, config)
             app.get('/api/customers/:customerId', (req, res) => this.sendCustomer(req, res));
 
             app.put('/api/emailrcv/:tenantId/:messageId', (req, res) => this.getPdf(req, res));
+
+            app.post('/api/suppliers/:supplierId/:capabilityId', (req, res) => this.setCapability(req, res));
         });
     });
 }
-
 
 /**
  * Steps to transfer a Sales-Invoice:
@@ -578,6 +579,21 @@ module.exports.addVoucher = function(req, res)
 //////////////////////////////////////////////////////
 // REST forwards to access data from other services
 //////////////////////////////////////////////////////
+
+module.exports.setCapability = function(req, res)
+{
+    let supplierId = req.params.supplierId
+    let capabilityId = req.params.capabilityId
+    console.log(supplierId, capabilityId, "======================================================================")
+    req.opuscapita.serviceClient.post("supplier", "/api/suppliers/" + supplierId + '/capabilities/' + capabilityId, true)
+    .spread((supplier, response) => {
+        res.status(200).json(supplier);
+    })
+    .catch((e) => {
+        console.log("error aya ++++++++++++++++++++++++++++++++++++++++++++++++++", e)
+        res.status("400").json({message: e.message});
+    })
+}
 
 module.exports.sendCustomer = function(req, res)
 {

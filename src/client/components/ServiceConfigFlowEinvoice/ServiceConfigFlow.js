@@ -10,6 +10,7 @@ import ServiceConfigFlow3 from './ServiceConfigFlow3.js';
 
 import InChannelConfig from '../../api/InChannelConfig.js';
 import InChannelContract from '../../api/InChannelContract.js';
+import Supplier from '../../api/Supplier.js'
 
 
 // A workaround to prevent a browser warning about unknown properties 'active', 'activeKey' and 'activeHref'
@@ -106,6 +107,9 @@ export default class ServiceConfigFlow extends Components.ContextComponent
     finalApprove = () => {
         return InChannelConfig.activate(this.props.voucher.supplierId, {
             status: InChannelConfig.status.activated  // configured
+        })
+        .then(() => {
+            return Supplier.updateCapabilities(this.props.voucher.supplierId)
         })
         .then(() => {
             return this.props.finalizeFlow();
