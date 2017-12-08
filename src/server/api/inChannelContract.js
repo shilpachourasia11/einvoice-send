@@ -58,5 +58,11 @@ module.exports.update = function(customerId, supplierId, data)
 {
     ['customerId', 'supplierId', 'createdOn', 'createdBy' ].forEach(key => delete data[key]);
     data.changedOn = new Date();
-    return this.db.models.InChannelContract.update(data, {where: {customerId: customerId, supplierId:supplierId}});
+    return this.db.models.InChannelContract.update(data, {where: {customerId: customerId, supplierId:supplierId}})
+    .then(updateData => this.get(customerId, supplierId));
+}
+
+module.exports.delete = function(customerId, supplierId)
+{
+    return this.db.models.InChannelContract.destroy({where: {customerId: customerId, supplierId:supplierId}});
 }
