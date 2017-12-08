@@ -79,8 +79,12 @@ module.exports.init = function(app, db, config)
         const evt6 = this.events.subscribe('sales-inoivce.created', (data) => {
             this.transferSalesInvoice(data);
         });
+        const evt7 = this.events.subscribe('sales-inoivce.updated', (data) => {
+            this.transferSalesInvoice(data);
+        });
 
-        return Promise.all([ evt1, evt2, evt3, evt4, evt5, evt6 ]).then(() =>
+
+        return Promise.all([ evt1, evt2, evt3, evt4, evt5, evt6, evt7 ]).then(() =>
         {
             this.blob = new BlobClient({forceServiceToken:true});
 
@@ -124,7 +128,24 @@ module.exports.init = function(app, db, config)
  * 2. trigger transfer of a2a-integration
  * 3. set STatus to sent/sendingfailed
  */
+function getAddressOfType(addresses, type)
+{
+    if (!addresses)
+        return null;
+
+    for(let i = 0; i < addresses.length; i++) {
+        if (addresses[i].type == type)
+            return addresses[i];
+    }
+    return null;
+}
+
  module.exports.transferSalesInvoice = function(invoice) {
+
+    if (invoice.status != "approved") {
+        console.log("transferSalesInvoice is rejected for invoice status != 'approved'");
+        return;
+    }
 
     console.log("transferSalesInvoice started with: ", invoice);
 
@@ -139,12 +160,51 @@ module.exports.init = function(app, db, config)
                 {status: "sending"},
                 true)
             .spread((salesInvoice, response) => {
-                return this.serviceClient.post("a2a-integration",
-                    "/api/sales-invoices",
-                    invoice,
-                    true)
+                return Promise.all([
+                    this.serviceClient.get('supplier', `/api/suppliers/${invoice.supplierId}?include=addresses`, true),
+                    this.serviceClient.get(`customer`, `/api/customers/${invoice.customerId}?include=addresses`, true)
+                ])
+                .spread((supplierResponse, customerResponse) => {
+                    const supplier = supplierResponse[0];
+                    const customer = customerResponse[0]
+
+                    customer.address = getAddressOfType(customer.addresses, 'default');
+                    supplier.address = getAddressOfType(supplier.addresses, 'invoice');
+                    if (!supplier.address)
+                        supplier.address = getAddressOfType(supplier.addresses, 'default');
+
+                    const json = {
+                        supplier: supplier,
+                        customer: customer,
+                        invoice,
+                        invoiceItems: invoice.SalesInvoiceItems
+                    }
+                    return this.serviceClient.put('sales-invoice',
+                        '/api/pdfpreview',
+                        { json },
+                        true);
+                })
+                .then(pdfString => {
+                    // TODO: get rid of the base64 encoding
+                    const pdfBuff = new Buffer(pdfString.toString('base64').split(';base64,').pop(), 'base64');
+                    return this.blob.storeFile('s_' + supplierId, `/private/salesinvoices/${invoice.id}.pdf`, pdfBuff, true);
+                })
+                .then(result => {
+                    invoice.attachments = [`/blob/api/s_${supplierId}/files/private/salesinvoices/${invoice.id}.pdf`];
+
+                    // add emtpy arrays to avoid errors on a2a-integration
+                    if (!invoice.taxDistribution)
+                        invoice.taxDistribution = [];
+                    if (!invoice.SalesInvoiceItems)
+                        invoice.SalesInvoiceItems = [];
+
+                    return this.serviceClient.post("a2a-integration",
+                        "/api/sales-invoices",
+                        invoice,
+                        true).catch(e => console.log(e));
+                })
             })
-            .then((result) => {
+            .then(result => {
                 return this.serviceClient.put("sales-invoice",
                     `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
                     {status: "sent"},
@@ -155,18 +215,19 @@ module.exports.init = function(app, db, config)
             });
         }
         else {
-            console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped, because 'keyIn'-InChannel configuration is not defined found for supplier " + supplierId + ". Setting status of Sales-Invoice to 'sendingNotGranted'.");
+            console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped, because 'keyIn'-InChannel configuration is not defined for supplier " + supplierId + ". Setting status of Sales-Invoice to 'sendingFailed'.");
             this.serviceClient.put("sales-invoice",
                 `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
-                {status: "sendingNotGranted"},
+                {status: "sendingFailed"},
                 true);
         }
+
     })
     .catch((e) => {
         console.log("Error: Transfer of Sales-Invoice " + invoiceNumber + " stopped: ", e);
         this.serviceClient.put("sales-invoice",
             `/api/salesinvoices/${supplierId}/${invoiceNumber}`,
-            {status: "sendingNotGranted"},
+            {status: "sendingFailed"},
             true);
     })
 }
@@ -449,7 +510,11 @@ module.exports.addInChannelContract = function(req, res)
                     obj.customerSupplierId = voucher.customerSupplierId;
                     return InChannelContract.add(obj, true)
                 })
+                // TODO: Check, what about inherited InChannelContracts from master customers? one event, or multiple, or depending on what?
                 .then(icc => this.events.emit(icc, 'inChannelContract.created').then(() => icc))
+                .then((icc) => {
+                    return inheritInChannelContract(icc, obj);
+                })
                 .then(icc => res.status(200).json(icc));
             }
         });
@@ -483,9 +548,16 @@ module.exports.updateInChannelContract = function(req, res)
                     obj.customerSupplierId = voucher.customerSupplierId;
                     return InChannelContract.update(bp.customerId, bp.supplierId, obj)
                 })
-                .then( () => {
-                    return InChannelContract.get(bp.customerId, bp.supplierId);
+                .then((icc) => {
+                    obj.customerId = bp.customerId;
+                    obj.supplierId = bp.supplierId;
+                    obj.createdBy = req.opuscapita.userData('id');
+                    return inheritInChannelContract(icc, obj).then(() => icc);
                 })
+                // .then( () => {
+                //     return InChannelContract.get(bp.customerId, bp.supplierId);
+                // })
+                // TODO: Which events to be send in case of inheritance - see comment in add method!
                 .then((icc) => this.events.emit(icc, 'inChannelContract.updated').then(() => icc))
                 .then((icc) => {
                     res.status(200).json(icc);
@@ -502,6 +574,48 @@ module.exports.updateInChannelContract = function(req, res)
     }
 }
 
+
+function inheritInChannelContract(masterIcc, data) {
+
+    // Attention: Workaround for dekabank!!!
+    // TODO: Introduct CustomerGroup structure. As long as we don't have it, copy data for dekabank customers manually.
+
+    // TODO: optimize with bulk upsert/delete
+
+    const dekaCustomerIds = ['dekaBestvestor', 'dekaDeutscheGiro', 'dekaImmobilien', 'dekaImmobilienInvest', 'dekaInvest', 'dekaWestInvest'];
+    let promises = [];
+
+    if (masterIcc.inputType != "keyIn") {
+        // Delete inherited ICCs.
+        //
+        for (let i = 0; i < dekaCustomerIds.length; i++) {
+            InChannelContract.get(dekaCustomerIds[i], masterIcc.supplierId)
+            .then(foundIcc => {
+                if (foundIcc)
+                    promises.push(InChannelContract.delete(dekaCustomerIds[i], masterIcc.supplierId));
+            });
+        }
+        return masterIcc;
+    }
+    else
+    {
+        // Check whether Customer is a master of a a group. If yes, then copy the icc entries to all subcustomers
+        if (masterIcc.customerId == 'dekabank')
+        {
+            for (let i = 0; i < dekaCustomerIds.length; i++) {
+                let obj = Object.assign({}, data, {customerId: dekaCustomerIds[i]});
+                InChannelContract.get(obj.customerId, obj.supplierId)
+                .then(foundIcc => {
+                    if (foundIcc)
+                        promises.push(InChannelContract.update(obj.customerId, obj.supplierId, obj));
+                    else
+                        promises.push(InChannelContract.add(obj, true));
+                });
+            }
+        }
+        return Promise.all(promises);
+    }
+}
 
 
 //////////////////////////////////////////////////////////////////////

@@ -382,6 +382,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       REDIS_AUTH: ${REDIS_AUTH}
+      USER_NAME: 'svc_a2a-integration'
+      PASSWORD: 'test'
       SERVICE_3015_CHECK_HTTP: /api/health/check
       SERVICE_3015_CHECK_INTERVAL: 15s
       SERVICE_3015_CHECK_TIMEOUT: 3s
