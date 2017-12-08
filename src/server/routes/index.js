@@ -584,13 +584,12 @@ module.exports.setCapability = function(req, res)
 {
     let supplierId = req.params.supplierId
     let capabilityId = req.params.capabilityId
-    console.log(supplierId, capabilityId, "======================================================================")
-    req.opuscapita.serviceClient.post("supplier", "/api/suppliers/" + supplierId + '/capabilities/' + capabilityId, true)
-    .spread((supplier, response) => {
-        res.status(200).json(supplier);
+    let url = '/api/suppliers/' + supplierId + '/capabilities/' + capabilityId
+    req.opuscapita.serviceClient.post('supplier', url, {}, true)
+    .then((response) => {
+        res.status(200).json(response);
     })
     .catch((e) => {
-        console.log("error aya ++++++++++++++++++++++++++++++++++++++++++++++++++", e)
         res.status("400").json({message: e.message});
     })
 }
